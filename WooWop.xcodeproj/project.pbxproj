@@ -57,11 +57,9 @@
 		5B0311B62BF2F479008550DF /* WooWop */ = {
 			isa = PBXGroup;
 			children = (
-				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
-				5B6D53832BF685DF007ABB96 /* StarRating.swift */,
 				5B0311B72BF2F479008550DF /* WooWopApp.swift */,
-				5B0311B92BF2F479008550DF /* ContentView.swift */,
-				5B7C54582BF3D458001C2212 /* AnimatedButton.swift */,
+				5B7273752BF8631B000A430C /* Media Module */,
+				5B7273762BF86351000A430C /* API module */,
 				5B0311BB2BF2F47A008550DF /* Assets.xcassets */,
 				5B0311BD2BF2F47A008550DF /* Preview Content */,
 			);
@@ -74,6 +72,24 @@
 				5B0311BE2BF2F47A008550DF /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		5B7273752BF8631B000A430C /* Media Module */ = {
+			isa = PBXGroup;
+			children = (
+				5B0311B92BF2F479008550DF /* ContentView.swift */,
+				5B6D53832BF685DF007ABB96 /* StarRating.swift */,
+				5B7C54582BF3D458001C2212 /* AnimatedButton.swift */,
+			);
+			path = "Media Module";
+			sourceTree = "<group>";
+		};
+		5B7273762BF86351000A430C /* API module */ = {
+			isa = PBXGroup;
+			children = (
+				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
+			);
+			path = "API module";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

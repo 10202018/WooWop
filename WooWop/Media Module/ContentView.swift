@@ -8,8 +8,12 @@
 import SwiftUI
 import ShazamKit
 
+// MARK: - Media module.
+
+/// The entry view in the app.
 struct ContentView: View {
-  // singleton (lowercase "s")
+  
+  // Singleton (lowercase "s")
   private let shazamClient = ShazamClient.instance
   
   @State private var mediaItem: SHMediaItem?
