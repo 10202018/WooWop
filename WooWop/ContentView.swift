@@ -9,9 +9,8 @@ import SwiftUI
 import ShazamKit
 
 struct ContentView: View {
-  
-  // Set up the session
-  @State private var shazamSession = SHManagedSession()
+  // singleton (lowercase "s")
+  private let shazamClient = ShazamClient.instance
   
   @State private var mediaItem: SHMediaItem?
   @State private var rating: Int = 1
@@ -62,7 +61,7 @@ struct ContentView: View {
         ToolbarItem() {
           Button {
             Task {
-              mediaItem = await getSessionResult(shazamSession)
+              mediaItem = await shazamClient.getSessionResult()
             }
           } label: {
             Image(systemName: "music.note")
@@ -70,18 +69,8 @@ struct ContentView: View {
         }
       }
       .task {
-        mediaItem = await getSessionResult(shazamSession)
+        mediaItem = await shazamClient.getSessionResult()
       }
-    }
-  }
-  
-  func getSessionResult(_ shazamSession: SHManagedSession) async -> SHMediaItem? {
-    // Use the result.
-    switch await shazamSession.result() {
-    case .match(let match):
-      return match.mediaItems.first
-    case .noMatch(_): return nil
-    case .error(let error, _): return nil
     }
   }
 }
