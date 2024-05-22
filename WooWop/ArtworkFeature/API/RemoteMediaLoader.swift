@@ -11,17 +11,17 @@ import ShazamKit
 extension String: Error {}
 
 class RemoteMediaLoader: MediaLoader {
-  func loadMedia() async throws -> SHMediaItem {
+  func loadMedia(completion: @escaping (LoadMediaResult) -> Void) async throws {
     // Call single method from API of ShazamClient.
     let result = await ShazamClient().executeSessionAndMatch()
     // Use the result.
     switch result {
     case .match(let match):
-      return match.mediaItems.first!
+      completion(.success(match.mediaItems))
     case .noMatch(_):
-      throw "Error: No match found"
+      completion(.error("Error: No match found"))
     case .error(let error, _):
-      throw "Error: \(error)"
+      completion(.error("Error: \(error)"))
     }
   }
 }

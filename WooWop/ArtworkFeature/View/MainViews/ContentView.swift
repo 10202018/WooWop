@@ -65,7 +65,7 @@ struct ContentView: View {
           Button {
             Task {
 //              mediaItem = await shazamClient.getSessionResult()
-              mediaItem = try await mediaLoader.loadMedia()
+//              mediaItem = try await mediaLoader.loadMedia()
             }
           } label: {
             Image(systemName: "music.note")
@@ -75,7 +75,7 @@ struct ContentView: View {
       .task {
 //        mediaItem = await shazamClient.getSessionResult()
         do {
-          mediaItem = try await mediaLoader.loadMedia()
+//          mediaItem = try await mediaLoader.loadMedia()
         } catch {}
       }
     }

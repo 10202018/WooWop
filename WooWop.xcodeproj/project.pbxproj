@@ -14,14 +14,14 @@
 		5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6D53832BF685DF007ABB96 /* StarRating.swift */; };
 		5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273732BF7F25C000A430C /* ShazamClient.swift */; };
 		5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273792BFBD47F000A430C /* MediaLoader.swift */; };
-		5B7273842BFD545E000A430C /* WooWopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273832BFD545E000A430C /* WooWopTests.swift */; };
 		5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */; };
 		5B7273952BFD8D71000A430C /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273942BFD8D71000A430C /* MediaItem.swift */; };
+		5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */; };
 		5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7C54582BF3D458001C2212 /* AnimatedButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5B7273852BFD545E000A430C /* PBXContainerItemProxy */ = {
+		5B7273AB2BFD9DDA000A430C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5B0311AC2BF2F479008550DF /* Project object */;
 			proxyType = 1;
@@ -39,10 +39,10 @@
 		5B6D53832BF685DF007ABB96 /* StarRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRating.swift; sourceTree = "<group>"; };
 		5B7273732BF7F25C000A430C /* ShazamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShazamClient.swift; sourceTree = "<group>"; };
 		5B7273792BFBD47F000A430C /* MediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoader.swift; sourceTree = "<group>"; };
-		5B7273812BFD545E000A430C /* WooWopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WooWopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5B7273832BFD545E000A430C /* WooWopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopTests.swift; sourceTree = "<group>"; };
 		5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoader.swift; sourceTree = "<group>"; };
 		5B7273942BFD8D71000A430C /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
+		5B7273A72BFD9DDA000A430C /* WooWopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WooWopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoaderTests.swift; sourceTree = "<group>"; };
 		5B7C54582BF3D458001C2212 /* AnimatedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -54,7 +54,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5B72737E2BFD545E000A430C /* Frameworks */ = {
+		5B7273A42BFD9DDA000A430C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -68,7 +68,7 @@
 			isa = PBXGroup;
 			children = (
 				5B0311B62BF2F479008550DF /* WooWop */,
-				5B7273822BFD545E000A430C /* WooWopTests */,
+				5B7273A82BFD9DDA000A430C /* WooWopTests */,
 				5B0311B52BF2F479008550DF /* Products */,
 			);
 			sourceTree = "<group>";
@@ -77,7 +77,7 @@
 			isa = PBXGroup;
 			children = (
 				5B0311B42BF2F479008550DF /* WooWop.app */,
-				5B7273812BFD545E000A430C /* WooWopTests.xctest */,
+				5B7273A72BFD9DDA000A430C /* WooWopTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,7 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				5B0311B72BF2F479008550DF /* WooWopApp.swift */,
-				5B7273752BF8631B000A430C /* Media Module */,
+				5B7273752BF8631B000A430C /* ArtworkFeature */,
 				5B7273762BF86351000A430C /* NetworkingModule */,
 				5B0311BB2BF2F47A008550DF /* Assets.xcassets */,
 				5B0311BD2BF2F47A008550DF /* Preview Content */,
@@ -102,14 +102,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		5B7273752BF8631B000A430C /* Media Module */ = {
+		5B7273752BF8631B000A430C /* ArtworkFeature */ = {
 			isa = PBXGroup;
 			children = (
 				5B7273932BFD8D43000A430C /* Model */,
 				5B72738E2BFD8660000A430C /* API */,
 				5B7273922BFD8D25000A430C /* View */,
 			);
-			path = "Media Module";
+			path = ArtworkFeature;
 			sourceTree = "<group>";
 		};
 		5B7273762BF86351000A430C /* NetworkingModule */ = {
@@ -118,14 +118,6 @@
 				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
 			);
 			path = NetworkingModule;
-			sourceTree = "<group>";
-		};
-		5B7273822BFD545E000A430C /* WooWopTests */ = {
-			isa = PBXGroup;
-			children = (
-				5B7273832BFD545E000A430C /* WooWopTests.swift */,
-			);
-			path = WooWopTests;
 			sourceTree = "<group>";
 		};
 		5B72738C2BFD85EF000A430C /* Subviews */ = {
@@ -171,6 +163,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		5B7273A82BFD9DDA000A430C /* WooWopTests */ = {
+			isa = PBXGroup;
+			children = (
+				5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */,
+			);
+			path = WooWopTests;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -191,22 +191,22 @@
 			productReference = 5B0311B42BF2F479008550DF /* WooWop.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5B7273802BFD545E000A430C /* WooWopTests */ = {
+		5B7273A62BFD9DDA000A430C /* WooWopTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5B7273872BFD545E000A430C /* Build configuration list for PBXNativeTarget "WooWopTests" */;
+			buildConfigurationList = 5B7273AD2BFD9DDA000A430C /* Build configuration list for PBXNativeTarget "WooWopTests" */;
 			buildPhases = (
-				5B72737D2BFD545E000A430C /* Sources */,
-				5B72737E2BFD545E000A430C /* Frameworks */,
-				5B72737F2BFD545E000A430C /* Resources */,
+				5B7273A32BFD9DDA000A430C /* Sources */,
+				5B7273A42BFD9DDA000A430C /* Frameworks */,
+				5B7273A52BFD9DDA000A430C /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5B7273862BFD545E000A430C /* PBXTargetDependency */,
+				5B7273AC2BFD9DDA000A430C /* PBXTargetDependency */,
 			);
 			name = WooWopTests;
 			productName = WooWopTests;
-			productReference = 5B7273812BFD545E000A430C /* WooWopTests.xctest */;
+			productReference = 5B7273A72BFD9DDA000A430C /* WooWopTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -222,7 +222,7 @@
 					5B0311B32BF2F479008550DF = {
 						CreatedOnToolsVersion = 15.2;
 					};
-					5B7273802BFD545E000A430C = {
+					5B7273A62BFD9DDA000A430C = {
 						CreatedOnToolsVersion = 15.2;
 						TestTargetID = 5B0311B32BF2F479008550DF;
 					};
@@ -242,7 +242,7 @@
 			projectRoot = "";
 			targets = (
 				5B0311B32BF2F479008550DF /* WooWop */,
-				5B7273802BFD545E000A430C /* WooWopTests */,
+				5B7273A62BFD9DDA000A430C /* WooWopTests */,
 			);
 		};
 /* End PBXProject section */
@@ -257,7 +257,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5B72737F2BFD545E000A430C /* Resources */ = {
+		5B7273A52BFD9DDA000A430C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -282,21 +282,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5B72737D2BFD545E000A430C /* Sources */ = {
+		5B7273A32BFD9DDA000A430C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5B7273842BFD545E000A430C /* WooWopTests.swift in Sources */,
+				5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5B7273862BFD545E000A430C /* PBXTargetDependency */ = {
+		5B7273AC2BFD9DDA000A430C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5B0311B32BF2F479008550DF /* WooWop */;
-			targetProxy = 5B7273852BFD545E000A430C /* PBXContainerItemProxy */;
+			targetProxy = 5B7273AB2BFD9DDA000A430C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -484,10 +484,9 @@
 			};
 			name = Release;
 		};
-		5B7273882BFD545E000A430C /* Debug */ = {
+		5B7273AE2BFD9DDA000A430C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6GSKP79G95;
@@ -502,10 +501,9 @@
 			};
 			name = Debug;
 		};
-		5B7273892BFD545E000A430C /* Release */ = {
+		5B7273AF2BFD9DDA000A430C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6GSKP79G95;
@@ -541,11 +539,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5B7273872BFD545E000A430C /* Build configuration list for PBXNativeTarget "WooWopTests" */ = {
+		5B7273AD2BFD9DDA000A430C /* Build configuration list for PBXNativeTarget "WooWopTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5B7273882BFD545E000A430C /* Debug */,
-				5B7273892BFD545E000A430C /* Release */,
+				5B7273AE2BFD9DDA000A430C /* Debug */,
+				5B7273AF2BFD9DDA000A430C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

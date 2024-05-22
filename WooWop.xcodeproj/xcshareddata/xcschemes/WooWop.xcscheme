@@ -30,13 +30,24 @@
       shouldAutocreateTestPlan = "YES">
       <Testables>
          <TestableReference
+            skipped = "YES"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5B7273A62BFD9DDA000A430C"
+               BuildableName = "WooWopTests.xctest"
+               BlueprintName = "WooWopTests"
+               ReferencedContainer = "container:WooWop.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
             skipped = "NO"
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5B7273802BFD545E000A430C"
-               BuildableName = "WooWopTests.xctest"
-               BlueprintName = "WooWopTests"
+               BlueprintIdentifier = "5B7273992BFD9BDD000A430C"
+               BuildableName = "ArtworkFeatureTests.xctest"
+               BlueprintName = "ArtworkFeatureTests"
                ReferencedContainer = "container:WooWop.xcodeproj">
             </BuildableReference>
          </TestableReference>
