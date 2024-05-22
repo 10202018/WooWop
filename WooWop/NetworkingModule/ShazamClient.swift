@@ -13,8 +13,6 @@ import ShazamKit
 // Singleton (capital "S")
 /// The Shazam API client.
 class ShazamClient {
-  static let instance = ShazamClient()
-  
   // Set up the session
   /// An object that records and matches a recording with captured sound in the Shazam catalog or your
   /// custom catalog.
@@ -24,7 +22,7 @@ class ShazamClient {
   /// the song from the current session.
   /// Returns:
   /// - an object that represents the metadata for a reference signature.
-  private func executeSessionAndMatch() async -> SHSession.Result {
+  func executeSessionAndMatch() async -> SHSession.Result {
     return await shazamSession.result()
   }
 }

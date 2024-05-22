@@ -13,8 +13,7 @@ import ShazamKit
 /// The entry view in the app.
 struct ContentView: View {
   
-  // Singleton (lowercase "s")
-  private let shazamClient = ShazamClient.instance
+  var mediaLoader: MediaLoader!
   
   @State private var mediaItem: SHMediaItem?
   @State private var rating: Int = 1
@@ -65,7 +64,8 @@ struct ContentView: View {
         ToolbarItem() {
           Button {
             Task {
-              mediaItem = await shazamClient.getSessionResult()
+//              mediaItem = await shazamClient.getSessionResult()
+              mediaItem = try await mediaLoader.loadMedia()
             }
           } label: {
             Image(systemName: "music.note")
@@ -73,7 +73,10 @@ struct ContentView: View {
         }
       }
       .task {
-        mediaItem = await shazamClient.getSessionResult()
+//        mediaItem = await shazamClient.getSessionResult()
+        do {
+          mediaItem = try await mediaLoader.loadMedia()
+        } catch {}
       }
     }
   }
