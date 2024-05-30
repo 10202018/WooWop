@@ -15,10 +15,14 @@ extension SHManagedSession: Equatable {
 }
 
 public protocol HTTPClient {
-  func findMatch(from: SHManagedSession)
+  func findMatch(from: SHManagedSession, completion: @escaping (Error) -> Void)
 }
 
 public final class RemoteMediaLoader {
+  public enum Error: Swift.Error {
+    case connectivity
+  }
+  
   private let client: HTTPClient
   private let session: SHManagedSession
   
@@ -27,18 +31,19 @@ public final class RemoteMediaLoader {
     self.session = session
   }
   
-  public func load() {
-    client.findMatch(from: session)
+  public func load(completion: @escaping (Error) -> Void = { _ in }) {
+    client.findMatch(from: session) { error in
+      completion(.connectivity)
+    }
   }
 }
 
 final class RemoteMediaLoaderTests: XCTestCase {
-
   func test_init_doesNotRequestMatchFromSession() {
     let session = SHManagedSession()
     let (client, _) = makeSUT(session: session)
     
-    XCTAssertNil(client.requestedShazamSession)
+    XCTAssertTrue(client.requestedShazamSessions.isEmpty)
   }
   
   func test_load_requestMatchFromSession() {
@@ -51,14 +56,26 @@ final class RemoteMediaLoaderTests: XCTestCase {
     XCTAssertEqual(client.requestedShazamSessions, [session, session])
   }
   
+  func test_load_deliversErrorOnClientError() {
+    let (client, sut) = makeSUT()
+    client.error = NSError(domain: "Test", code: 0)
+    
+    var capturedError: RemoteMediaLoader.Error?
+    sut.load() { error in capturedError = error }
+    
+    XCTAssertEqual(capturedError, .connectivity)
+  }
+  
   // MARK: - Helpers.
   /// An implementation of the HTTPClient protocol for testing purposes only.
   class HTTPClientSpy: HTTPClient {
-    var requestedShazamSession: SHManagedSession?
     var requestedShazamSessions = [SHManagedSession]()
+    var error: Error?
 
-    func findMatch(from session: SHManagedSession) {
-      requestedShazamSession = session
+    func findMatch(from session: SHManagedSession, completion: @escaping (Error) -> Void) {
+      if let error = error {
+        completion(error)
+      }
       requestedShazamSessions.append(session)
     }
   }
