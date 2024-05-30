@@ -13,9 +13,10 @@ import ShazamKit
 /// The entry view in the app.
 struct ContentView: View {
   
-  var mediaLoader: MediaLoader!
+  var mediaLoader: MediaLoader?
   
-  @State private var mediaItem: SHMediaItem?
+//  private var mediaItem: SHMediaItem?
+  @Environment (MediaItem.self) var mediaItem: MediaItem?
   @State private var rating: Int = 1
   @State private var bounceValue: Int = 0
   

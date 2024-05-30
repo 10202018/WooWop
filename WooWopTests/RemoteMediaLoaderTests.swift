@@ -14,38 +14,29 @@ extension SHManagedSession: Equatable {
   }
 }
 
-class RemoteMediaLoader {
-  let client: HTTPClient
-  let session: SHManagedSession
+public protocol HTTPClient {
+  func findMatch(from: SHManagedSession)
+}
+
+public final class RemoteMediaLoader {
+  private let client: HTTPClient
+  private let session: SHManagedSession
   
-  init(client: HTTPClient, session: SHManagedSession) {
+  public init(client: HTTPClient, session: SHManagedSession) {
     self.client = client
     self.session = session
   }
   
-  func load() {
-    client.get(from: session)
+  public func load() {
+    client.findMatch(from: session)
   }
-}
-
-protocol HTTPClient {
-  func get(from: SHManagedSession)
-}
-
-/// An implementation of the HTTPClient protocol for testing purposes only.
-class HTTPClientSpy: HTTPClient {
-  func get(from session: SHManagedSession) {
-    requestedShazamSession = session
-  }
-  
-  var requestedShazamSession: SHManagedSession?
 }
 
 final class RemoteMediaLoaderTests: XCTestCase {
 
   func test_init_doesNotRequestMatchFromSession() {
     let session = SHManagedSession()
-    let (client, sut) = makeSUT(session: session)
+    let (client, _) = makeSUT(session: session)
     
     XCTAssertNil(client.requestedShazamSession)
   }
@@ -55,15 +46,26 @@ final class RemoteMediaLoaderTests: XCTestCase {
     let (client, sut) = makeSUT(session: session)
     
     sut.load()
+    sut.load()
     
-    XCTAssertEqual(client.requestedShazamSession, session)
+    XCTAssertEqual(client.requestedShazamSessions, [session, session])
   }
   
-  // MARK: - Factory methods.
+  // MARK: - Helpers.
+  /// An implementation of the HTTPClient protocol for testing purposes only.
+  class HTTPClientSpy: HTTPClient {
+    var requestedShazamSession: SHManagedSession?
+    var requestedShazamSessions = [SHManagedSession]()
+
+    func findMatch(from session: SHManagedSession) {
+      requestedShazamSession = session
+      requestedShazamSessions.append(session)
+    }
+  }
+  
   private func makeSUT(session: SHManagedSession = SHManagedSession()) -> (client: HTTPClientSpy, sut: RemoteMediaLoader) {
     let client = HTTPClientSpy()
     let sut = RemoteMediaLoader(client: client, session: session)
     return (client, sut)
   }
-
 }

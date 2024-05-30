@@ -36,6 +36,7 @@
 		5B0311B92BF2F479008550DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5B0311BB2BF2F47A008550DF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5B0311BE2BF2F47A008550DF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		5B1F335A2BFE6FA2007CA3E6 /* ShazamKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ShazamKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.2.sdk/System/Library/Frameworks/ShazamKit.framework; sourceTree = DEVELOPER_DIR; };
 		5B6D53832BF685DF007ABB96 /* StarRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRating.swift; sourceTree = "<group>"; };
 		5B7273732BF7F25C000A430C /* ShazamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShazamClient.swift; sourceTree = "<group>"; };
 		5B7273792BFBD47F000A430C /* MediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoader.swift; sourceTree = "<group>"; };
@@ -70,6 +71,7 @@
 				5B0311B62BF2F479008550DF /* WooWop */,
 				5B7273A82BFD9DDA000A430C /* WooWopTests */,
 				5B0311B52BF2F479008550DF /* Products */,
+				5B1F33592BFE6F7A007CA3E6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -87,7 +89,7 @@
 			children = (
 				5B0311B72BF2F479008550DF /* WooWopApp.swift */,
 				5B7273752BF8631B000A430C /* ArtworkFeature */,
-				5B7273762BF86351000A430C /* NetworkingModule */,
+				5B7273762BF86351000A430C /* ArtworkAPI */,
 				5B0311BB2BF2F47A008550DF /* Assets.xcassets */,
 				5B0311BD2BF2F47A008550DF /* Preview Content */,
 			);
@@ -102,6 +104,14 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		5B1F33592BFE6F7A007CA3E6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5B1F335A2BFE6FA2007CA3E6 /* ShazamKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5B7273752BF8631B000A430C /* ArtworkFeature */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,12 +122,13 @@
 			path = ArtworkFeature;
 			sourceTree = "<group>";
 		};
-		5B7273762BF86351000A430C /* NetworkingModule */ = {
+		5B7273762BF86351000A430C /* ArtworkAPI */ = {
 			isa = PBXGroup;
 			children = (
+				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
 				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
 			);
-			path = NetworkingModule;
+			path = ArtworkAPI;
 			sourceTree = "<group>";
 		};
 		5B72738C2BFD85EF000A430C /* Subviews */ = {
@@ -141,7 +152,6 @@
 			isa = PBXGroup;
 			children = (
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
-				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
