@@ -63,7 +63,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
     sut.load() { capturedError.append($0) }
     
     let clientError = NSError(domain: "Test", code: 0)
-    client.completions[0](clientError)
+    client.complete(with: clientError)
     
     XCTAssertEqual(capturedError, [.connectivity])
   }
@@ -77,6 +77,10 @@ final class RemoteMediaLoaderTests: XCTestCase {
     func findMatch(from session: SHManagedSession, completion: @escaping (Error) -> Void) {
       completions.append(completion)
       requestedShazamSessions.append(session)
+    }
+    
+    func complete(with error: Error, at index: Int = 0) {
+      completions[index](error)
     }
   }
   
