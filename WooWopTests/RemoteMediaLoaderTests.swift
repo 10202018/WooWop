@@ -58,10 +58,12 @@ final class RemoteMediaLoaderTests: XCTestCase {
   
   func test_load_deliversErrorOnClientError() {
     let (client, sut) = makeSUT()
-    client.error = NSError(domain: "Test", code: 0)
     
     var capturedError = [RemoteMediaLoader.Error]()
     sut.load() { capturedError.append($0) }
+    
+    let clientError = NSError(domain: "Test", code: 0)
+    client.completions[0](clientError)
     
     XCTAssertEqual(capturedError, [.connectivity])
   }
@@ -70,12 +72,10 @@ final class RemoteMediaLoaderTests: XCTestCase {
   /// An implementation of the HTTPClient protocol for testing purposes only.
   class HTTPClientSpy: HTTPClient {
     var requestedShazamSessions = [SHManagedSession]()
-    var error: Error?
+    var completions = [(Error) -> Void]()
 
     func findMatch(from session: SHManagedSession, completion: @escaping (Error) -> Void) {
-      if let error = error {
-        completion(error)
-      }
+      completions.append(completion)
       requestedShazamSessions.append(session)
     }
   }
