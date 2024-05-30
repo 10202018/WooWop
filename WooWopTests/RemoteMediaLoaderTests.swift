@@ -45,20 +45,25 @@ final class RemoteMediaLoaderTests: XCTestCase {
 
   func test_init_doesNotRequestMatchFromSession() {
     let session = SHManagedSession()
-    let client = HTTPClientSpy()
-    _ = RemoteMediaLoader(client: client, session: session)
+    let (client, sut) = makeSUT(session: session)
     
     XCTAssertNil(client.requestedShazamSession)
   }
   
   func test_load_requestMatchFromSession() {
     let session = SHManagedSession()
-    let client = HTTPClientSpy()
-    let sut = RemoteMediaLoader(client: client, session: session)
+    let (client, sut) = makeSUT(session: session)
     
     sut.load()
     
     XCTAssertEqual(client.requestedShazamSession, session)
+  }
+  
+  // MARK: - Factory methods.
+  private func makeSUT(session: SHManagedSession = SHManagedSession()) -> (client: HTTPClientSpy, sut: RemoteMediaLoader) {
+    let client = HTTPClientSpy()
+    let sut = RemoteMediaLoader(client: client, session: session)
+    return (client, sut)
   }
 
 }
