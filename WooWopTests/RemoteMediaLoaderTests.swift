@@ -71,16 +71,19 @@ final class RemoteMediaLoaderTests: XCTestCase {
   // MARK: - Helpers.
   /// An implementation of the HTTPClient protocol for testing purposes only.
   class HTTPClientSpy: HTTPClient {
-    var requestedShazamSessions = [SHManagedSession]()
-    var completions = [(Error) -> Void]()
+    private var messages = [(session: SHManagedSession, completion: (Error) -> Void)]()
+    var requestedShazamSessions: [SHManagedSession] {
+      return messages.map { result in
+        result.session
+      }
+    }
 
     func findMatch(from session: SHManagedSession, completion: @escaping (Error) -> Void) {
-      completions.append(completion)
-      requestedShazamSessions.append(session)
+      messages.append((session, completion))
     }
     
     func complete(with error: Error, at index: Int = 0) {
-      completions[index](error)
+      messages[index].completion(error)
     }
   }
   
