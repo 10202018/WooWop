@@ -31,7 +31,7 @@ public final class RemoteMediaLoader {
     self.session = session
   }
   
-  public func load(completion: @escaping (Error) -> Void = { _ in }) {
+  public func load(completion: @escaping (Error) -> Void) {
     client.findMatch(from: session) { error in
       completion(.connectivity)
     }
@@ -46,12 +46,21 @@ final class RemoteMediaLoaderTests: XCTestCase {
     XCTAssertTrue(client.requestedShazamSessions.isEmpty)
   }
   
-  func test_load_requestMatchFromSession() {
+  func test_load_requestsMatchFromSession() {
     let session = SHManagedSession()
     let (client, sut) = makeSUT(session: session)
     
-    sut.load()
-    sut.load()
+    sut.load() { _ in }
+    
+    XCTAssertEqual(client.requestedShazamSessions, [session])
+  }
+  
+  func test_loadTwice_requestsMatchFromSession() {
+    let session = SHManagedSession()
+    let (client, sut) = makeSUT(session: session)
+    
+    sut.load() { _ in }
+    sut.load() { _ in }
     
     XCTAssertEqual(client.requestedShazamSessions, [session, session])
   }
