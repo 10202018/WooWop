@@ -14,8 +14,14 @@ extension SHManagedSession: Equatable {
   }
 }
 
+public enum ClientResult {
+  case match([SHMediaItem])
+  case noMatch
+  case error(Error)
+}
+
 public protocol Client {
-  func findMatch(from: SHManagedSession, completion: @escaping (Error) -> Void)
+  func findMatch(from: SHManagedSession, completion: @escaping (ClientResult) -> Void)
 }
 
 public final class RemoteMediaLoader {
@@ -33,8 +39,16 @@ public final class RemoteMediaLoader {
   }
   
   public func load(completion: @escaping (Error) -> Void) {
-    client.findMatch(from: session) { error in
-      completion(.connectivity)
+    client.findMatch(from: session) { result in
+      switch result {
+      case .match:
+        completion(.connectivity)
+      case .noMatch:
+        completion(.invalidData)
+      case .error:
+        completion(.invalidData)
+      }
+
     }
   }
 }
@@ -81,19 +95,19 @@ final class RemoteMediaLoaderTests: XCTestCase {
   // MARK: - Helpers.
   /// An implementation of the HTTPClient protocol for testing purposes only.
   class ClientSpy: Client {
-    private var messages = [(session: SHManagedSession, completion: (Error) -> Void)]()
+    private var messages = [(session: SHManagedSession, completion: (ClientResult) -> Void)]()
     var requestedShazamSessions: [SHManagedSession] {
       return messages.map { result in
         result.session
       }
     }
 
-    func findMatch(from session: SHManagedSession, completion: @escaping (Error) -> Void) {
+    func findMatch(from session: SHManagedSession, completion: @escaping (ClientResult) -> Void) {
       messages.append((session, completion))
     }
     
     func complete(with error: Error, at index: Int = 0) {
-      messages[index].completion(error)
+      messages[index].completion(.error(error))
     }
   }
   
