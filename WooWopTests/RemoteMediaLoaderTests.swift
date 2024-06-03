@@ -5,6 +5,7 @@
 //  Created by Jah Morris-Jones on 5/21/24.
 //
 
+import WooWop
 import ShazamKit
 import XCTest
 
@@ -15,7 +16,7 @@ extension SHManagedSession: Equatable {
 }
 
 public enum ClientResult {
-  case match([SHMediaItem])
+  case match([MediaItem])
   case noMatch
   case error(Error)
 }
@@ -30,6 +31,12 @@ public final class RemoteMediaLoader {
     case invalidData
   }
   
+  public enum Result: Equatable {
+    case match([MediaItem])
+    case noMatch
+    case error(Error)
+  }
+  
   private let client: Client
   private let session: SHManagedSession
   
@@ -38,15 +45,15 @@ public final class RemoteMediaLoader {
     self.session = session
   }
   
-  public func load(completion: @escaping (Error) -> Void) {
+  public func load(completion: @escaping (Result) -> Void) {
     client.findMatch(from: session) { result in
       switch result {
       case .match:
-        completion(.connectivity)
+        completion(.error(.connectivity))
       case .noMatch:
-        completion(.invalidData)
+        completion(.noMatch)
       case .error:
-        completion(.invalidData)
+        completion(.error(.connectivity))
       }
 
     }
@@ -83,13 +90,24 @@ final class RemoteMediaLoaderTests: XCTestCase {
   func test_load_deliversErrorOnClientError() {
     let (client, sut) = makeSUT()
     
-    var capturedError = [RemoteMediaLoader.Error]()
+    var capturedError = [RemoteMediaLoader.Result]()
     sut.load() { capturedError.append($0) }
     
     let clientError = NSError(domain: "Test", code: 0)
-    client.complete(with: clientError)
+    client.complete(withError: clientError)
     
-    XCTAssertEqual(capturedError, [.connectivity])
+    XCTAssertEqual(capturedError, [.error(.connectivity)])
+  }
+  
+  func test_load_deliversNoMatchesFromSession() {
+    let (client, sut) = makeSUT()
+    
+    var capturedResults = [RemoteMediaLoader.Result]()
+    sut.load { capturedResults.append($0) }
+    
+    client.completeWithNoMatches()
+    
+    XCTAssertEqual(capturedResults, [.noMatch])
   }
   
   // MARK: - Helpers.
@@ -106,8 +124,12 @@ final class RemoteMediaLoaderTests: XCTestCase {
       messages.append((session, completion))
     }
     
-    func complete(with error: Error, at index: Int = 0) {
+    func complete(withError error: Error, at index: Int = 0) {
       messages[index].completion(.error(error))
+    }
+    
+    func completeWithNoMatches(at index: Int = 0) {
+      messages[index].completion(.noMatch)
     }
   }
   

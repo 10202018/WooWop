@@ -11,6 +11,7 @@
 		5B0311BA2BF2F479008550DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B92BF2F479008550DF /* ContentView.swift */; };
 		5B0311BC2BF2F47A008550DF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B0311BB2BF2F47A008550DF /* Assets.xcassets */; };
 		5B0311BF2BF2F47A008550DF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B0311BE2BF2F47A008550DF /* Preview Assets.xcassets */; };
+		5B63BE682C0E4BB1000D9A4C /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273942BFD8D71000A430C /* MediaItem.swift */; };
 		5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6D53832BF685DF007ABB96 /* StarRating.swift */; };
 		5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273732BF7F25C000A430C /* ShazamClient.swift */; };
 		5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273792BFBD47F000A430C /* MediaLoader.swift */; };
@@ -296,6 +297,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B63BE682C0E4BB1000D9A4C /* MediaItem.swift in Sources */,
 				5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
