@@ -14,19 +14,20 @@ extension SHManagedSession: Equatable {
   }
 }
 
-public protocol HTTPClient {
+public protocol Client {
   func findMatch(from: SHManagedSession, completion: @escaping (Error) -> Void)
 }
 
 public final class RemoteMediaLoader {
   public enum Error: Swift.Error {
     case connectivity
+    case invalidData
   }
   
-  private let client: HTTPClient
+  private let client: Client
   private let session: SHManagedSession
   
-  public init(client: HTTPClient, session: SHManagedSession) {
+  public init(client: Client, session: SHManagedSession) {
     self.client = client
     self.session = session
   }
@@ -79,7 +80,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
   
   // MARK: - Helpers.
   /// An implementation of the HTTPClient protocol for testing purposes only.
-  class HTTPClientSpy: HTTPClient {
+  class ClientSpy: Client {
     private var messages = [(session: SHManagedSession, completion: (Error) -> Void)]()
     var requestedShazamSessions: [SHManagedSession] {
       return messages.map { result in
@@ -96,8 +97,8 @@ final class RemoteMediaLoaderTests: XCTestCase {
     }
   }
   
-  private func makeSUT(session: SHManagedSession = SHManagedSession()) -> (client: HTTPClientSpy, sut: RemoteMediaLoader) {
-    let client = HTTPClientSpy()
+  private func makeSUT(session: SHManagedSession = SHManagedSession()) -> (client: ClientSpy, sut: RemoteMediaLoader) {
+    let client = ClientSpy()
     let sut = RemoteMediaLoader(client: client, session: session)
     return (client, sut)
   }
