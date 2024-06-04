@@ -48,8 +48,8 @@ public final class RemoteMediaLoader {
   public func load(completion: @escaping (Result) -> Void) {
     client.findMatch(from: session) { result in
       switch result {
-      case .match:
-        completion(.error(.connectivity))
+      case let .match(items):
+        completion(.match(items))
       case .noMatch:
         completion(.noMatch)
       case .error:
@@ -110,8 +110,25 @@ final class RemoteMediaLoaderTests: XCTestCase {
     XCTAssertEqual(capturedResults, [.noMatch])
   }
   
+  func test_load_deliversMatchesFromSession() {
+    let session = SHManagedSession()
+    let (client, sut) = makeSUT(session: session)
+    
+    let item1 = MediaItem(artworkURL: URL(string: "http://a-url-for-artwork")!, shazamID: UUID().uuidString)
+    let item2 = MediaItem(artworkURL: URL(string: "http://a-second-url-for-artwork")!, shazamID: UUID().uuidString)
+    let item3 = MediaItem(artworkURL: URL(string: "http://a-third-url-for-artwork")!, shazamID: UUID().uuidString)
+    
+    var capturedResults = [RemoteMediaLoader.Result]()
+    sut.load { capturedResults.append($0) }
+    
+    let matchedMediaItems = [item1, item2, item3]
+    client.complete(withMatchedMedia: matchedMediaItems)
+    
+    XCTAssertEqual(capturedResults, [.match(matchedMediaItems)])
+  }
+  
   // MARK: - Helpers.
-  /// An implementation of the HTTPClient protocol for testing purposes only.
+  /// An implementation of the Client protocol for testing purposes only.
   class ClientSpy: Client {
     private var messages = [(session: SHManagedSession, completion: (ClientResult) -> Void)]()
     var requestedShazamSessions: [SHManagedSession] {
@@ -130,6 +147,10 @@ final class RemoteMediaLoaderTests: XCTestCase {
     
     func completeWithNoMatches(at index: Int = 0) {
       messages[index].completion(.noMatch)
+    }
+    
+    func complete(withMatchedMedia items: [MediaItem], at index: Int = 0) {
+      messages[index].completion(.match(items))
     }
   }
   
