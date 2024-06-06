@@ -17,7 +17,7 @@ class RemoteMediaLoader: MediaLoader {
     // Use the result.
     switch result {
     case .match(let match):
-      completion(.success(match.mediaItems))
+      completion(.match(match.mediaItems))
     case .noMatch(_):
       completion(.error("Error: No match found"))
     case .error(let error, _):

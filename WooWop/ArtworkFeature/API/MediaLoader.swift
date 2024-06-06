@@ -9,7 +9,8 @@ import Foundation
 import ShazamKit
 
 enum LoadMediaResult {
-  case success([SHMediaItem])
+  case match([SHMediaItem])
+  case noMatch
   case error(Error)
 }
 
