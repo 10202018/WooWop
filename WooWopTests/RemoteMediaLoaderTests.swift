@@ -16,7 +16,7 @@ extension SHManagedSession: Equatable {
 }
 
 public enum ClientResult {
-  case match([MediaItem])
+  case match([SHMediaItem])
   case noMatch
   case error(Error)
 }
@@ -32,7 +32,7 @@ public final class RemoteMediaLoader {
   }
   
   public enum Result: Equatable {
-    case match([MediaItem])
+    case match([SHMediaItem])
     case noMatch
     case error(Error)
   }
@@ -114,9 +114,9 @@ final class RemoteMediaLoaderTests: XCTestCase {
     let session = SHManagedSession()
     let (client, sut) = makeSUT(session: session)
     
-    let item1 = MediaItem(artworkURL: URL(string: "http://a-url-for-artwork")!, shazamID: UUID().uuidString)
-    let item2 = MediaItem(artworkURL: URL(string: "http://a-second-url-for-artwork")!, shazamID: UUID().uuidString)
-    let item3 = MediaItem(artworkURL: URL(string: "http://a-third-url-for-artwork")!, shazamID: UUID().uuidString)
+    let item1 = SHMediaItem(properties: [.artworkURL : "http://a-url-for-artwork", .shazamID: UUID().uuidString])
+    let item2 = SHMediaItem(properties: [.artworkURL : "http://a-second-url-for-artwork", .shazamID: UUID().uuidString])
+    let item3 = SHMediaItem(properties: [.artworkURL :  "http://a-third-url-for-artwork", .shazamID: UUID().uuidString])
     
     var capturedResults = [RemoteMediaLoader.Result]()
     sut.load { capturedResults.append($0) }
@@ -149,7 +149,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
       messages[index].completion(.noMatch)
     }
     
-    func complete(withMatchedMedia items: [MediaItem], at index: Int = 0) {
+    func complete(withMatchedMedia items: [SHMediaItem], at index: Int = 0) {
       messages[index].completion(.match(items))
     }
   }

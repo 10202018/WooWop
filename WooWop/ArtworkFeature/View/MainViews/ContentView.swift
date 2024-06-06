@@ -16,7 +16,7 @@ struct ContentView: View {
   var mediaLoader: MediaLoader?
   
 //  private var mediaItem: SHMediaItem?
-  @Environment (MediaItem.self) var mediaItem: MediaItem?
+  @State private var mediaItem: SHMediaItem?
   @State private var rating: Int = 1
   @State private var bounceValue: Int = 0
   
