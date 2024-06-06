@@ -187,8 +187,8 @@
             filePath = "WooWopTests/RemoteMediaLoaderTests.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
             landmarkName = "load(completion:)"
             landmarkType = "7">
             <Locations>
@@ -235,8 +235,8 @@
             filePath = "WooWopTests/RemoteMediaLoaderTests.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "51"
-            endingLineNumber = "51"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
             landmarkName = "load(completion:)"
             landmarkType = "7">
             <Locations>
@@ -283,8 +283,8 @@
             filePath = "WooWopTests/RemoteMediaLoaderTests.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
             landmarkName = "test_load_deliversMatchesFromSession()"
             landmarkType = "7">
          </BreakpointContent>

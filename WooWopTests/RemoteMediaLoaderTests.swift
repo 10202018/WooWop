@@ -15,16 +15,6 @@ extension SHManagedSession: Equatable {
   }
 }
 
-public enum ClientResult {
-  case match([SHMediaItem])
-  case noMatch
-  case error(Error)
-}
-
-public protocol Client {
-  func findMatch(from: SHManagedSession, completion: @escaping (ClientResult) -> Void)
-}
-
 public final class RemoteMediaLoader {
   public enum Error: Swift.Error {
     case connectivity

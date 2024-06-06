@@ -17,6 +17,8 @@
 		5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */; };
 		5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */; };
 		5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7C54582BF3D458001C2212 /* AnimatedButton.swift */; };
+		5BEC96952C12802500363F1D /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC96942C12802500363F1D /* Client.swift */; };
+		5BEC96962C12807700363F1D /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC96942C12802500363F1D /* Client.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,6 +45,7 @@
 		5B7273A72BFD9DDA000A430C /* WooWopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WooWopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoaderTests.swift; sourceTree = "<group>"; };
 		5B7C54582BF3D458001C2212 /* AnimatedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedButton.swift; sourceTree = "<group>"; };
+		5BEC96942C12802500363F1D /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +93,7 @@
 				5B7273762BF86351000A430C /* ArtworkAPI */,
 				5B0311BB2BF2F47A008550DF /* Assets.xcassets */,
 				5B0311BD2BF2F47A008550DF /* Preview Content */,
+				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
 			);
 			path = WooWop;
 			sourceTree = "<group>";
@@ -113,8 +117,7 @@
 		5B7273752BF8631B000A430C /* ArtworkFeature */ = {
 			isa = PBXGroup;
 			children = (
-				5B7273932BFD8D43000A430C /* Model */,
-				5B72738E2BFD8660000A430C /* API */,
+				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
 				5B7273922BFD8D25000A430C /* View */,
 			);
 			path = ArtworkFeature;
@@ -124,7 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
-				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
+				5BEC96942C12802500363F1D /* Client.swift */,
 			);
 			path = ArtworkAPI;
 			sourceTree = "<group>";
@@ -146,14 +149,6 @@
 			path = MainViews;
 			sourceTree = "<group>";
 		};
-		5B72738E2BFD8660000A430C /* API */ = {
-			isa = PBXGroup;
-			children = (
-				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
-			);
-			path = API;
-			sourceTree = "<group>";
-		};
 		5B7273922BFD8D25000A430C /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,13 +156,6 @@
 				5B72738C2BFD85EF000A430C /* Subviews */,
 			);
 			path = View;
-			sourceTree = "<group>";
-		};
-		5B7273932BFD8D43000A430C /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		5B7273A82BFD9DDA000A430C /* WooWopTests */ = {
@@ -284,6 +272,7 @@
 				5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */,
 				5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */,
 				5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */,
+				5BEC96952C12802500363F1D /* Client.swift in Sources */,
 				5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -292,6 +281,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BEC96962C12807700363F1D /* Client.swift in Sources */,
 				5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
