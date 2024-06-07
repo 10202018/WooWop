@@ -36,7 +36,8 @@ public final class RemoteMediaLoader {
   }
   
   public func load(completion: @escaping (Result) -> Void) {
-    client.findMatch(from: session) { result in
+    client.findMatch(from: session) { [weak self] result in
+      guard self != nil else { return }
       switch result {
       case let .match(items):
         completion(.match(items))
@@ -115,6 +116,22 @@ final class RemoteMediaLoaderTests: XCTestCase {
     client.complete(withMatchedMedia: matchedMediaItems)
     
     XCTAssertEqual(capturedResults, [.match(matchedMediaItems)])
+  }
+  
+  func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+    let client = ClientSpy()
+    let session = SHManagedSession()
+    var sut: RemoteMediaLoader? = RemoteMediaLoader(client: client, session: session)
+    
+    var capturedResults = [RemoteMediaLoader.Result]()
+    sut!.load { capturedResults.append($0) }
+
+    sut = nil
+    client.complete(withMatchedMedia: [
+      SHMediaItem(properties: [.artworkURL : "any-url"])
+    ])
+    
+    XCTAssertTrue(capturedResults.isEmpty)
   }
   
   // MARK: - Helpers.
