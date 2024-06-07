@@ -147,6 +147,17 @@ final class RemoteMediaLoaderTests: XCTestCase {
   private func makeSUT(session: SHManagedSession = SHManagedSession()) -> (client: ClientSpy, sut: RemoteMediaLoader) {
     let client = ClientSpy()
     let sut = RemoteMediaLoader(client: client, session: session)
+    trackForMemoryLeaks(client)
+    trackForMemoryLeaks(sut)
     return (client, sut)
+  }
+  
+  private func trackForMemoryLeaks(
+      _ instance: AnyObject,
+      file: StaticString = #file,
+      line: UInt = #line) {
+        addTeardownBlock { [weak instance] in
+          XCTAssertNil(instance, "Instance should have been deallocated. Potential memory leak.", file: file, line: line)
+        }
   }
 }

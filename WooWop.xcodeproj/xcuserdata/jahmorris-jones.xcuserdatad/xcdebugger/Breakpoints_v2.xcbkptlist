@@ -34,6 +34,53 @@
             endingLineNumber = "33"
             landmarkName = "getSessionResult()"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "691B0970-0750-4284-87B6-44C86339679D - 7fd8a3cdaafe04a0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(1) suspend resume partial function for WooWop.ShazamClient.getSessionResult() async -&gt; Swift.Optional&lt;__C.SHMediaItem&gt;"
+                  moduleName = "WooWop"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/ShazamClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "64">
+               </Location>
+               <Location
+                  uuid = "691B0970-0750-4284-87B6-44C86339679D - 3c077bcc0f0868a8"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(2) await resume partial function for WooWop.ShazamClient.getSessionResult() async -&gt; Swift.Optional&lt;__C.SHMediaItem&gt;"
+                  moduleName = "WooWop"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/ShazamClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "44">
+               </Location>
+               <Location
+                  uuid = "691B0970-0750-4284-87B6-44C86339679D - 31c2b24a05c748a2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for WooWop.ShazamClient.getSessionResult() async -&gt; Swift.Optional&lt;__C.SHMediaItem&gt;"
+                  moduleName = "WooWop"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/ShazamClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "33"
+                  endingLineNumber = "33"
+                  offsetFromSymbolStart = "52">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -175,118 +222,6 @@
                   offsetFromSymbolStart = "56">
                </Location>
             </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "0695F3A8-0C90-4271-A47E-850EB9753D1F"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "WooWopTests/RemoteMediaLoaderTests.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
-            landmarkName = "load(completion:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "0695F3A8-0C90-4271-A47E-850EB9753D1F - 9daa57059bfab0a3"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "WooWopTests.RemoteMediaLoader.load(completion: (WooWopTests.RemoteMediaLoader.Result) -&gt; ()) -&gt; ()"
-                  moduleName = "WooWopTests"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWopTests/RemoteMediaLoaderTests.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "49"
-                  endingLineNumber = "49"
-                  offsetFromSymbolStart = "72">
-               </Location>
-               <Location
-                  uuid = "0695F3A8-0C90-4271-A47E-850EB9753D1F - 7c764c073ea05da4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (WooWopTests.ClientResult) -&gt; () in WooWopTests.RemoteMediaLoader.load(completion: (WooWopTests.RemoteMediaLoader.Result) -&gt; ()) -&gt; ()"
-                  moduleName = "WooWopTests"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWopTests/RemoteMediaLoaderTests.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "49"
-                  endingLineNumber = "49"
-                  offsetFromSymbolStart = "84">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "87FF311B-823B-4B94-8E34-42D4627C8401"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "WooWopTests/RemoteMediaLoaderTests.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
-            landmarkName = "load(completion:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "87FF311B-823B-4B94-8E34-42D4627C8401 - 7c764c073ea05d66"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (WooWopTests.ClientResult) -&gt; () in WooWopTests.RemoteMediaLoader.load(completion: (WooWopTests.RemoteMediaLoader.Result) -&gt; ()) -&gt; ()"
-                  moduleName = "WooWopTests"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWopTests/RemoteMediaLoaderTests.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "51"
-                  endingLineNumber = "51"
-                  offsetFromSymbolStart = "96">
-               </Location>
-               <Location
-                  uuid = "87FF311B-823B-4B94-8E34-42D4627C8401 - 7c764c073ea05d66"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (WooWopTests.ClientResult) -&gt; () in WooWopTests.RemoteMediaLoader.load(completion: (WooWopTests.RemoteMediaLoader.Result) -&gt; ()) -&gt; ()"
-                  moduleName = "WooWopTests"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWopTests/RemoteMediaLoaderTests.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "51"
-                  endingLineNumber = "51"
-                  offsetFromSymbolStart = "168">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C41D4FAC-D25C-4A62-B2EA-FA4AFA839C52"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "WooWopTests/RemoteMediaLoaderTests.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
-            landmarkName = "test_load_deliversMatchesFromSession()"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
