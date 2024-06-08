@@ -15,42 +15,6 @@ extension SHManagedSession: Equatable {
   }
 }
 
-public final class RemoteMediaLoader {
-  public enum Error: Swift.Error {
-    case connectivity
-    case invalidData
-  }
-  
-  public enum Result: Equatable {
-    case match([SHMediaItem])
-    case noMatch
-    case error(Error)
-  }
-  
-  private let client: Client
-  private let session: SHManagedSession
-  
-  public init(client: Client, session: SHManagedSession) {
-    self.client = client
-    self.session = session
-  }
-  
-  public func load(completion: @escaping (Result) -> Void) {
-    client.findMatch(from: session) { [weak self] result in
-      guard self != nil else { return }
-      switch result {
-      case let .match(items):
-        completion(.match(items))
-      case .noMatch:
-        completion(.noMatch)
-      case .error:
-        completion(.error(.connectivity))
-      }
-
-    }
-  }
-}
-
 final class RemoteMediaLoaderTests: XCTestCase {
   func test_init_doesNotRequestMatchFromSession() {
     let session = SHManagedSession()
@@ -81,13 +45,10 @@ final class RemoteMediaLoaderTests: XCTestCase {
   func test_load_deliversErrorOnClientError() {
     let (client, sut) = makeSUT()
     
-    var capturedError = [RemoteMediaLoader.Result]()
-    sut.load() { capturedError.append($0) }
-    
-    let clientError = NSError(domain: "Test", code: 0)
-    client.complete(withError: clientError)
-    
-    XCTAssertEqual(capturedError, [.error(.connectivity)])
+    expect(sut, toCompleteWithError: .error(RemoteMediaLoader.Error.connectivity)) {
+      let clientError = NSError(domain: "Test", code: 0)
+      client.complete(withError: clientError)
+    }
   }
   
   func test_load_deliversNoMatchesFromSession() {
@@ -167,6 +128,16 @@ final class RemoteMediaLoaderTests: XCTestCase {
     trackForMemoryLeaks(client)
     trackForMemoryLeaks(sut)
     return (client, sut)
+  }
+  
+  private func expect(_ sut: RemoteMediaLoader, toCompleteWithError error: RemoteMediaLoader.Result, when action: () -> Void, file: StaticString = #filePath,
+                      line: UInt = #line) {
+    var capturedError = [RemoteMediaLoader.Result]()
+    sut.load() { capturedError.append($0) }
+
+    action()
+    
+    XCTAssertEqual(capturedError, [error], file: file, line: line)
   }
   
   private func trackForMemoryLeaks(

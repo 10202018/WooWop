@@ -8,11 +8,15 @@
 import Foundation
 import ShazamKit
 
-enum LoadMediaResult {
-  case success([SHMediaItem])
+public enum LoadMediaResult<Error: Swift.Error> {
+  case match([SHMediaItem])
+  case noMatch
   case error(Error)
 }
 
+extension LoadMediaResult: Equatable where Error: Equatable { }
+
 protocol MediaLoader {
-  func loadMedia(completion: @escaping (LoadMediaResult) -> Void) async throws
+  associatedtype Error: Swift.Error
+  func loadMedia(completion: @escaping (LoadMediaResult<Error>) -> Void) async throws
 }

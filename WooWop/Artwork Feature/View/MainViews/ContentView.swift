@@ -13,7 +13,7 @@ import ShazamKit
 /// The entry view in the app.
 struct ContentView: View {
   
-  var mediaLoader: MediaLoader?
+  var mediaLoader: (any MediaLoader)?
   
 //  private var mediaItem: SHMediaItem?
   @State private var mediaItem: SHMediaItem?
