@@ -124,7 +124,6 @@ final class RemoteMediaLoaderTests: XCTestCase {
   }
   
   private func expect(_ sut: RemoteMediaLoader, toCompleteWith expectedResult: RemoteMediaLoader.Result, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) async {
-    
     let exp = expectation(description: "Wait for load completion")
     
     await sut.loadMedia { receivedResult in
