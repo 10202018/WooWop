@@ -8,7 +8,7 @@
 import Foundation
 import ShazamKit
 
-public final class RemoteMediaLoader {
+public final class RemoteMediaLoader: MediaLoader {
   public enum Error: Swift.Error {
     case connectivity
     case invalidData
@@ -24,7 +24,7 @@ public final class RemoteMediaLoader {
     self.session = session
   }
   
-  public func load(completion: @escaping (Result) -> Void) {
+  func loadMedia(completion: @escaping (Result) -> Void) async {
     client.findMatch(from: session) { [weak self] result in
       guard self != nil else { return }
       switch result {

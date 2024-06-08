@@ -23,46 +23,46 @@ final class RemoteMediaLoaderTests: XCTestCase {
     XCTAssertTrue(client.requestedShazamSessions.isEmpty)
   }
   
-  func test_load_requestsMatchFromSession() {
+  func test_load_requestsMatchFromSession() async {
     let session = SHManagedSession()
     let (client, sut) = makeSUT(session: session)
     
-    sut.load() { _ in }
+    await sut.loadMedia() { _ in }
     
     XCTAssertEqual(client.requestedShazamSessions, [session])
   }
   
-  func test_loadTwice_requestsMatchFromSession() {
+  func test_loadTwice_requestsMatchFromSession() async {
     let session = SHManagedSession()
     let (client, sut) = makeSUT(session: session)
     
-    sut.load() { _ in }
-    sut.load() { _ in }
+    await sut.loadMedia() { _ in }
+    await sut.loadMedia() { _ in }
     
     XCTAssertEqual(client.requestedShazamSessions, [session, session])
   }
   
-  func test_load_deliversErrorOnClientError() {
+  func test_load_deliversErrorOnClientError() async {
     let (client, sut) = makeSUT()
     
-    expect(sut, toCompleteWithError: .error(RemoteMediaLoader.Error.connectivity)) {
+    await expect(sut, toCompleteWithError: .error(RemoteMediaLoader.Error.connectivity)) {
       let clientError = NSError(domain: "Test", code: 0)
       client.complete(withError: clientError)
     }
   }
   
-  func test_load_deliversNoMatchesFromSession() {
+  func test_load_deliversNoMatchesFromSession() async {
     let (client, sut) = makeSUT()
     
     var capturedResults = [RemoteMediaLoader.Result]()
-    sut.load { capturedResults.append($0) }
+    await sut.loadMedia { capturedResults.append($0) }
     
     client.completeWithNoMatches()
     
     XCTAssertEqual(capturedResults, [.noMatch])
   }
   
-  func test_load_deliversMatchesFromSession() {
+  func test_load_deliversMatchesFromSession() async {
     let session = SHManagedSession()
     let (client, sut) = makeSUT(session: session)
     
@@ -71,7 +71,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
     let item3 = SHMediaItem(properties: [.artworkURL :  "http://a-third-url-for-artwork", .shazamID: UUID().uuidString])
     
     var capturedResults = [RemoteMediaLoader.Result]()
-    sut.load { capturedResults.append($0) }
+    await sut.loadMedia { capturedResults.append($0) }
     
     let matchedMediaItems = [item1, item2, item3]
     client.complete(withMatchedMedia: matchedMediaItems)
@@ -79,13 +79,13 @@ final class RemoteMediaLoaderTests: XCTestCase {
     XCTAssertEqual(capturedResults, [.match(matchedMediaItems)])
   }
   
-  func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() {
+  func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() async {
     let client = ClientSpy()
     let session = SHManagedSession()
     var sut: RemoteMediaLoader? = RemoteMediaLoader(client: client, session: session)
     
     var capturedResults = [RemoteMediaLoader.Result]()
-    sut!.load { capturedResults.append($0) }
+    await sut!.loadMedia { capturedResults.append($0) }
 
     sut = nil
     client.complete(withMatchedMedia: [
@@ -131,9 +131,9 @@ final class RemoteMediaLoaderTests: XCTestCase {
   }
   
   private func expect(_ sut: RemoteMediaLoader, toCompleteWithError error: RemoteMediaLoader.Result, when action: () -> Void, file: StaticString = #filePath,
-                      line: UInt = #line) {
+                      line: UInt = #line) async {
     var capturedError = [RemoteMediaLoader.Result]()
-    sut.load() { capturedError.append($0) }
+    await sut.loadMedia() { capturedError.append($0) }
 
     action()
     

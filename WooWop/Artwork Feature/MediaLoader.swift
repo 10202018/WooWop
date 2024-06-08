@@ -18,5 +18,5 @@ extension LoadMediaResult: Equatable where Error: Equatable { }
 
 protocol MediaLoader {
   associatedtype Error: Swift.Error
-  func loadMedia(completion: @escaping (LoadMediaResult<Error>) -> Void) async throws
+  func loadMedia(completion: @escaping (LoadMediaResult<Error>) -> Void) async
 }
