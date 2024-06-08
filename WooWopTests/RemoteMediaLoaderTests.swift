@@ -70,7 +70,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
     await expect(sut, toCompleteWith: .match(matchedMediaItems)) {
       client.complete(withMatchedMedia: matchedMediaItems)
     }
-  }
+   }
   
   func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() async {
     let client = ClientSpy()
@@ -133,7 +133,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
         XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
       case (.noMatch, .noMatch):
         XCTAssert(true)
-      case let (.error(receivedError), .error(expectedError)):
+      case let (.error(receivedError as RemoteMediaLoader.Error), .error(expectedError as RemoteMediaLoader.Error)):
         XCTAssertEqual(receivedError, expectedError, file: file, line: line)
       default:
         XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)

@@ -8,13 +8,12 @@
 import Foundation
 import ShazamKit
 
-public enum LoadMediaResult<Error: Swift.Error> {
+public enum LoadMediaResult {
   case match([SHMediaItem])
   case noMatch
   case error(Error)
 }
 
 protocol MediaLoader {
-  associatedtype Error: Swift.Error
-  func loadMedia(completion: @escaping (LoadMediaResult<Error>) -> Void) async
+  func loadMedia(completion: @escaping (LoadMediaResult) -> Void) async
 }

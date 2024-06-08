@@ -17,7 +17,7 @@ public final class RemoteMediaLoader: MediaLoader {
   private let client: Client
   private let session: SHManagedSession
   
-  public typealias Result = LoadMediaResult<Error>
+  public typealias Result = LoadMediaResult
   
   public init(client: Client, session: SHManagedSession) {
     self.client = client
@@ -33,7 +33,7 @@ public final class RemoteMediaLoader: MediaLoader {
       case .noMatch:
         completion(.noMatch)
       case .error:
-        completion(.error(.connectivity))
+        completion(.error(Error.connectivity))
       }
 
     }
