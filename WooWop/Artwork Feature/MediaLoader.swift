@@ -14,8 +14,6 @@ public enum LoadMediaResult<Error: Swift.Error> {
   case error(Error)
 }
 
-extension LoadMediaResult: Equatable where Error: Equatable { }
-
 protocol MediaLoader {
   associatedtype Error: Swift.Error
   func loadMedia(completion: @escaping (LoadMediaResult<Error>) -> Void) async

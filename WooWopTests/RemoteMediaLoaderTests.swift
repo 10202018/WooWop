@@ -45,7 +45,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
   func test_load_deliversErrorOnClientError() async {
     let (client, sut) = makeSUT()
     
-    await expect(sut, toCompleteWithError: .error(RemoteMediaLoader.Error.connectivity)) {
+    await expect(sut, toCompleteWith: .error(RemoteMediaLoader.Error.connectivity)) {
       let clientError = NSError(domain: "Test", code: 0)
       client.complete(withError: clientError)
     }
@@ -54,29 +54,22 @@ final class RemoteMediaLoaderTests: XCTestCase {
   func test_load_deliversNoMatchesFromSession() async {
     let (client, sut) = makeSUT()
     
-    var capturedResults = [RemoteMediaLoader.Result]()
-    await sut.loadMedia { capturedResults.append($0) }
-    
-    client.completeWithNoMatches()
-    
-    XCTAssertEqual(capturedResults, [.noMatch])
+    await expect(sut, toCompleteWith: .noMatch) {
+      client.completeWithNoMatches()
+    }
   }
   
   func test_load_deliversMatchesFromSession() async {
     let session = SHManagedSession()
     let (client, sut) = makeSUT(session: session)
-    
     let item1 = SHMediaItem(properties: [.artworkURL : "http://a-url-for-artwork", .shazamID: UUID().uuidString])
     let item2 = SHMediaItem(properties: [.artworkURL : "http://a-second-url-for-artwork", .shazamID: UUID().uuidString])
     let item3 = SHMediaItem(properties: [.artworkURL :  "http://a-third-url-for-artwork", .shazamID: UUID().uuidString])
-    
-    var capturedResults = [RemoteMediaLoader.Result]()
-    await sut.loadMedia { capturedResults.append($0) }
-    
     let matchedMediaItems = [item1, item2, item3]
-    client.complete(withMatchedMedia: matchedMediaItems)
-    
-    XCTAssertEqual(capturedResults, [.match(matchedMediaItems)])
+
+    await expect(sut, toCompleteWith: .match(matchedMediaItems)) {
+      client.complete(withMatchedMedia: matchedMediaItems)
+    }
   }
   
   func test_load_doesNotDeliverResultAfterSUTInstanceHasBeenDeallocated() async {
@@ -130,14 +123,28 @@ final class RemoteMediaLoaderTests: XCTestCase {
     return (client, sut)
   }
   
-  private func expect(_ sut: RemoteMediaLoader, toCompleteWithError error: RemoteMediaLoader.Result, when action: () -> Void, file: StaticString = #filePath,
-                      line: UInt = #line) async {
-    var capturedError = [RemoteMediaLoader.Result]()
-    await sut.loadMedia() { capturedError.append($0) }
+  private func expect(_ sut: RemoteMediaLoader, toCompleteWith expectedResult: RemoteMediaLoader.Result, when action: () -> Void, file: StaticString = #filePath, line: UInt = #line) async {
+    
+    let exp = expectation(description: "Wait for load completion")
+    
+    await sut.loadMedia { receivedResult in
+      switch (receivedResult, expectedResult) {
+      case let (.match(receivedItems), .match(expectedItems)):
+        XCTAssertEqual(receivedItems, expectedItems, file: file, line: line)
+      case (.noMatch, .noMatch):
+        XCTAssert(true)
+      case let (.error(receivedError), .error(expectedError)):
+        XCTAssertEqual(receivedError, expectedError, file: file, line: line)
+      default:
+        XCTFail("Expected result \(expectedResult) got \(receivedResult) instead", file: file, line: line)
+      }
+      
+      exp.fulfill()
+    }
 
     action()
     
-    XCTAssertEqual(capturedError, [error], file: file, line: line)
+    await fulfillment(of: [exp], timeout: 1.0, enforceOrder: true)
   }
   
   private func trackForMemoryLeaks(
