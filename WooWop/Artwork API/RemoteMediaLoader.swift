@@ -24,7 +24,7 @@ public final class RemoteMediaLoader: MediaLoader {
     self.session = session
   }
   
-  func loadMedia(completion: @escaping (Result) -> Void) async {
+  public func loadMedia(completion: @escaping (Result) -> Void) async {
     client.findMatch(from: session) { [weak self] result in
       guard self != nil else { return }
       switch result {
