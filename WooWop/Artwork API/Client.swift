@@ -15,5 +15,5 @@ public enum ClientResult {
 }
 
 public protocol Client {
-  func findMatch(from: SHManagedSession, completion: @escaping (ClientResult) -> Void)
+  func findMatch(from session: SHManagedSession, completion: @escaping (ClientResult) -> Void)
 }
