@@ -19,7 +19,6 @@
 		5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */; };
 		5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */; };
 		5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7C54582BF3D458001C2212 /* AnimatedButton.swift */; };
-		5BBD9A282C17C3D70020D9E4 /* SHManagedSessionClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BBD9A272C17C3D70020D9E4 /* SHManagedSessionClientTests.swift */; };
 		5BEC96952C12802500363F1D /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC96942C12802500363F1D /* Client.swift */; };
 		5BEC96962C12807700363F1D /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEC96942C12802500363F1D /* Client.swift */; };
 /* End PBXBuildFile section */
@@ -48,7 +47,6 @@
 		5B7273A72BFD9DDA000A430C /* WooWopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WooWopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoaderTests.swift; sourceTree = "<group>"; };
 		5B7C54582BF3D458001C2212 /* AnimatedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedButton.swift; sourceTree = "<group>"; };
-		5BBD9A272C17C3D70020D9E4 /* SHManagedSessionClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHManagedSessionClientTests.swift; sourceTree = "<group>"; };
 		5BEC96942C12802500363F1D /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -122,7 +120,6 @@
 			isa = PBXGroup;
 			children = (
 				5B7273A92BFD9DDA000A430C /* RemoteMediaLoaderTests.swift */,
-				5BBD9A272C17C3D70020D9E4 /* SHManagedSessionClientTests.swift */,
 			);
 			path = "Artwork API";
 			sourceTree = "<group>";
@@ -297,7 +294,6 @@
 				5B54ABEC2C1373520022ED56 /* MediaLoader.swift in Sources */,
 				5B54ABEB2C1367470022ED56 /* RemoteMediaLoader.swift in Sources */,
 				5BEC96962C12807700363F1D /* Client.swift in Sources */,
-				5BBD9A282C17C3D70020D9E4 /* SHManagedSessionClientTests.swift in Sources */,
 				5B7273AA2BFD9DDA000A430C /* RemoteMediaLoaderTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
