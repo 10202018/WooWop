@@ -1,18 +1,41 @@
 //
-//  ShazamClient.swift
+//  Client.swift
 //  WooWop
 //
-//  Created by Jah Morris-Jones on 5/17/24.
+//  Created by Jah Morris-Jones on 6/6/24.
 //
 
 import Foundation
 import ShazamKit
 
-// MARK: - API Module
-
 // Singleton (capital "S")
 /// The Shazam API client.
+class SHManagedSessionClient: Client {
+  /// An object that records and matches a recording with captured sound in the Shazam catalog or your
+  /// custom catalog.
+  var session: SHManagedSessionClient
+  
+  init(session: SHManagedSessionClient) {
+    self.session = session
+  }
+  
+  /// Makes  an asynchrnous request to match the signature (hashed version passed to and from client) of
+  /// the song from the current session.
+  func findMatch(from session: SHManagedSession, completion: @escaping (ClientResult) -> Void) async {
+    let result = await session.result()
+    switch result {
+    case let .match(returnedMatch):
+      completion(.match([returnedMatch.mediaItems.first!]))
+    case .noMatch(_):
+      completion(.noMatch)
+    case let .error(error, _):
+      completion(.error(error))
+    }
+  }
+}
+
 class ShazamClient {
+  
   // Set up the session
   /// An object that records and matches a recording with captured sound in the Shazam catalog or your
   /// custom catalog.
@@ -25,13 +48,10 @@ class ShazamClient {
   func executeSessionAndMatch() async -> SHSession.Result {
     return await shazamSession.result()
   }
-}
-
-extension ShazamClient {
-
+  
   func getSessionResult() async -> SHMediaItem? {
-    let result = await executeSessionAndMatch()
     // Use the result.
+    let shazamSession = SHManagedSession()
     switch await shazamSession.result() {
     case .match(let match):
       return match.mediaItems.first

@@ -193,53 +193,5 @@
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "04BDA3FA-17C2-4961-AB25-00DCA82313FB"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "WooWop/ArtworkFeature/View/MainViews/ContentView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
-            landmarkName = "getMediaItem()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "04BDA3FA-17C2-4961-AB25-00DCA82313FB - f036e8ddf70b249c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (WooWop.LoadMediaResult) -&gt; () in WooWop.ContentView.getMediaItem() async -&gt; ()"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/ArtworkFeature/View/MainViews/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "76"
-                  endingLineNumber = "76"
-                  offsetFromSymbolStart = "104">
-               </Location>
-               <Location
-                  uuid = "04BDA3FA-17C2-4961-AB25-00DCA82313FB - f036e8ddf70b249c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (WooWop.LoadMediaResult) -&gt; () in WooWop.ContentView.getMediaItem() async -&gt; ()"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/ArtworkFeature/View/MainViews/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "76"
-                  endingLineNumber = "76"
-                  offsetFromSymbolStart = "180">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
