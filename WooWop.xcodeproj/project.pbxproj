@@ -83,10 +83,9 @@
 		5B0311B62BF2F479008550DF /* WooWop */ = {
 			isa = PBXGroup;
 			children = (
-				5BB596452C6BE09600C4CACF /* Artwork API */,
 				5B0311B72BF2F479008550DF /* WooWopApp.swift */,
+				5BB596452C6BE09600C4CACF /* Artwork API */,
 				5B7273752BF8631B000A430C /* ArtworkFeature */,
-				5B7273762BF86351000A430C /* NetworkingModule */,
 			);
 			path = WooWop;
 			sourceTree = "<group>";
@@ -94,18 +93,12 @@
 		5B7273752BF8631B000A430C /* ArtworkFeature */ = {
 			isa = PBXGroup;
 			children = (
+				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
+				5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */,
 				5B7273932BFD8D43000A430C /* Model */,
-				5B72738E2BFD8660000A430C /* API */,
 				5B7273922BFD8D25000A430C /* View */,
 			);
 			path = ArtworkFeature;
-			sourceTree = "<group>";
-		};
-		5B7273762BF86351000A430C /* NetworkingModule */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = NetworkingModule;
 			sourceTree = "<group>";
 		};
 		5B72738C2BFD85EF000A430C /* Subviews */ = {
@@ -123,17 +116,6 @@
 				5B0311B92BF2F479008550DF /* ContentView.swift */,
 			);
 			path = MainViews;
-			sourceTree = "<group>";
-		};
-		5B72738E2BFD8660000A430C /* API */ = {
-			isa = PBXGroup;
-			children = (
-				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
-				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
-				5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */,
-				5B7273732BF7F25C000A430C /* Client.swift */,
-			);
-			path = API;
 			sourceTree = "<group>";
 		};
 		5B7273922BFD8D25000A430C /* View */ = {
@@ -164,6 +146,8 @@
 		5BB596452C6BE09600C4CACF /* Artwork API */ = {
 			isa = PBXGroup;
 			children = (
+				5B7273732BF7F25C000A430C /* Client.swift */,
+				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
 			);
 			path = "Artwork API";
 			sourceTree = "<group>";

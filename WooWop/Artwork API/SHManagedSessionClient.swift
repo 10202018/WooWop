@@ -10,7 +10,7 @@ import ShazamKit
 
 // Singleton (capital "S")
 /// The Shazam API client.
-public class SHManagedSessionClient: Client {
+public class SHManagedSessionClient: ShazamClient {
   /// An object that records and matches a recording with captured sound in the Shazam catalog or your
   /// custom catalog.
   var session: SHManagedSession
