@@ -11,14 +11,14 @@ import XCTest
 final class RemoteMediaLoaderTests: XCTestCase {
 
   func test_init_doesNotRequestMatchFromSession() {
-    let client = ClientSpy()
+    let client = ShazamClientSpy()
     _ = RemoteMediaLoader(client: client)
     
     XCTAssertNil(client.requestedShazamSession)
   }
   
   func test_load_requestMatchFromSession() async throws {
-    let client = ClientSpy()
+    let client = ShazamClientSpy()
     let sut = RemoteMediaLoader(client: client)
     
     _ = try await sut.loadMedia()
@@ -29,7 +29,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
 
 
 /// An implementation of the HTTPClient protocol for testing purposes only.
-class ClientSpy: Client {
+class ShazamClientSpy: ShazamClient {
   func findMatch() async -> ClientResult {
     requestedShazamSession = true
     return ClientResult.noMatch

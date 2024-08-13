@@ -10,12 +10,13 @@
 		5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B72BF2F479008550DF /* WooWopApp.swift */; };
 		5B0311BA2BF2F479008550DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B92BF2F479008550DF /* ContentView.swift */; };
 		5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6D53832BF685DF007ABB96 /* StarRating.swift */; };
-		5B7273742BF7F25C000A430C /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273732BF7F25C000A430C /* Client.swift */; };
+		5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273732BF7F25C000A430C /* ShazamClient.swift */; };
 		5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273792BFBD47F000A430C /* MediaLoader.swift */; };
 		5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */; };
 		5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7C54582BF3D458001C2212 /* AnimatedButton.swift */; };
 		5BB5963D2C6AF3E700C4CACF /* WooWopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */; };
 		5BB596442C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */; };
+		5BB596472C6C0C8B00C4CACF /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5BB596462C6C0C8B00C4CACF /* README.md */; };
 		5BBD9A2E2C1A1C400020D9E4 /* SHManagedSessionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */; };
 /* End PBXBuildFile section */
 
@@ -34,13 +35,14 @@
 		5B0311B72BF2F479008550DF /* WooWopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopApp.swift; sourceTree = "<group>"; };
 		5B0311B92BF2F479008550DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5B6D53832BF685DF007ABB96 /* StarRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRating.swift; sourceTree = "<group>"; };
-		5B7273732BF7F25C000A430C /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		5B7273732BF7F25C000A430C /* ShazamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShazamClient.swift; sourceTree = "<group>"; };
 		5B7273792BFBD47F000A430C /* MediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoader.swift; sourceTree = "<group>"; };
 		5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoader.swift; sourceTree = "<group>"; };
 		5B7C54582BF3D458001C2212 /* AnimatedButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatedButton.swift; sourceTree = "<group>"; };
 		5BB5963A2C6AF3E700C4CACF /* WooWopTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WooWopTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopTests.swift; sourceTree = "<group>"; };
 		5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoaderTests.swift; sourceTree = "<group>"; };
+		5BB596462C6C0C8B00C4CACF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHManagedSessionClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -65,6 +67,7 @@
 		5B0311AB2BF2F479008550DF = {
 			isa = PBXGroup;
 			children = (
+				5BB596462C6C0C8B00C4CACF /* README.md */,
 				5B0311B62BF2F479008550DF /* WooWop */,
 				5BB5963B2C6AF3E700C4CACF /* WooWopTests */,
 				5B0311B52BF2F479008550DF /* Products */,
@@ -84,8 +87,8 @@
 			isa = PBXGroup;
 			children = (
 				5B0311B72BF2F479008550DF /* WooWopApp.swift */,
-				5BB596452C6BE09600C4CACF /* Artwork API */,
 				5B7273752BF8631B000A430C /* ArtworkFeature */,
+				5BB596452C6BE09600C4CACF /* Artwork API */,
 			);
 			path = WooWop;
 			sourceTree = "<group>";
@@ -94,7 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
-				5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */,
 				5B7273932BFD8D43000A430C /* Model */,
 				5B7273922BFD8D25000A430C /* View */,
 			);
@@ -146,7 +148,8 @@
 		5BB596452C6BE09600C4CACF /* Artwork API */ = {
 			isa = PBXGroup;
 			children = (
-				5B7273732BF7F25C000A430C /* Client.swift */,
+				5B7273732BF7F25C000A430C /* ShazamClient.swift */,
+				5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */,
 				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
 			);
 			path = "Artwork API";
@@ -233,6 +236,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5BB596472C6C0C8B00C4CACF /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +261,7 @@
 				5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */,
 				5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */,
 				5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */,
-				5B7273742BF7F25C000A430C /* Client.swift in Sources */,
+				5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

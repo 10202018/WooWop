@@ -14,6 +14,6 @@ public enum ClientResult {
   case error(Error)
 }
 
-public protocol Client {
+public protocol ShazamClient {
   func findMatch() async -> ClientResult
 }

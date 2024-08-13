@@ -11,9 +11,9 @@ import ShazamKit
 extension String: Error {}
 
 public class RemoteMediaLoader: MediaLoader {
-  private var client: Client
+  private var client: ShazamClient
   
-  public init(client: Client) {
+  public init(client: ShazamClient) {
     self.client = client
   }
   
