@@ -66,53 +66,6 @@
             endingLineNumber = "16"
             landmarkName = "loadMedia()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "2A076AB9-5309-43B9-BA31-3B7FF1462980 - 937c05029b56f389"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for WooWop.RemoteMediaLoader.loadMedia() async throws -&gt; __C.SHMediaItem"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/API/RemoteMediaLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "16"
-                  endingLineNumber = "16"
-                  offsetFromSymbolStart = "56">
-               </Location>
-               <Location
-                  uuid = "2A076AB9-5309-43B9-BA31-3B7FF1462980 - 42110366ceed4ad7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for WooWop.RemoteMediaLoader.loadMedia() async throws -&gt; __C.SHMediaItem"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/API/RemoteMediaLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "16"
-                  endingLineNumber = "16"
-                  offsetFromSymbolStart = "44">
-               </Location>
-               <Location
-                  uuid = "2A076AB9-5309-43B9-BA31-3B7FF1462980 - eb70f74d5d4f978b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for WooWop.RemoteMediaLoader.loadMedia() async throws -&gt; __C.SHMediaItem"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/API/RemoteMediaLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "16"
-                  endingLineNumber = "16"
-                  offsetFromSymbolStart = "124">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -129,68 +82,22 @@
             endingLineNumber = "78"
             landmarkName = "body"
             landmarkType = "24">
-            <Locations>
-               <Location
-                  uuid = "0064C5C8-D3D0-4A51-B08B-00C981F99580 - 9b1f2317fdeb1d0f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(1) suspend resume partial function for closure #3 @Sendable () async -&gt; () in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.task(priority: Swift.TaskPriority, _: @Sendable () async -&gt; ()) -&gt; some&gt;&gt;.0 in WooWop.ContentView.body.getter : some"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/Main/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "78"
-                  endingLineNumber = "78"
-                  offsetFromSymbolStart = "124">
-               </Location>
-               <Location
-                  uuid = "0064C5C8-D3D0-4A51-B08B-00C981F99580 - f27db03f12a7ffee"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(2) await resume partial function for closure #3 @Sendable () async -&gt; () in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.task(priority: Swift.TaskPriority, _: @Sendable () async -&gt; ()) -&gt; some&gt;&gt;.0 in WooWop.ContentView.body.getter : some"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/Main/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "78"
-                  endingLineNumber = "78"
-                  offsetFromSymbolStart = "40">
-               </Location>
-               <Location
-                  uuid = "0064C5C8-D3D0-4A51-B08B-00C981F99580 - a189af35bc0510d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(3) suspend resume partial function for closure #3 @Sendable () async -&gt; () in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.task(priority: Swift.TaskPriority, _: @Sendable () async -&gt; ()) -&gt; some&gt;&gt;.0 in WooWop.ContentView.body.getter : some"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/Main/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "78"
-                  endingLineNumber = "78"
-                  offsetFromSymbolStart = "44">
-               </Location>
-               <Location
-                  uuid = "0064C5C8-D3D0-4A51-B08B-00C981F99580 - 329b31a0eb34f732"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "(4) suspend resume partial function for closure #3 @Sendable () async -&gt; () in closure #1 () -&gt; &lt;&lt;opaque return type of SwiftUI.View.task(priority: Swift.TaskPriority, _: @Sendable () async -&gt; ()) -&gt; some&gt;&gt;.0 in WooWop.ContentView.body.getter : some"
-                  moduleName = "WooWop"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/jahmorris-jones/Documents/dev/WooWop/WooWop/Media%20Module/Main/ContentView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "78"
-                  endingLineNumber = "78"
-                  offsetFromSymbolStart = "56">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1B4E33D2-A3ED-454B-8698-B64933BE4D20"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "WooWop/ArtworkFeature/View/MainViews/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "71"
+            endingLineNumber = "71"
+            landmarkName = "getMediaItem()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

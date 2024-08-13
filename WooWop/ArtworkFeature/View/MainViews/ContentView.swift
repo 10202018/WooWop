@@ -13,7 +13,7 @@ import ShazamKit
 /// The entry view in the app.
 struct ContentView: View {
   
-  var mediaLoader: MediaLoader!
+  var mediaLoader: MediaLoader = RemoteMediaLoader(client: SHManagedSessionClient())
   
   @State private var mediaItem: SHMediaItem?
   @State private var rating: Int = 1
@@ -27,7 +27,6 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       ZStack {
-        //        GeometryReader { geo in
         if showProgress {
           ProgressView()
         } else {
@@ -36,20 +35,15 @@ struct ContentView: View {
               image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-              //              .frame(width: geo.size.width, height: geo.size.width )
                 .scaleEffect(scale)
                 .gesture(MagnificationGesture().onChanged { val in
                   let delta = val / self.lastScaleValue
                   self.lastScaleValue = val
                   var newScale = self.scale * delta
-                  //                if newScale < 1.0 {
-                  //                  newScale =  1.0
-                  //                }
                   scale = newScale
                 }.onEnded{ val in
-                  scaledFrame = scale //Update the value once the gesture is over
+                  scaledFrame = scale
                   lastScaleValue = 1
-                  
                 })
             }
           }
@@ -59,7 +53,7 @@ struct ContentView: View {
         ToolbarItem() {
           Button {
             Task {
-              await getMediaItem()
+              try await getMediaItem()
             }
           } label: {
             Image(systemName: "music.note")
@@ -69,22 +63,23 @@ struct ContentView: View {
     }
   }
   
-  func getMediaItem() async {
-      do {
-        try await mediaLoader.loadMedia { result in
-          switch result {
-          case .match(let mediaItems):
-            mediaItem = mediaItems.first
-          case .noMatch:
-            print ("")
-          case .error(let error):
-            print (error)
-          }
-        }
-      } catch {}
-
+  func getMediaItem() async throws {
+    do {
+      let result = try await mediaLoader.loadMedia()
+      switch result {
+      case .match(let mediaItems):
+        self.mediaItem = mediaItems.first!
+      case .noMatch:
+        print ("")
+      case .error(let error):
+        print (error)
+      }
+    } catch(let error) {
+      print(error)
     }
+    
   }
+}
 
 #Preview {
   ContentView()

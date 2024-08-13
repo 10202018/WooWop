@@ -10,18 +10,24 @@ import ShazamKit
 
 extension String: Error {}
 
-class RemoteMediaLoader: MediaLoader {
-  func loadMedia(completion: @escaping (LoadMediaResult) -> Void) async throws {
+public class RemoteMediaLoader: MediaLoader {
+  private var client: Client
+  
+  public init(client: Client) {
+    self.client = client
+  }
+  
+  public func loadMedia() async throws -> LoadMediaResult {
     // Call single method from API of ShazamClient.
-    let result = await ShazamClient().executeSessionAndMatch()
+    let result = await client.findMatch()
     // Use the result.
     switch result {
     case .match(let match):
-      completion(.match(match.mediaItems))
-    case .noMatch(_):
-      completion(.error("Error: No match found"))
-    case .error(let error, _):
-      completion(.error("Error: \(error)"))
+      return LoadMediaResult.match(match)
+    case .noMatch:
+      return LoadMediaResult.noMatch
+    case .error(let error):
+      return LoadMediaResult.error(error)
     }
   }
 }
