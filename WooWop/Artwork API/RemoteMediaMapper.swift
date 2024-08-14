@@ -16,7 +16,7 @@ internal final class RemoteMediaMapper {
       if let artworkURL = item.artworkURL {
         return RemoteMediaItem(artworkURL: artworkURL)
       } else {
-        throw "Error"
+        throw "Error: could not map type `SHMediaItem` to type `RemoteMediaItem`"
       }
     }
   }
