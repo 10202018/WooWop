@@ -1,0 +1,18 @@
+{
+  "configurations" : [
+    {
+      "id" : "AE51047E-BFD4-4CD6-B800-EDE49C3B2C49",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+
+  ],
+  "version" : 1
+}

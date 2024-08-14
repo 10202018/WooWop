@@ -13,7 +13,7 @@ import ShazamKit
 /// The entry view in the app.
 struct ContentView: View {
   
-  var mediaLoader: MediaLoader = RemoteMediaLoader(client: SHManagedSessionClient())
+  var mediaLoader: MediaLoader
   
   @State private var mediaItem: SHMediaItem?
   @State private var rating: Int = 1
@@ -82,5 +82,5 @@ struct ContentView: View {
 }
 
 #Preview {
-  ContentView()
+  ContentView(mediaLoader: RemoteMediaLoader(client: SHManagedSessionClient()))
 }

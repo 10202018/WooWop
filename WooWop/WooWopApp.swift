@@ -11,7 +11,7 @@ import SwiftUI
 struct WooWopApp: App {
     var body: some Scene {
         WindowGroup {
-          ContentView()
+          ContentView(mediaLoader: RemoteMediaLoader(client: SHManagedSessionClient()))
         }
     }
 }
