@@ -1,12 +1,8 @@
 //
-//  MediaItem.swift
+//  RemoteMediaMapper.swift
 //  WooWop
 //
 //  Created by Jah Morris-Jones on 8/13/24.
 //
 
 import Foundation
-
-public struct MediaItem {
-  let artworkURL: URL
-}

@@ -39,7 +39,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5B7273A62BFD9DDA000A430C"
+               BlueprintIdentifier = "5BB596392C6AF3E700C4CACF"
                BuildableName = "WooWopTests.xctest"
                BlueprintName = "WooWopTests"
                ReferencedContainer = "container:WooWop.xcodeproj">

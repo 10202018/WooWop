@@ -12,7 +12,13 @@
 
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:WooWop.xcodeproj",
+        "identifier" : "5BB596392C6AF3E700C4CACF",
+        "name" : "WooWopTests"
+      }
+    }
   ],
   "version" : 1
 }

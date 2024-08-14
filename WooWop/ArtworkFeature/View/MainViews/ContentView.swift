@@ -15,7 +15,7 @@ struct ContentView: View {
   
   var mediaLoader: MediaLoader
   
-  @State private var mediaItem: SHMediaItem?
+  @State private var mediaItem: MediaItem?
   @State private var rating: Int = 1
   
   @State var scale: CGFloat = 1.0

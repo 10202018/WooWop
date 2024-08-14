@@ -17,6 +17,7 @@
 		5BB5963D2C6AF3E700C4CACF /* WooWopTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */; };
 		5BB596442C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */; };
 		5BB596472C6C0C8B00C4CACF /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 5BB596462C6C0C8B00C4CACF /* README.md */; };
+		5BB596492C6C2F6200C4CACF /* MediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB596482C6C2F6200C4CACF /* MediaItem.swift */; };
 		5BBD9A2E2C1A1C400020D9E4 /* SHManagedSessionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */; };
 /* End PBXBuildFile section */
 
@@ -43,7 +44,9 @@
 		5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopTests.swift; sourceTree = "<group>"; };
 		5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoaderTests.swift; sourceTree = "<group>"; };
 		5BB596462C6C0C8B00C4CACF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		5BB596482C6C2F6200C4CACF /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
 		5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHManagedSessionClient.swift; sourceTree = "<group>"; };
+		5BC195C72C6C3C100005C196 /* WooWop.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = WooWop.xctestplan; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +102,7 @@
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
 				5B7273932BFD8D43000A430C /* Model */,
 				5B7273922BFD8D25000A430C /* View */,
+				5BB596482C6C2F6200C4CACF /* MediaItem.swift */,
 			);
 			path = ArtworkFeature;
 			sourceTree = "<group>";
@@ -141,6 +145,7 @@
 			children = (
 				5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */,
 				5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */,
+				5BC195C72C6C3C100005C196 /* WooWop.xctestplan */,
 			);
 			path = WooWopTests;
 			sourceTree = "<group>";
@@ -256,6 +261,7 @@
 			files = (
 				5B0311BA2BF2F479008550DF /* ContentView.swift in Sources */,
 				5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */,
+				5BB596492C6C2F6200C4CACF /* MediaItem.swift in Sources */,
 				5BBD9A2E2C1A1C400020D9E4 /* SHManagedSessionClient.swift in Sources */,
 				5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */,
 				5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */,
