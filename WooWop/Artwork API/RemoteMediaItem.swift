@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+internal struct RemoteMediaItem {
+  internal let artworkURL: URL
+}

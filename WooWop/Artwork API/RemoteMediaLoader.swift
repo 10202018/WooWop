@@ -41,11 +41,6 @@ public class RemoteMediaLoader: MediaLoader {
   }
 }
 
-
-internal struct RemoteMediaItem {
-  internal let artworkURL: URL
-}
-
 private extension Array where Element == RemoteMediaItem {
   func toModels() -> [MediaItem] {
     return map { MediaItem(artworkURL: $0.artworkURL ) }

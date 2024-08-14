@@ -10,6 +10,7 @@
 		5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B72BF2F479008550DF /* WooWopApp.swift */; };
 		5B0311BA2BF2F479008550DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B92BF2F479008550DF /* ContentView.swift */; };
 		5B4A269C2C6C3E6700DCBB08 /* RemoteMediaMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4A269B2C6C3E6700DCBB08 /* RemoteMediaMapper.swift */; };
+		5B4A269E2C6C47DB00DCBB08 /* RemoteMediaItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4A269D2C6C47DB00DCBB08 /* RemoteMediaItem.swift */; };
 		5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6D53832BF685DF007ABB96 /* StarRating.swift */; };
 		5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273732BF7F25C000A430C /* ShazamClient.swift */; };
 		5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7273792BFBD47F000A430C /* MediaLoader.swift */; };
@@ -37,6 +38,7 @@
 		5B0311B72BF2F479008550DF /* WooWopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopApp.swift; sourceTree = "<group>"; };
 		5B0311B92BF2F479008550DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		5B4A269B2C6C3E6700DCBB08 /* RemoteMediaMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaMapper.swift; sourceTree = "<group>"; };
+		5B4A269D2C6C47DB00DCBB08 /* RemoteMediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaItem.swift; sourceTree = "<group>"; };
 		5B6D53832BF685DF007ABB96 /* StarRating.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarRating.swift; sourceTree = "<group>"; };
 		5B7273732BF7F25C000A430C /* ShazamClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShazamClient.swift; sourceTree = "<group>"; };
 		5B7273792BFBD47F000A430C /* MediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoader.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */,
 				5B72738F2BFD86F1000A430C /* RemoteMediaLoader.swift */,
 				5B4A269B2C6C3E6700DCBB08 /* RemoteMediaMapper.swift */,
+				5B4A269D2C6C47DB00DCBB08 /* RemoteMediaItem.swift */,
 			);
 			path = "Artwork API";
 			sourceTree = "<group>";
@@ -272,6 +275,7 @@
 				5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */,
 				5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */,
 				5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */,
+				5B4A269E2C6C47DB00DCBB08 /* RemoteMediaItem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
