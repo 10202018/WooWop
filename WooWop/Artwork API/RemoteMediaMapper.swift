@@ -6,3 +6,19 @@
 //
 
 import Foundation
+import ShazamKit
+
+internal final class RemoteMediaMapper {
+  let items = [RemoteMediaItem]()
+  
+  internal static func map(_ items: [SHMediaItem]) throws -> [RemoteMediaItem] {
+    return try items.map { item in
+      if let artworkURL = item.artworkURL {
+        return RemoteMediaItem(artworkURL: artworkURL)
+      } else {
+        throw "Error"
+      }
+    }
+  }
+  
+}

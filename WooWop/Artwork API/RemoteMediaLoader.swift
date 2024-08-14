@@ -23,34 +23,24 @@ public class RemoteMediaLoader: MediaLoader {
     // Use the result.
     switch result {
     case .match(let matches):
-      do {
-        let mediaItems = try RemoteMediaMapper.map(matches)
-        return LoadMediaResult.match(mediaItems.toModels())
-      } catch(let error) {
-        return LoadMediaResult.error(error)
-      }
+      return RemoteMediaLoader.map(matches)
     case .noMatch:
       return LoadMediaResult.noMatch
     case .error(let error):
       return LoadMediaResult.error(error)
     }
   }
-}
-
-internal final class RemoteMediaMapper {
-  let items = [RemoteMediaItem]()
   
-  internal static func map(_ items: [SHMediaItem]) throws -> [RemoteMediaItem] {
-    return try items.map { item in
-      if let artworkURL = item.artworkURL {
-        return RemoteMediaItem(artworkURL: artworkURL)
-      } else {
-        throw "Error"
-      }
+  private static func map(_ matches: [SHMediaItem]) -> LoadMediaResult {
+    do {
+      let mediaItems = try RemoteMediaMapper.map(matches)
+      return LoadMediaResult.match(mediaItems.toModels())
+    } catch(let error) {
+      return LoadMediaResult.error(error)
     }
   }
-  
 }
+
 
 internal struct RemoteMediaItem {
   internal let artworkURL: URL
