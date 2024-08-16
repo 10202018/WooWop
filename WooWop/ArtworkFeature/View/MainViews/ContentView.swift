@@ -39,7 +39,7 @@ struct ContentView: View {
                 .gesture(MagnificationGesture().onChanged { val in
                   let delta = val / self.lastScaleValue
                   self.lastScaleValue = val
-                  var newScale = self.scale * delta
+                  let newScale = self.scale * delta
                   scale = newScale
                 }.onEnded{ val in
                   scaledFrame = scale

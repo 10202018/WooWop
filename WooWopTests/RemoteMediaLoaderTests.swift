@@ -5,6 +5,7 @@
 //  Created by Jah Morris-Jones on 8/12/24.
 //
 
+import ShazamKit
 import WooWop
 import XCTest
 
@@ -17,7 +18,7 @@ final class RemoteMediaLoaderTests: XCTestCase {
     XCTAssertNil(client.requestedShazamSession)
   }
   
-  func test_load_requestMatchFromSession() async throws {
+  func test_loadMedia_requestMatchFromSessionIsSuccessful() async throws {
     let client = ShazamClientSpy()
     let sut = RemoteMediaLoader(client: client)
     

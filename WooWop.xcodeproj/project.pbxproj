@@ -48,7 +48,7 @@
 		5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopTests.swift; sourceTree = "<group>"; };
 		5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteMediaLoaderTests.swift; sourceTree = "<group>"; };
 		5BB596462C6C0C8B00C4CACF /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		5BB596482C6C2F6200C4CACF /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaItem.swift; sourceTree = "<group>"; };
+		5BB596482C6C2F6200C4CACF /* MediaItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MediaItem.swift; path = ../MediaItem.swift; sourceTree = "<group>"; };
 		5BBD9A2D2C1A1C400020D9E4 /* SHManagedSessionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SHManagedSessionClient.swift; sourceTree = "<group>"; };
 		5BC195C72C6C3C100005C196 /* WooWop.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = WooWop.xctestplan; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -100,13 +100,20 @@
 			path = WooWop;
 			sourceTree = "<group>";
 		};
-		5B7273752BF8631B000A430C /* ArtworkFeature */ = {
+		5B4A269F2C6CE9B700DCBB08 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		5B7273752BF8631B000A430C /* ArtworkFeature */ = {
+			isa = PBXGroup;
+			children = (
+				5B4A269F2C6CE9B700DCBB08 /* Core */,
 				5B7273932BFD8D43000A430C /* Model */,
 				5B7273922BFD8D25000A430C /* View */,
-				5BB596482C6C2F6200C4CACF /* MediaItem.swift */,
 			);
 			path = ArtworkFeature;
 			sourceTree = "<group>";
@@ -140,6 +147,7 @@
 		5B7273932BFD8D43000A430C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				5BB596482C6C2F6200C4CACF /* MediaItem.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -490,7 +498,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6GSKP79G95;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.theronjones.WooWopTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -509,7 +517,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6GSKP79G95;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.theronjones.WooWopTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
