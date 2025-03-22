@@ -64,6 +64,7 @@ struct ContentView: View {
   }
   
   func getMediaItem() async throws {
+    showProgress.toggle()
     do {
       let result = try await mediaLoader.loadMedia()
       switch result {
@@ -74,8 +75,10 @@ struct ContentView: View {
       case .error(let error):
         print (error)
       }
+      showProgress.toggle()
     } catch(let error) {
       print(error)
+      showProgress.toggle()
     }
     
   }
