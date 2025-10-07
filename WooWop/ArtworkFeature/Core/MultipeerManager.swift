@@ -9,24 +9,55 @@ import Foundation
 import MultipeerConnectivity
 import Combine
 
+/// Manages peer-to-peer connectivity and communication for song requests.
+/// 
+/// This class handles the entire multipeer connectivity lifecycle, allowing devices
+/// to discover each other, establish connections, and exchange song request data
+/// without requiring a backend server. It supports both DJ (host) and Listener (client) modes.
 class MultipeerManager: NSObject, ObservableObject {
     // MARK: - Published Properties
+    
+    /// Indicates whether this device is currently connected to other peers
     @Published var isConnected = false
+    
+    /// Array of currently connected peer devices
     @Published var connectedPeers: [MCPeerID] = []
+    
+    /// Array of song requests received from other devices (DJ mode)
     @Published var receivedRequests: [SongRequest] = []
+    
+    /// Indicates whether this device is operating in DJ mode (hosting)
     @Published var isDJ = false
+    
+    /// Indicates whether this device has joined a session as a listener
     @Published var hasJoinedSession = false
     
     // MARK: - Multipeer Connectivity Properties
+    
+    /// The service type identifier for this app's multipeer sessions
     private let serviceType = "woowop-requests"
+    
+    /// Unique identifier for this device in the multipeer session
     private let localPeerID = MCPeerID(displayName: UIDevice.current.name)
+    
+    /// Advertiser for broadcasting this device's availability (DJ mode)
     private let serviceAdvertiser: MCNearbyServiceAdvertiser
+    
+    /// Browser for discovering nearby DJ devices (Listener mode)
     private let serviceBrowser: MCNearbyServiceBrowser
+    
+    /// The multipeer connectivity session managing all connections
     private let session: MCSession
     
     // MARK: - User Properties
+    
+    /// The display name for this user in song requests
     @Published var userName: String = UIDevice.current.name
     
+    /// Initializes the MultipeerManager with default settings.
+    /// 
+    /// Sets up the multipeer connectivity components including the session,
+    /// advertiser, and browser with appropriate delegates.
     override init() {
         self.session = MCSession(peer: localPeerID, securityIdentity: nil, encryptionPreference: .none)
         self.serviceAdvertiser = MCNearbyServiceAdvertiser(peer: localPeerID, discoveryInfo: nil, serviceType: serviceType)
@@ -40,17 +71,30 @@ class MultipeerManager: NSObject, ObservableObject {
     }
     
     // MARK: - Public Methods
+    
+    /// Starts hosting a session as a DJ.
+    /// 
+    /// When called, this device begins advertising itself as available for connections
+    /// and switches to DJ mode to receive song requests from listeners.
     func startHosting() {
         isDJ = true
         serviceAdvertiser.startAdvertisingPeer()
     }
     
+    /// Joins an existing session as a listener.
+    /// 
+    /// When called, this device begins searching for nearby DJs and attempts
+    /// to connect to them for sending song requests.
     func joinSession() {
         isDJ = false
         hasJoinedSession = true
         serviceBrowser.startBrowsingForPeers()
     }
     
+    /// Stops all multipeer connectivity activities.
+    /// 
+    /// Disconnects from all peers, stops advertising/browsing, and resets
+    /// the manager to its initial state.
     func stopSession() {
         serviceAdvertiser.stopAdvertisingPeer()
         serviceBrowser.stopBrowsingForPeers()
@@ -61,6 +105,12 @@ class MultipeerManager: NSObject, ObservableObject {
         connectedPeers.removeAll()
     }
     
+    /// Sends a song request to all connected peers.
+    /// 
+    /// Encodes the song request as JSON and transmits it to all connected devices.
+    /// Typically used by listeners to send requests to the DJ.
+    /// 
+    /// - Parameter request: The song request to send
     func sendSongRequest(_ request: SongRequest) {
         guard !session.connectedPeers.isEmpty else {
             print("No connected peers to send request to")
@@ -76,6 +126,11 @@ class MultipeerManager: NSObject, ObservableObject {
         }
     }
     
+    /// Removes a song request from the received requests list.
+    /// 
+    /// Typically used by DJs to mark requests as completed or dismissed.
+    /// 
+    /// - Parameter request: The song request to remove
     func removeSongRequest(_ request: SongRequest) {
         receivedRequests.removeAll { $0.id == request.id }
     }

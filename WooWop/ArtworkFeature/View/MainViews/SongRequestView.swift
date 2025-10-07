@@ -7,10 +7,23 @@
 
 import SwiftUI
 
+/// View for sending song requests to connected DJs.
+/// 
+/// This view presents a detailed interface for users to review a song they've
+/// identified and send it as a request to the currently connected DJ. It displays
+/// the song's artwork, metadata, and connection status while providing controls
+/// for submitting the request.
 struct SongRequestView: View {
+    /// The media item containing song details to be requested
     let mediaItem: MediaItem
+    
+    /// Manager handling multipeer connectivity and request transmission
     @ObservedObject var multipeerManager: MultipeerManager
+    
+    /// Controls the display of the success confirmation alert
     @State private var showingSuccessAlert = false
+    
+    /// Environment value for dismissing this view
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -83,6 +96,11 @@ struct SongRequestView: View {
         }
     }
     
+    /// Creates and sends a song request to connected peers.
+    /// 
+    /// This method constructs a SongRequest object with the current media item's
+    /// information and the user's name, then transmits it via the multipeer manager.
+    /// Shows a success alert upon completion.
     private func sendRequest() {
         let request = SongRequest(
             title: mediaItem.title ?? "Unknown Title",

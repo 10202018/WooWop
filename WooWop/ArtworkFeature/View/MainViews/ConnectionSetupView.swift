@@ -7,8 +7,16 @@
 
 import SwiftUI
 
+/// Initial setup interface for choosing user role and configuring connectivity.
+/// 
+/// This view serves as the onboarding screen where users select their role
+/// (DJ or Listener), set their display name, and initiate the appropriate
+/// multipeer connectivity mode. It provides real-time feedback on connection status.
 struct ConnectionSetupView: View {
+    /// Manager handling multipeer connectivity setup and status
     @ObservedObject var multipeerManager: MultipeerManager
+    
+    /// User's display name for song requests and session identification
     @State private var userName: String = ""
     
     var body: some View {
@@ -120,6 +128,12 @@ struct ConnectionSetupView: View {
         }
     }
     
+    /// Generates appropriate status text based on current connection state.
+    /// 
+    /// This helper method provides user-friendly status messages that reflect
+    /// the current state of the multipeer connectivity session.
+    /// 
+    /// - Returns: Localized status string describing the current connection state
     private func getConnectionStatusText() -> String {
         if multipeerManager.isDJ {
             return "DJ Mode Active"

@@ -7,7 +7,13 @@
 
 import SwiftUI
 
+/// Main interface for DJs to manage incoming song requests and session controls.
+/// 
+/// This view provides comprehensive DJ functionality including session management,
+/// real-time display of incoming song requests, and controls for starting/stopping
+/// DJ mode. It shows connection status and allows DJs to mark requests as completed.
 struct DJQueueView: View {
+    /// Manager handling multipeer connectivity and song request data
     @ObservedObject var multipeerManager: MultipeerManager
     
     var body: some View {
@@ -88,8 +94,16 @@ struct DJQueueView: View {
     }
 }
 
+/// Individual row component displaying a single song request.
+/// 
+/// This view presents the details of a song request including title, artist,
+/// requester name, and timestamp. It provides a completion button for DJs
+/// to mark requests as fulfilled.
 struct SongRequestRow: View {
+    /// The song request data to display
     let request: SongRequest
+    
+    /// Callback executed when the DJ marks this request as completed
     let onRemove: () -> Void
     
     var body: some View {

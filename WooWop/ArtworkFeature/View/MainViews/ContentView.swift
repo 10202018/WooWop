@@ -10,21 +10,41 @@ import ShazamKit
 
 // MARK: - Media module.
 
-/// The entry view in the app.
+/// The main content view of the WooWop application.
+/// 
+/// This view serves as the primary interface for song identification and request functionality.
+/// It displays song artwork, provides controls for Shazam identification, and integrates
+/// with the multipeer connectivity system for sending song requests to DJs.
 struct ContentView: View {
   
+  /// Service responsible for loading media information from Shazam
   var mediaLoader: MediaLoader
+  
+  /// Manages peer-to-peer connectivity and song request functionality
   @EnvironmentObject var multipeerManager: MultipeerManager
   
+  /// Currently identified media item with artwork and metadata
   @State private var mediaItem: MediaItem?
+  
+  /// User rating for the current song (currently unused)
   @State private var rating: Int = 1
+  
+  /// Controls the presentation of the song request sheet
   @State private var showingSongRequest = false
+  
+  /// Controls the presentation of the DJ queue management sheet
   @State private var showingDJQueue = false
   
+  /// Current scale factor for the artwork image (pinch-to-zoom)
   @State var scale: CGFloat = 1.0
+  
+  /// Previous scale value used during gesture calculations
   @State var lastScaleValue: CGFloat = 1.0
+  
+  /// Final scale factor after gesture completion
   @State var scaledFrame: CGFloat = 1.0
   
+  /// Indicates whether a Shazam identification is in progress
   @State var showProgress: Bool = false
   
   var body: some View {
@@ -123,6 +143,11 @@ struct ContentView: View {
     }
   }
   
+  /// Initiates the song identification process using Shazam.
+  /// 
+  /// This method handles the complete identification workflow: showing progress,
+  /// calling the media loader, processing results, and updating the UI state.
+  /// It includes error handling for various failure scenarios.
   func getMediaItem() async throws {
     showProgress.toggle()
     do {

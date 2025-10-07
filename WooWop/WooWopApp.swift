@@ -7,9 +7,17 @@
 
 import SwiftUI
 
+/// The main entry point for the WooWop application.
+/// 
+/// WooWop is a social music discovery app that allows users to identify songs using Shazam
+/// and request them to a DJ in real-time using peer-to-peer networking. The app supports
+/// two main roles: DJ (host) and Listener (client).
 @main
 struct WooWopApp: App {
+    /// Manages peer-to-peer connectivity and song requests between devices
     @StateObject private var multipeerManager = MultipeerManager()
+    
+    /// Controls whether to show the initial setup screen or the main content
     @State private var showingSetup = true
     
     var body: some Scene {
