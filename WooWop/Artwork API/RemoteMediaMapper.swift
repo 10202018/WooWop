@@ -14,7 +14,10 @@ internal final class RemoteMediaMapper {
   internal static func map(_ items: [SHMediaItem]) throws -> [RemoteMediaItem] {
     return try items.map { item in
       if let artworkURL = item.artworkURL {
-        return RemoteMediaItem(artworkURL: artworkURL)
+        let title = item.title ?? "Unknown Title"
+        let artist = item.artist ?? "Unknown Artist"
+        let shazamID = item.shazamID
+        return RemoteMediaItem(artworkURL: artworkURL, title: title, artist: artist, shazamID: shazamID)
       } else {
         throw "Error: could not map type `SHMediaItem` to type `RemoteMediaItem`"
       }

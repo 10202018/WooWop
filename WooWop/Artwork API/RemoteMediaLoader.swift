@@ -43,6 +43,6 @@ public class RemoteMediaLoader: MediaLoader {
 
 private extension Array where Element == RemoteMediaItem {
   func toModels() -> [MediaItem] {
-    return map { MediaItem(artworkURL: $0.artworkURL ) }
+    return map { MediaItem(artworkURL: $0.artworkURL, title: $0.title, artist: $0.artist, shazamID: $0.shazamID) }
   }
 }

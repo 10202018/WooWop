@@ -9,4 +9,7 @@ import Foundation
 
 internal struct RemoteMediaItem {
   internal let artworkURL: URL
+  internal let title: String
+  internal let artist: String
+  internal let shazamID: String?
 }
