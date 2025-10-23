@@ -8,19 +8,44 @@
 import Foundation
 import ShazamKit
 
-// Singleton (capital "S")
-/// The Shazam API client.
+/// SHManagedSessionClient
+///
+/// A concrete implementation of `ShazamClient` built on top of Apple's
+/// `SHManagedSession`.
+/// Singleton (capital "S") to indicate it's a specific implementation of the
+/// ShazamClient protocol.
+///
+///   may call back on internal threads. Callers should assume `findMatch()` is
+///   asynchronous and may be resumed on a non-main thread; dispatch to the
+///   main queue when updating UI.
+/// - This implementation intentionally keeps a lightweight wrapper rather than
+///   exposing `SHManagedSession` directly so the app can swap implementations
+///   during testing or when using a different recognition backend.
+///
+/// Thread-safety & lifecycle:
+/// - `SHManagedSession` manages its own lifecycle; if you need a shared
+///   instance across the app, instantiate and reuse a single `SHManagedSessionClient`.
+/// - Avoid creating many managed sessions concurrently — prefer reusing an
+///   existing client to conserve system resources.
 public class SHManagedSessionClient: ShazamClient {
-  /// An object that records and matches a recording with captured sound in the Shazam catalog or your
-  /// custom catalog.
+  /// The underlying Shazam managed session that handles audio recognition
   var session: SHManagedSession
   
+  /// Initializes the client with a managed session.
+  /// 
+  /// - Parameter session: The SHManagedSession to use for audio recognition.
+  ///                      Defaults to a new instance if not provided.
   public init(session: SHManagedSession = SHManagedSession()) {
     self.session = session
   }
   
-  /// Makes  an asynchrnous request to match the signature (hashed version passed to and from client) of
-  /// the song from the current session.
+  /// Performs asynchronous song identification using the managed session.
+  /// 
+  /// This method triggers the audio recognition process and waits for results
+  /// from Shazam's service. It handles the conversion from Shazam's result format
+  /// to the app's internal ClientResult format.
+  /// 
+  /// - Returns: A ClientResult containing matched songs, no match indication, or error details
   public func findMatch() async -> ClientResult {
     let result = await session.result()
     switch result {

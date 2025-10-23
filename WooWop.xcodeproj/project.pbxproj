@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */; };
+		35F5D9E12E94A44400CD46EA /* ConnectionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */; };
+		35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */; };
+		35F5D9E52E94A44F00CD46EA /* SongRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E32E94A44F00CD46EA /* SongRequestView.swift */; };
 		5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B72BF2F479008550DF /* WooWopApp.swift */; };
 		5B0311BA2BF2F479008550DF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B0311B92BF2F479008550DF /* ContentView.swift */; };
 		5B4A269C2C6C3E6700DCBB08 /* RemoteMediaMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B4A269B2C6C3E6700DCBB08 /* RemoteMediaMapper.swift */; };
@@ -34,6 +38,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManager.swift; sourceTree = "<group>"; };
+		35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSetupView.swift; sourceTree = "<group>"; };
+		35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJQueueView.swift; sourceTree = "<group>"; };
+		35F5D9E32E94A44F00CD46EA /* SongRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongRequestView.swift; sourceTree = "<group>"; };
 		5B0311B42BF2F479008550DF /* WooWop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WooWop.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B0311B72BF2F479008550DF /* WooWopApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WooWopApp.swift; sourceTree = "<group>"; };
 		5B0311B92BF2F479008550DF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -104,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
+				35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -130,7 +139,10 @@
 		5B72738D2BFD8604000A430C /* MainViews */ = {
 			isa = PBXGroup;
 			children = (
+				35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */,
 				5B0311B92BF2F479008550DF /* ContentView.swift */,
+				35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */,
+				35F5D9E32E94A44F00CD46EA /* SongRequestView.swift */,
 			);
 			path = MainViews;
 			sourceTree = "<group>";
@@ -275,11 +287,15 @@
 			files = (
 				5B0311BA2BF2F479008550DF /* ContentView.swift in Sources */,
 				5B4A269C2C6C3E6700DCBB08 /* RemoteMediaMapper.swift in Sources */,
+				35F5D9E12E94A44400CD46EA /* ConnectionSetupView.swift in Sources */,
+				35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */,
+				35F5D9E52E94A44F00CD46EA /* SongRequestView.swift in Sources */,
 				5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */,
 				5BB596492C6C2F6200C4CACF /* MediaItem.swift in Sources */,
 				5BBD9A2E2C1A1C400020D9E4 /* SHManagedSessionClient.swift in Sources */,
 				5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */,
 				5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */,
+				35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */,
 				5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */,
 				5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */,
 				5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */,
