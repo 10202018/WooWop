@@ -8,11 +8,27 @@
 import Foundation
 import ShazamKit
 
-/// A concrete implementation of ShazamClient using Apple's SHManagedSession.
-/// 
-/// This class provides a managed audio recognition session that can automatically
-/// handle audio capture, processing, and matching against Shazam's catalog.
-/// It follows the Singleton pattern for consistent session management.
+/// SHManagedSessionClient
+///
+/// A concrete implementation of `ShazamClient` built on top of Apple's
+/// `SHManagedSession`.
+///
+/// Notes:
+/// - This class wraps `SHManagedSession` to provide a simple async interface
+///   (`findMatch()`) that returns `ClientResult` values used by the app.
+/// - The underlying `SHManagedSession` performs audio capture and matching and
+///   may call back on internal threads. Callers should assume `findMatch()` is
+///   asynchronous and may be resumed on a non-main thread; dispatch to the
+///   main queue when updating UI.
+/// - This implementation intentionally keeps a lightweight wrapper rather than
+///   exposing `SHManagedSession` directly so the app can swap implementations
+///   during testing or when using a different recognition backend.
+///
+/// Thread-safety & lifecycle:
+/// - `SHManagedSession` manages its own lifecycle; if you need a shared
+///   instance across the app, instantiate and reuse a single `SHManagedSessionClient`.
+/// - Avoid creating many managed sessions concurrently — prefer reusing an
+///   existing client to conserve system resources.
 public class SHManagedSessionClient: ShazamClient {
   /// The underlying Shazam managed session that handles audio recognition
   var session: SHManagedSession
