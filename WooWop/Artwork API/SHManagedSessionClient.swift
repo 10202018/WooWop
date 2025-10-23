@@ -12,11 +12,9 @@ import ShazamKit
 ///
 /// A concrete implementation of `ShazamClient` built on top of Apple's
 /// `SHManagedSession`.
+/// Singleton (capital "S") to indicate it's a specific implementation of the
+/// ShazamClient protocol.
 ///
-/// Notes:
-/// - This class wraps `SHManagedSession` to provide a simple async interface
-///   (`findMatch()`) that returns `ClientResult` values used by the app.
-/// - The underlying `SHManagedSession` performs audio capture and matching and
 ///   may call back on internal threads. Callers should assume `findMatch()` is
 ///   asynchronous and may be resumed on a non-main thread; dispatch to the
 ///   main queue when updating UI.
