@@ -101,6 +101,10 @@ struct ContentView: View {
       .toolbar {
         ToolbarItemGroup(placement: .navigationBarLeading) {
           Button {
+            // Explicitly request the current DJ queue before opening the queue UI so listeners get an immediate snapshot
+            if !multipeerManager.isDJ {
+              multipeerManager.requestQueue()
+            }
             showingDJQueue = true
           } label: {
             Image(systemName: "list.bullet")
