@@ -41,7 +41,7 @@ class MultipeerManager: NSObject, ObservableObject {
     private let localPeerID = MCPeerID(displayName: UIDevice.current.name)
     
     /// Advertiser for broadcasting this device's availability (DJ mode)
-    private let serviceAdvertiser: MCNearbyServiceAdvertiser
+    private var serviceAdvertiser: MCNearbyServiceAdvertiser
     
     /// Browser for discovering nearby DJ devices (Listener mode)
     private let serviceBrowser: MCNearbyServiceBrowser
@@ -53,6 +53,15 @@ class MultipeerManager: NSObject, ObservableObject {
     
     /// The display name for this user in song requests
     @Published var userName: String = UIDevice.current.name
+    
+    /// Indicates whether a DJ has been discovered nearby via discoveryInfo
+    @Published var djAvailable: Bool = false
+    
+    /// The display name of the connected DJ (for listeners)
+    @Published var currentDJName: String? = nil
+    
+    /// Map of discovered peer displayName -> advertised DJ name (from discoveryInfo)
+    private var discoveredDJNames: [String: String] = [:]
     
     /// Initializes the MultipeerManager with default settings.
     /// 
@@ -78,6 +87,10 @@ class MultipeerManager: NSObject, ObservableObject {
     /// and switches to DJ mode to receive song requests from listeners.
     func startHosting() {
         isDJ = true
+        // Recreate the advertiser with DJ discoveryInfo so listeners can detect DJ presence and name
+        serviceAdvertiser.stopAdvertisingPeer()
+        serviceAdvertiser = MCNearbyServiceAdvertiser(peer: localPeerID, discoveryInfo: ["dj": "1", "name": userName], serviceType: serviceType)
+        serviceAdvertiser.delegate = self
         serviceAdvertiser.startAdvertisingPeer()
     }
     
@@ -97,6 +110,9 @@ class MultipeerManager: NSObject, ObservableObject {
     /// the manager to its initial state.
     func stopSession() {
         serviceAdvertiser.stopAdvertisingPeer()
+        // Reset advertiser to non-DJ mode (no discoveryInfo)
+        serviceAdvertiser = MCNearbyServiceAdvertiser(peer: localPeerID, discoveryInfo: nil, serviceType: serviceType)
+        serviceAdvertiser.delegate = self
         serviceBrowser.stopBrowsingForPeers()
         session.disconnect()
         isDJ = false
@@ -251,12 +267,25 @@ extension MultipeerManager: MCSessionDelegate {
             case .connected:
                 self.connectedPeers.append(peerID)
                 self.isConnected = true
+                // If we're a listener, prefer the advertised DJ name (from discoveryInfo)
+                if !self.isDJ {
+                    let advertised = self.discoveredDJNames[peerID.displayName]
+                    self.currentDJName = advertised ?? peerID.displayName
+                    self.djAvailable = true
+                }
                 print("Connected to: \(peerID.displayName)")
             case .connecting:
                 print("Connecting to: \(peerID.displayName)")
             case .notConnected:
                 self.connectedPeers.removeAll { $0 == peerID }
                 self.isConnected = !self.connectedPeers.isEmpty
+                // If the disconnected peer was the DJ we were tracking, clear it
+                if self.currentDJName == self.discoveredDJNames[peerID.displayName] || self.currentDJName == peerID.displayName {
+                    self.currentDJName = nil
+                    self.djAvailable = !self.connectedPeers.isEmpty
+                }
+                // Remove any cached advertised name for this peer
+                self.discoveredDJNames.removeValue(forKey: peerID.displayName)
                 print("Disconnected from: \(peerID.displayName)")
             @unknown default:
                 break
@@ -317,11 +346,36 @@ extension MultipeerManager: MCNearbyServiceAdvertiserDelegate {
 // MARK: - MCNearbyServiceBrowserDelegate
 extension MultipeerManager: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        // Auto-invite when found peer (DJ)
-        browser.invitePeer(peerID, to: session, withContext: nil, timeout: 10)
+        // If the discovered peer is advertising as a DJ, record its name and invite
+        if let info = info, info["dj"] == "1" {
+            DispatchQueue.main.async {
+                self.djAvailable = true
+                let advertisedName = info["name"] ?? peerID.displayName
+                // Cache advertised DJ name keyed by the peer's displayName so we can use it when connected
+                self.discoveredDJNames[peerID.displayName] = advertisedName
+                self.currentDJName = advertisedName
+            }
+            browser.invitePeer(peerID, to: session, withContext: nil, timeout: 10)
+        } else {
+            // Not a DJ advertiser; ignore or optionally log
+            print("Found non-DJ peer: \(peerID.displayName)")
+        }
     }
     
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
         print("Lost peer: \(peerID.displayName)")
+        DispatchQueue.main.async {
+            // If we lost a peer that we had an advertised name for, clear it
+            if let advertised = self.discoveredDJNames[peerID.displayName] {
+                if self.currentDJName == advertised {
+                    self.currentDJName = nil
+                    self.djAvailable = false
+                }
+                self.discoveredDJNames.removeValue(forKey: peerID.displayName)
+            } else if self.currentDJName == peerID.displayName {
+                self.currentDJName = nil
+                self.djAvailable = false
+            }
+        }
     }
 }
