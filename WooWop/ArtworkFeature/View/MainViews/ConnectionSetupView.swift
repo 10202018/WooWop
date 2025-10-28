@@ -78,23 +78,45 @@ struct ConnectionSetupView: View {
                         }
                         .foregroundColor(.blue)
                         
-                        Button {
-                            multipeerManager.userName = userName.isEmpty ? UIDevice.current.name : userName
-                            multipeerManager.startHosting()
-                        } label: {
+                        // Become DJ button should be available only if not already connected to a DJ
+                        if !multipeerManager.isConnected || multipeerManager.isDJ {
+                            Button {
+                                multipeerManager.userName = userName.isEmpty ? UIDevice.current.name : userName
+                                multipeerManager.startHosting()
+                            } label: {
+                                HStack {
+                                    Image(systemName: "music.mic")
+                                    Text("Become DJ")
+                                    Spacer()
+                                    Text("Receive requests")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding()
+                                .background(Color.green.opacity(0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            }
+                            .foregroundColor(.green)
+                        } else {
+                            // When a DJ is present, show a read-only view explaining the role
                             HStack {
                                 Image(systemName: "music.mic")
-                                Text("Become DJ")
+                                Text("DJ unavailable")
                                 Spacer()
-                                Text("Receive requests")
+                                Text("View DJ queue")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             .padding()
-                            .background(Color.green.opacity(0.1))
+                            .background(Color.gray.opacity(0.06))
                             .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .foregroundColor(.secondary)
+                            .onTapGesture {
+                                // Let listeners still view the DJ queue
+                                multipeerManager.hasJoinedSession = true
+                                multipeerManager.joinSession()
+                            }
                         }
-                        .foregroundColor(.green)
                     }
                 }
                 .padding(.horizontal)

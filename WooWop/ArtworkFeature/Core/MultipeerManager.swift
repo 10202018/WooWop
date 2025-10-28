@@ -116,13 +116,14 @@ class MultipeerManager: NSObject, ObservableObject {
             print("No connected peers to send request to")
             return
         }
-        
+
+        let wrapper = QueueMessage.songRequest(request)
         do {
-            let data = try JSONEncoder().encode(request)
+            let data = try JSONEncoder().encode(wrapper)
             try session.send(data, toPeers: session.connectedPeers, with: .reliable)
-            print("Sent song request: \(request.title) by \(request.artist)")
+            print("Sent wrapped song request: \(request.title) by \(request.artist)")
         } catch {
-            print("Failed to send song request: \(error)")
+            print("Failed to send wrapped song request: \(error)")
         }
     }
     
@@ -134,6 +135,112 @@ class MultipeerManager: NSObject, ObservableObject {
     func removeSongRequest(_ request: SongRequest) {
         receivedRequests.removeAll { $0.id == request.id }
     }
+
+    // MARK: - Message Protocol
+
+    /// Wrapper enum used on the wire to identify the payload type.
+    enum QueueMessage: Codable {
+        case songRequest(SongRequest)
+        case queue([SongRequest])
+        case request
+
+        private enum CodingKeys: String, CodingKey {
+            case type
+            case payload
+        }
+
+        private enum MessageType: String, Codable {
+            case songRequest
+            case queue
+            case request
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            let type = try container.decode(MessageType.self, forKey: .type)
+            switch type {
+            case .songRequest:
+                let req = try container.decode(SongRequest.self, forKey: .payload)
+                self = .songRequest(req)
+            case .queue:
+                let q = try container.decode([SongRequest].self, forKey: .payload)
+                self = .queue(q)
+            case .request:
+                self = .request
+            }
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            switch self {
+            case .songRequest(let req):
+                try container.encode(MessageType.songRequest, forKey: .type)
+                try container.encode(req, forKey: .payload)
+            case .queue(let q):
+                try container.encode(MessageType.queue, forKey: .type)
+                try container.encode(q, forKey: .payload)
+            case .request:
+                try container.encode(MessageType.request, forKey: .type)
+            }
+        }
+    }
+
+    /// Sends the DJ's current queue to connected peers.
+    func broadcastQueue() {
+        guard !session.connectedPeers.isEmpty else { return }
+        let wrapper = QueueMessage.queue(receivedRequests)
+        do {
+            let data = try JSONEncoder().encode(wrapper)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("Broadcasted queue to peers (\(receivedRequests.count) items)")
+        } catch {
+            print("Failed to broadcast queue: \(error)")
+        }
+    }
+
+    /// Requests the current DJ queue from connected peers.
+    func requestQueue() {
+        // Do nothing if we're the DJ or there are no peers
+        guard !isDJ else { return }
+        guard !session.connectedPeers.isEmpty else {
+            print("No connected peers to request queue from")
+            return
+        }
+
+        let wrapper = QueueMessage.request
+        do {
+            let data = try JSONEncoder().encode(wrapper)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("Requested queue from peers")
+        } catch {
+            print("Failed to request queue: \(error)")
+        }
+    }
+
+    /// Simple retry sender: attempts to send data several times with a short delay.
+    func sendDataWithRetry(_ data: Data, to peers: [MCPeerID], attempts: Int = 3, delayMs: UInt64 = 200) {
+        guard !peers.isEmpty else { return }
+        DispatchQueue.global(qos: .utility).async {
+            var remaining = attempts
+            while remaining > 0 {
+                do {
+                    try self.session.send(data, toPeers: peers, with: .reliable)
+                    print("sendDataWithRetry: sent data to peers")
+                    return
+                } catch {
+                    remaining -= 1
+                    if remaining == 0 {
+                        print("sendDataWithRetry: final failure: \(error)")
+                        return
+                    }
+                    let ns = delayMs * 1_000_000
+                    usleep(useconds_t(ns / 1_000_000))
+                }
+            }
+        }
+    }
+
+    
 }
 
 // MARK: - MCSessionDelegate
@@ -158,14 +265,37 @@ extension MultipeerManager: MCSessionDelegate {
     }
     
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID) {
+        // Try to decode our wrapper QueueMessage first
         do {
-            let request = try JSONDecoder().decode(SongRequest.self, from: data)
+            let wrapper = try JSONDecoder().decode(QueueMessage.self, from: data)
             DispatchQueue.main.async {
-                self.receivedRequests.append(request)
-                print("Received song request: \(request.title) by \(request.artist) from \(request.requesterName)")
+                switch wrapper {
+                case .songRequest(let req):
+                    // DJs should accept song requests
+                    self.receivedRequests.append(req)
+                    print("Received song request: \(req.title) by \(req.artist) from \(req.requesterName)")
+                case .queue(let queue):
+                    // Listeners receive the full queue
+                    self.receivedRequests = queue
+                    print("Received queue with \(queue.count) items from \(peerID.displayName)")
+                case .request:
+                    // Peer asked for the queue; if we're DJ, respond
+                    if self.isDJ {
+                        self.broadcastQueue()
+                    }
+                }
             }
         } catch {
-            print("Failed to decode song request: \(error)")
+            // Fallback: try decoding a raw SongRequest for compatibility
+            do {
+                let request = try JSONDecoder().decode(SongRequest.self, from: data)
+                DispatchQueue.main.async {
+                    self.receivedRequests.append(request)
+                    print("Received legacy song request: \(request.title) by \(request.artist) from \(request.requesterName)")
+                }
+            } catch {
+                print("Failed to decode incoming data: \(error)")
+            }
         }
     }
     
