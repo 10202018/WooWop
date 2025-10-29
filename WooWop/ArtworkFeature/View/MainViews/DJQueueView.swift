@@ -39,6 +39,27 @@ struct DJQueueView: View {
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                // For listeners, show the currently-discovered DJ's name if available
+                if !multipeerManager.isDJ {
+                    HStack(spacing: 8) {
+                        if let dj = multipeerManager.currentDJName, !dj.isEmpty {
+                            Text("DJ \(dj)")
+                                .font(.subheadline)
+                                .bold()
+                        } else if multipeerManager.djAvailable {
+                            Text("DJ: (unknown)")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text("No DJ connected")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 4)
+                }
                 
                 // Control Buttons: only visible to the DJ. Listeners should not see Start/Stop controls.
                 if multipeerManager.isDJ {
