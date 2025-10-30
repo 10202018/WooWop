@@ -34,6 +34,7 @@ struct ContentView: View {
   
   /// Controls the presentation of the DJ queue management sheet
   @State private var showingDJQueue = false
+  @State private var showingRecordSheet = false
   
   /// Current scale factor for the artwork image (pinch-to-zoom)
   @State var scale: CGFloat = 1.0
@@ -118,6 +119,11 @@ struct ContentView: View {
             } label: {
               Image(systemName: "paperplane")
             }
+            Button {
+              showingRecordSheet = true
+            } label: {
+              Image(systemName: "video")
+            }
           }
           
           Button {
@@ -134,6 +140,15 @@ struct ContentView: View {
           NavigationView {
             SongRequestView(mediaItem: mediaItem, multipeerManager: multipeerManager)
           }
+        }
+      }
+      .sheet(isPresented: $showingRecordSheet) {
+        if let mediaItem = mediaItem {
+          NavigationView {
+            RecordVideoView(artworkURL: mediaItem.artworkURL, title: mediaItem.title)
+          }
+        } else {
+          RecordVideoView(artworkURL: nil, title: "Record")
         }
       }
       .sheet(isPresented: $showingDJQueue) {

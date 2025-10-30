@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		359539152EB0587D0034E334 /* QueueMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359539142EB0587D0034E334 /* QueueMessageTests.swift */; };
 		35DC73732EB318050004A819 /* UpvoteLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73722EB318050004A819 /* UpvoteLogicTests.swift */; };
+		35DC73752EB326000004A819 /* VideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73742EB326000004A819 /* VideoComposer.swift */; };
+		35DC73772EB326290004A819 /* RecordVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73762EB326290004A819 /* RecordVideoView.swift */; };
+		35DC73792EB3C8E80004A819 /* CameraCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73782EB3C8E80004A819 /* CameraCaptureManager.swift */; };
 		35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */; };
 		35F5D9E12E94A44400CD46EA /* ConnectionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */; };
 		35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */; };
@@ -42,6 +45,9 @@
 /* Begin PBXFileReference section */
 		359539142EB0587D0034E334 /* QueueMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueMessageTests.swift; sourceTree = "<group>"; };
 		35DC73722EB318050004A819 /* UpvoteLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpvoteLogicTests.swift; sourceTree = "<group>"; };
+		35DC73742EB326000004A819 /* VideoComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoComposer.swift; sourceTree = "<group>"; };
+		35DC73762EB326290004A819 /* RecordVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVideoView.swift; sourceTree = "<group>"; };
+		35DC73782EB3C8E80004A819 /* CameraCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureManager.swift; sourceTree = "<group>"; };
 		35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManager.swift; sourceTree = "<group>"; };
 		35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSetupView.swift; sourceTree = "<group>"; };
 		35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJQueueView.swift; sourceTree = "<group>"; };
@@ -115,8 +121,10 @@
 		5B4A269F2C6CE9B700DCBB08 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				35DC73782EB3C8E80004A819 /* CameraCaptureManager.swift */,
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
 				35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */,
+				35DC73742EB326000004A819 /* VideoComposer.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -146,6 +154,7 @@
 				35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */,
 				5B0311B92BF2F479008550DF /* ContentView.swift */,
 				35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */,
+				35DC73762EB326290004A819 /* RecordVideoView.swift */,
 				35F5D9E32E94A44F00CD46EA /* SongRequestView.swift */,
 			);
 			path = MainViews;
@@ -302,8 +311,11 @@
 				5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */,
 				5B72737A2BFBD47F000A430C /* MediaLoader.swift in Sources */,
 				35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */,
+				35DC73772EB326290004A819 /* RecordVideoView.swift in Sources */,
 				5B7273902BFD86F1000A430C /* RemoteMediaLoader.swift in Sources */,
 				5B0311B82BF2F479008550DF /* WooWopApp.swift in Sources */,
+				35DC73752EB326000004A819 /* VideoComposer.swift in Sources */,
+				35DC73792EB3C8E80004A819 /* CameraCaptureManager.swift in Sources */,
 				5B7273742BF7F25C000A430C /* ShazamClient.swift in Sources */,
 				5B4A269E2C6C47DB00DCBB08 /* RemoteMediaItem.swift in Sources */,
 			);
@@ -462,6 +474,7 @@
 				DEVELOPMENT_TEAM = 73W26BLYS6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "WooWop - using to catch the viiibes.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "WooWop - using to catch the viiibes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -495,6 +508,7 @@
 				DEVELOPMENT_TEAM = 73W26BLYS6;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "WooWop - using to catch the viiibes.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "WooWop - using to catch the viiibes.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
