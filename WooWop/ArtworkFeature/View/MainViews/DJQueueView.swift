@@ -128,9 +128,39 @@ struct DJQueueView: View {
                 // Song Requests List
                 List {
                     ForEach(multipeerManager.receivedRequests) { request in
-                        SongRequestRow(request: request) {
-                            multipeerManager.removeSongRequest(request)
-                        }
+                        let localName = multipeerManager.localDisplayName
+                        let canUpvote = (request.requesterName != localName) && !request.upvoters.contains(localName)
+
+                        SongRequestRow(
+                            request: request,
+                            onRemove: {
+                                multipeerManager.removeSongRequest(request)
+                            },
+                            onUpvote: {
+                                // Block self-votes and duplicate votes locally before sending
+                                let localName = multipeerManager.localDisplayName
+                                // If the requester is the local user, disallow upvoting own request
+                                guard request.requesterName != localName else {
+                                    print("Local user cannot upvote their own request")
+                                    return
+                                }
+                                // If we've already upvoted, don't send again
+                                if request.upvoters.contains(localName) {
+                                    print("Local user has already upvoted this request")
+                                    return
+                                }
+
+                                // Optimistically record the vote locally
+                                if let idx = multipeerManager.receivedRequests.firstIndex(where: { $0.id == request.id }) {
+                                    multipeerManager.receivedRequests[idx].upvoters.append(localName)
+                                    multipeerManager.receivedRequests[idx].upvotes = multipeerManager.receivedRequests[idx].upvoters.count
+                                }
+
+                                // Send the upvote to peers (DJ will reconcile and rebroadcast authoritative queue)
+                                multipeerManager.sendUpvote(request.id)
+                            },
+                            canUpvote: canUpvote
+                        )
                     }
                 }
                 .listStyle(PlainListStyle())
@@ -196,6 +226,12 @@ struct SongRequestRow: View {
     /// Callback executed when the DJ marks this request as completed
     let onRemove: () -> Void
     
+    /// Callback executed when a listener upvotes this request
+    let onUpvote: () -> Void
+
+    /// Whether the local user is allowed to upvote this request (for disabling the UI)
+    let canUpvote: Bool
+    
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -218,13 +254,29 @@ struct SongRequestRow: View {
             }
             
             Spacer()
-            
-            Button {
-                onRemove()
-            } label: {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                    .font(.title2)
+
+            // Upvote count + button (listeners can upvote)
+            HStack(spacing: 8) {
+                Text("\(request.upvotes)")
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+
+                Button {
+                    onUpvote()
+                } label: {
+                    Image(systemName: "hand.thumbsup")
+                        .foregroundColor(.blue)
+                }
+                .buttonStyle(.borderless)
+                .disabled(!canUpvote)
+
+                Button {
+                    onRemove()
+                } label: {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.title2)
+                }
             }
         }
         .padding(.vertical, 4)

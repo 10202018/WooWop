@@ -39,6 +39,9 @@ class MultipeerManager: NSObject, ObservableObject {
     
     /// Unique identifier for this device in the multipeer session
     private let localPeerID = MCPeerID(displayName: UIDevice.current.name)
+
+    /// Public accessor for the local peer's display name (useful for vote checks)
+    var localDisplayName: String { localPeerID.displayName }
     
     /// Advertiser for broadcasting this device's availability (DJ mode)
     private var serviceAdvertiser: MCNearbyServiceAdvertiser
@@ -159,6 +162,7 @@ class MultipeerManager: NSObject, ObservableObject {
         case songRequest(SongRequest)
         case queue([SongRequest])
         case request
+        case upvote(UUID)
 
         private enum CodingKeys: String, CodingKey {
             case type
@@ -169,6 +173,7 @@ class MultipeerManager: NSObject, ObservableObject {
             case songRequest
             case queue
             case request
+            case upvote
         }
 
         init(from decoder: Decoder) throws {
@@ -183,6 +188,9 @@ class MultipeerManager: NSObject, ObservableObject {
                 self = .queue(q)
             case .request:
                 self = .request
+            case .upvote:
+                let id = try container.decode(UUID.self, forKey: .payload)
+                self = .upvote(id)
             }
         }
 
@@ -197,6 +205,9 @@ class MultipeerManager: NSObject, ObservableObject {
                 try container.encode(q, forKey: .payload)
             case .request:
                 try container.encode(MessageType.request, forKey: .type)
+            case .upvote(let id):
+                try container.encode(MessageType.upvote, forKey: .type)
+                try container.encode(id, forKey: .payload)
             }
         }
     }
@@ -230,6 +241,21 @@ class MultipeerManager: NSObject, ObservableObject {
             print("Requested queue from peers")
         } catch {
             print("Failed to request queue: \(error)")
+        }
+    }
+
+    /// Send an upvote for a request identified by `id`.
+    /// Listeners call this to signal they upvoted a queued song. DJs and peers
+    /// that receive the upvote will increment the tally and DJ will rebroadcast the queue.
+    func sendUpvote(_ id: UUID) {
+        guard !session.connectedPeers.isEmpty else { return }
+        let wrapper = QueueMessage.upvote(id)
+        do {
+            let data = try JSONEncoder().encode(wrapper)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("Sent upvote for id: \(id)")
+        } catch {
+            print("Failed to send upvote: \(error)")
         }
     }
 
@@ -311,6 +337,35 @@ extension MultipeerManager: MCSessionDelegate {
                     // Peer asked for the queue; if we're DJ, respond
                     if self.isDJ {
                         self.broadcastQueue()
+                    }
+                case .upvote(let id):
+                    // A peer signaled an upvote for a request id. Enforce rules:
+                    // - A listener cannot upvote their own request (requesterName == sender)
+                    // - Each listener may only upvote once per request (tracked via upvoters)
+                    let senderName = peerID.displayName
+                    if let idx = self.receivedRequests.firstIndex(where: { $0.id == id }) {
+                        var req = self.receivedRequests[idx]
+
+                        // Block self-upvotes
+                        if req.requesterName == senderName {
+                            print("Ignoring upvote from requester (self-vote) for id: \(id) by \(senderName)")
+                        } else if req.upvoters.contains(senderName) {
+                            // Duplicate vote from same listener
+                            print("Ignoring duplicate upvote for id: \(id) from \(senderName)")
+                        } else {
+                            // Accept the upvote
+                            req.upvoters.append(senderName)
+                            req.upvotes = req.upvoters.count
+                            self.receivedRequests[idx] = req
+                            print("Accepted upvote for id: \(id). New count: \(req.upvotes) from \(senderName)")
+
+                            // If we're the DJ, rebroadcast the updated queue so everyone sees the tally
+                            if self.isDJ {
+                                self.broadcastQueue()
+                            }
+                        }
+                    } else {
+                        print("Upvote received for unknown id: \(id)")
                     }
                 }
             }

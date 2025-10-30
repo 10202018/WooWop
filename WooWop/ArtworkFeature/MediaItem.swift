@@ -31,7 +31,7 @@ public struct MediaItem {
 /// including the song details, requester information, and timestamp.
 public struct SongRequest: Codable, Identifiable {
   /// Unique identifier for this specific request
-  public let id = UUID()
+  public let id: UUID
   
   /// The title of the requested song
   let title: String
@@ -47,19 +47,31 @@ public struct SongRequest: Codable, Identifiable {
   
   /// Optional Shazam ID for the requested song
   let shazamID: String?
+
+  /// Number of upvotes this request has received
+  /// Upvote count (kept for compatibility) — use `upvoters.count` as the source of truth
+  var upvotes: Int
+
+  /// Names (peer display names) of listeners who have upvoted this request.
+  /// This enforces one vote per unique listener and allows the DJ to dedupe votes.
+  var upvoters: [String]
   
   /// Creates a new song request with the specified details.
-  /// 
+  ///
   /// - Parameters:
   ///   - title: The song title
   ///   - artist: The artist name
   ///   - requesterName: Name of the person making the request
   ///   - shazamID: Optional Shazam identifier for the song
-  public init(title: String, artist: String, requesterName: String, shazamID: String? = nil) {
+  ///   - upvotes: Initial upvote count (defaults to 0)
+  public init(title: String, artist: String, requesterName: String, shazamID: String? = nil, upvotes: Int = 0, upvoters: [String] = [], id: UUID = UUID(), timestamp: Date = Date()) {
+    self.id = id
     self.title = title
     self.artist = artist
     self.requesterName = requesterName
-    self.timestamp = Date()
+    self.timestamp = timestamp
     self.shazamID = shazamID
+    self.upvotes = upvotes
+    self.upvoters = upvoters
   }
 }
