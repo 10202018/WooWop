@@ -12,6 +12,7 @@
 		35DC73752EB326000004A819 /* VideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73742EB326000004A819 /* VideoComposer.swift */; };
 		35DC73772EB326290004A819 /* RecordVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73762EB326290004A819 /* RecordVideoView.swift */; };
 		35DC73792EB3C8E80004A819 /* CameraCaptureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73782EB3C8E80004A819 /* CameraCaptureManager.swift */; };
+		35DC737D2EB403C10004A819 /* RecordVideoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC737C2EB403C10004A819 /* RecordVideoTests.swift */; };
 		35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */; };
 		35F5D9E12E94A44400CD46EA /* ConnectionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */; };
 		35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */; };
@@ -48,6 +49,7 @@
 		35DC73742EB326000004A819 /* VideoComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoComposer.swift; sourceTree = "<group>"; };
 		35DC73762EB326290004A819 /* RecordVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVideoView.swift; sourceTree = "<group>"; };
 		35DC73782EB3C8E80004A819 /* CameraCaptureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraCaptureManager.swift; sourceTree = "<group>"; };
+		35DC737C2EB403C10004A819 /* RecordVideoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordVideoTests.swift; sourceTree = "<group>"; };
 		35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManager.swift; sourceTree = "<group>"; };
 		35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSetupView.swift; sourceTree = "<group>"; };
 		35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJQueueView.swift; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 				359539142EB0587D0034E334 /* QueueMessageTests.swift */,
 				5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */,
 				35DC73722EB318050004A819 /* UpvoteLogicTests.swift */,
+				35DC737C2EB403C10004A819 /* RecordVideoTests.swift */,
 				5BC195C72C6C3C100005C196 /* WooWop.xctestplan */,
 			);
 			path = WooWopTests;
@@ -325,6 +328,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				35DC737D2EB403C10004A819 /* RecordVideoTests.swift in Sources */,
 				5BB5963D2C6AF3E700C4CACF /* WooWopTests.swift in Sources */,
 				35DC73732EB318050004A819 /* UpvoteLogicTests.swift in Sources */,
 				5BB596442C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift in Sources */,
