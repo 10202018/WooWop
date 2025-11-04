@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import UIKit
+import Photos
 
 /// Lightweight camera capture manager used by RecordVideoView.
 /// - Responsibilities:
@@ -149,5 +150,46 @@ extension CameraCapture: AVCaptureFileOutputRecordingDelegate {
 
         // For now simply keep the file URL available. Later we'll hand this to VideoComposer.
         print("Finished recording to: \(outputFileURL.path)")
+        // Attempt to save the recorded movie to the user's Photos library.
+        saveVideoToPhotos(outputFileURL)
+    }
+}
+
+private extension CameraCapture {
+    func saveVideoToPhotos(_ fileURL: URL) {
+        // Small helper to perform the PHAsset creation once we have authorization.
+        let performSave: () -> Void = {
+            PHPhotoLibrary.shared().performChanges({
+                let req = PHAssetCreationRequest.forAsset()
+                req.addResource(with: .video, fileURL: fileURL, options: nil)
+            }, completionHandler: { success, error in
+                if success {
+                    print("Saved video to Photos: \(fileURL.path)")
+                    // Optionally remove the temporary file after a successful save
+                    try? FileManager.default.removeItem(at: fileURL)
+                } else {
+                    print("Failed to save video to Photos: \(String(describing: error))")
+                }
+            })
+        }
+
+        if #available(iOS 14, *) {
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+                switch status {
+                case .authorized, .limited:
+                    performSave()
+                default:
+                    print("Photo library add authorization denied: \(status)")
+                }
+            }
+        } else {
+            PHPhotoLibrary.requestAuthorization { status in
+                if status == .authorized {
+                    performSave()
+                } else {
+                    print("Photo library authorization denied: \(status)")
+                }
+            }
+        }
     }
 }
