@@ -13,6 +13,8 @@ final class CameraCapture: NSObject {
 
     // Notification posted on the main queue after the session has started running.
     static let sessionStartedNotification = Notification.Name("CameraCaptureSessionStarted")
+    // Notification posted when a recording finishes. userInfo["fileURL"] = URL
+    static let recordingFinishedNotification = Notification.Name("CameraCaptureRecordingFinished")
 
     let session = AVCaptureSession()
     private(set) lazy var previewLayer: AVCaptureVideoPreviewLayer = {
@@ -150,12 +152,14 @@ extension CameraCapture: AVCaptureFileOutputRecordingDelegate {
 
         // For now simply keep the file URL available. Later we'll hand this to VideoComposer.
         print("Finished recording to: \(outputFileURL.path)")
-        // Attempt to save the recorded movie to the user's Photos library.
-        saveVideoToPhotos(outputFileURL)
+        // Post a notification so another component (UI) can perform composition
+        // and save the composed result. The notification contains the raw
+        // recorded file URL in userInfo["fileURL"].
+        NotificationCenter.default.post(name: CameraCapture.recordingFinishedNotification, object: nil, userInfo: ["fileURL": outputFileURL])
     }
 }
 
-private extension CameraCapture {
+extension CameraCapture {
     func saveVideoToPhotos(_ fileURL: URL) {
         // Small helper to perform the PHAsset creation once we have authorization.
         let performSave: () -> Void = {
@@ -192,4 +196,9 @@ private extension CameraCapture {
             }
         }
     }
+
+        /// Static wrapper that delegates to the shared instance helper.
+        static func saveVideoToPhotosStatic(_ fileURL: URL) {
+            CameraCapture.shared.saveVideoToPhotos(fileURL)
+        }
 }

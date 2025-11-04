@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import Photos
 
 /// A minimal recording UI that shows the album cover as a movable/zoomable background
 /// and a camera preview overlay. The recording/composition plumbing is delegated to
@@ -20,6 +21,9 @@ struct RecordVideoView: View {
     // Recording state
     @State private var isRecording: Bool = false
     @State private var showPreview: Bool = false
+    // Composition state
+    @State private var isComposing: Bool = false
+    @State private var recordingObserver: NSObjectProtocol?
 
     var body: some View {
         ZStack {
@@ -99,6 +103,64 @@ struct RecordVideoView: View {
         }
         .navigationTitle(title ?? "Record")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            // Observe finished recording and kick off compose+save flow
+            recordingObserver = NotificationCenter.default.addObserver(forName: CameraCapture.recordingFinishedNotification, object: nil, queue: .main) { note in
+                handleRecordingFinished(note)
+            }
+        }
+        .onDisappear {
+            if let obs = recordingObserver {
+                NotificationCenter.default.removeObserver(obs)
+                recordingObserver = nil
+            }
+        }
+        // Simple composing progress overlay
+        .overlay(Group {
+            if isComposing {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                ProgressView("Composing video…")
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 8).fill(Color(.systemBackground)))
+            }
+        })
+    }
+
+    private func handleRecordingFinished(_ notification: Notification) {
+        guard let recordedURL = notification.userInfo?["fileURL"] as? URL else { return }
+        isComposing = true
+
+        func composeWithArtwork(_ artworkImage: UIImage) {
+            let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
+            let out = tempDir.appendingPathComponent("wooWop_composed_\(UUID().uuidString).mov")
+            VideoComposer.compose(cameraVideoURL: recordedURL, artwork: artworkImage, outputURL: out) { result in
+                DispatchQueue.main.async {
+                    isComposing = false
+                }
+                switch result {
+                case .success(let composedURL):
+                    // Save composed movie to Photos
+                    CameraCapture.saveVideoToPhotosStatic(composedURL)
+                    print("Composed video exported: \(composedURL.path)")
+                case .failure(let err):
+                    print("Video composition failed: \(err)")
+                }
+            }
+        }
+
+        // Load artwork image (async). Fall back to a placeholder if unavailable.
+        if let artURL = artworkURL {
+            let task = URLSession.shared.dataTask(with: artURL) { data, _, _ in
+                if let d = data, let img = UIImage(data: d) {
+                    composeWithArtwork(img)
+                } else {
+                    composeWithArtwork(UIImage(systemName: "photo") ?? UIImage())
+                }
+            }
+            task.resume()
+        } else {
+            composeWithArtwork(UIImage(systemName: "photo") ?? UIImage())
+        }
     }
 
     private func toggleRecord() {
