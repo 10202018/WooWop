@@ -31,7 +31,10 @@ public struct VideoComposer {
         do {
             if let compVideoTrack = composition.addMutableTrack(withMediaType: .video, preferredTrackID: kCMPersistentTrackID_Invalid) {
                 try compVideoTrack.insertTimeRange(CMTimeRange(start: .zero, duration: asset.duration), of: videoTrack, at: .zero)
-                compVideoTrack.preferredTransform = videoTrack.preferredTransform
+                // Do NOT set the composition track's preferredTransform here. We'll
+                // apply the correct transform via the layer instruction so the
+                // AVVideoComposition rendering (and CoreAnimation post-processing)
+                // receives the transform consistently.
             }
 
             if let audioTrack = asset.tracks(withMediaType: .audio).first, let compAudioTrack = composition.addMutableTrack(withMediaType: .audio, preferredTrackID: kCMPersistentTrackID_Invalid) {
@@ -48,7 +51,10 @@ public struct VideoComposer {
 
         if let compTrack = composition.tracks(withMediaType: .video).first {
             let layerInstruction = AVMutableVideoCompositionLayerInstruction(assetTrack: compTrack)
-            // Keep original transform so orientation is preserved
+            // Apply the original video track's preferredTransform here so the
+            // video is rotated/scaled correctly for presentation. We intentionally
+            // avoid setting the composition track's preferredTransform above to
+            // keep this logic in one place.
             layerInstruction.setTransform(videoTrack.preferredTransform, at: .zero)
             instruction.layerInstructions = [layerInstruction]
         }
@@ -69,14 +75,27 @@ public struct VideoComposer {
             artworkLayer.contents = cg
         }
 
-        let videoLayer = CALayer()
-        // PIP width is 35% of render width
-        let pipWidth = renderSize.width * 0.35
-        let videoAspect = abs(videoTrack.naturalSize.height / videoTrack.naturalSize.width)
-        let pipHeight = pipWidth * videoAspect
-        let margin: CGFloat = 24
-        videoLayer.frame = CGRect(x: renderSize.width - pipWidth - margin, y: renderSize.height - pipHeight - margin, width: pipWidth, height: pipHeight)
-        videoLayer.masksToBounds = true
+    let videoLayer = CALayer()
+    // Preserve aspect and avoid stretch: compute the video natural size after
+    // applying the track transform (this matches renderSize computation above).
+    let transformedVideoSize = CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
+    // PIP width is 35% of render width
+    let pipWidth = renderSize.width * 0.35
+    let videoAspect = transformedVideoSize.height / transformedVideoSize.width
+    let pipHeight = pipWidth * videoAspect
+    let margin: CGFloat = 24
+
+    // Use resizeAspect so the video content isn't stretched to fill the layer
+    videoLayer.contentsGravity = .resizeAspect
+    // Flip geometry to match CoreAnimation/video coordinate space so y-origin
+    // aligns with the expected top/bottom placement. With geometryFlipped = true
+    // we position using a y-margin from the top of the render surface.
+        videoLayer.isGeometryFlipped = true
+
+    // Place the PIP in the lower-right visually by using y = margin when
+    // geometryFlipped is true (coordinate system aligned for video compositing).
+    videoLayer.frame = CGRect(x: renderSize.width - pipWidth - margin, y: margin, width: pipWidth, height: pipHeight)
+    videoLayer.masksToBounds = true
 
         parentLayer.addSublayer(artworkLayer)
         parentLayer.addSublayer(videoLayer)
