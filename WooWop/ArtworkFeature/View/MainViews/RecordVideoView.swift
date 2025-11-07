@@ -18,6 +18,13 @@ struct RecordVideoView: View {
     @State private var lastScale: CGFloat = 1.0
     @State private var lastOffset: CGSize = .zero
 
+    // PIP interactive state (position & scale)
+    @State private var pipOffset: CGSize = .zero
+    @State private var pipLastOffset: CGSize = .zero
+    @State private var pipScale: CGFloat = 1.0
+    @State private var pipLastScale: CGFloat = 1.0
+    @State private var canvasSize: CGSize = .zero
+
     // Recording state
     @State private var isRecording: Bool = false
     @State private var showPreview: Bool = false
@@ -58,18 +65,27 @@ struct RecordVideoView: View {
                 }
             }
 
-            // Camera preview as a smaller overlay (PIP)
-            VStack {
-                Spacer()
+            // Camera preview as a movable/scalable overlay (PIP)
+            GeometryReader { geo in
+                // capture canvas size for normalized rect calculation
+                Color.clear.onAppear { canvasSize = geo.size }
+                Color.clear.onChange(of: geo.size) { new in canvasSize = new }
 
-                HStack {
-                    Spacer()
-                    CameraPreviewView()
-                        .frame(width: 160, height: 240)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(radius: 6)
-                        .padding()
-                }
+                // compute base PIP size and initial anchored center (lower-right)
+                let baseSize = CGSize(width: 160, height: 240)
+                let margin: CGFloat = 24
+                let initialCenterX = geo.size.width - margin - baseSize.width / 2
+                let initialCenterY = geo.size.height - margin - baseSize.height / 2
+
+                CameraPreviewView()
+                    .frame(width: baseSize.width, height: baseSize.height)
+                    .scaleEffect(pipScale)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(radius: 6)
+                    .position(x: initialCenterX + pipOffset.width, y: initialCenterY + pipOffset.height)
+                    .gesture(dragPIPGesture())
+                    .gesture(magnifyPIPGesture())
+                    .padding()
             }
 
             // Controls
@@ -133,7 +149,27 @@ struct RecordVideoView: View {
         func composeWithArtwork(_ artworkImage: UIImage) {
             let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             let out = tempDir.appendingPathComponent("wooWop_composed_\(UUID().uuidString).mov")
-            VideoComposer.compose(cameraVideoURL: recordedURL, artwork: artworkImage, outputURL: out) { result in
+            // Compute normalized PIP rect from current interactive state (if we have a canvas size)
+            var normRect: CGRect? = nil
+            if canvasSize.width > 0 && canvasSize.height > 0 {
+                let baseSize = CGSize(width: 160, height: 240)
+                let currentWidth = baseSize.width * pipScale
+                let currentHeight = baseSize.height * pipScale
+                let margin: CGFloat = 24
+                let initialCenterX = canvasSize.width - margin - baseSize.width / 2
+                let initialCenterY = canvasSize.height - margin - baseSize.height / 2
+                let centerX = initialCenterX + pipOffset.width
+                let centerY = initialCenterY + pipOffset.height
+                let originX = centerX - (currentWidth / 2)
+                let originY = centerY - (currentHeight / 2)
+                let nx = originX / canvasSize.width
+                let ny = originY / canvasSize.height
+                let nw = currentWidth / canvasSize.width
+                let nh = currentHeight / canvasSize.height
+                normRect = CGRect(x: max(0, nx), y: max(0, ny), width: max(0, nw), height: max(0, nh))
+            }
+
+            VideoComposer.compose(cameraVideoURL: recordedURL, artwork: artworkImage, outputURL: out, pipRectNormalized: normRect) { result in
                 DispatchQueue.main.async {
                     isComposing = false
                 }
@@ -211,6 +247,27 @@ struct RecordVideoView: View {
             }
             .onEnded { _ in
                 lastScale = scale
+            }
+    }
+
+    // MARK: - PIP gestures
+    private func dragPIPGesture() -> some Gesture {
+        DragGesture()
+            .onChanged { value in
+                pipOffset = CGSize(width: pipLastOffset.width + value.translation.width, height: pipLastOffset.height + value.translation.height)
+            }
+            .onEnded { _ in
+                pipLastOffset = pipOffset
+            }
+    }
+
+    private func magnifyPIPGesture() -> some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                pipScale = pipLastScale * value
+            }
+            .onEnded { _ in
+                pipLastScale = pipScale
             }
     }
 }

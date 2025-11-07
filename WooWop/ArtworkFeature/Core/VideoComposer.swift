@@ -14,7 +14,11 @@ public struct VideoComposer {
     ///   - artwork: UIImage used as the background.
     ///   - outputURL: Destination file URL for the composed video.
     ///   - completion: Called on the main queue with the composed file URL or an error.
-    public static func compose(cameraVideoURL: URL, artwork: UIImage, outputURL: URL, completion: @escaping (Result<URL, Error>) -> Void) {
+    /// - Parameters:
+    ///   - pipRectNormalized: Optional CGRect in normalized coordinates (0..1) relative to
+    ///     the artwork/render size specifying where the camera PIP should be placed and
+    ///     how large it should be. If nil, a default lower-right PIP is used.
+    public static func compose(cameraVideoURL: URL, artwork: UIImage, outputURL: URL, pipRectNormalized: CGRect? = nil, completion: @escaping (Result<URL, Error>) -> Void) {
         let asset = AVAsset(url: cameraVideoURL)
 
         // Ensure the recorded asset has a video track. If the provided file isn't
@@ -78,9 +82,9 @@ public struct VideoComposer {
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.renderSize = renderSize
 
-        // Core Animation layers: artwork as background, video as PIP
-        let parentLayer = CALayer()
-        parentLayer.frame = CGRect(origin: .zero, size: renderSize)
+    // Core Animation layers: artwork as background, video as PIP
+    let parentLayer = CALayer()
+    parentLayer.frame = CGRect(origin: .zero, size: renderSize)
 
         let artworkLayer = CALayer()
         artworkLayer.frame = parentLayer.bounds
@@ -89,27 +93,32 @@ public struct VideoComposer {
             artworkLayer.contents = cg
         }
 
-    let videoLayer = CALayer()
-    // Preserve aspect and avoid stretch: compute the video natural size after
-    // applying the track transform (this matches renderSize computation above).
-    let transformedVideoSize = CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
-    // PIP width is 35% of render width
-    let pipWidth = renderSize.width * 0.35
-    let videoAspect = transformedVideoSize.height / transformedVideoSize.width
-    let pipHeight = pipWidth * videoAspect
-    let margin: CGFloat = 24
+        let videoLayer = CALayer()
+        // Preserve aspect and avoid stretch: compute the video natural size after
+        // applying the track transform (this matches renderSize computation above).
+        let transformedVideoSize = CGSize(width: abs(transformedSize.width), height: abs(transformedSize.height))
+        let videoAspect = transformedVideoSize.height / transformedVideoSize.width
 
-    // Use resizeAspect so the video content isn't stretched to fill the layer
-    videoLayer.contentsGravity = .resizeAspect
-    // Flip geometry to match CoreAnimation/video coordinate space so y-origin
-    // aligns with the expected top/bottom placement. With geometryFlipped = true
-    // we position using a y-margin from the top of the render surface.
-        videoLayer.isGeometryFlipped = true
+        // Default PIP: 35% width, lower-right with margin. If a normalized rect is
+        // supplied by the UI, use that to compute the frame directly.
+        let margin: CGFloat = 24
+        if let norm = pipRectNormalized {
+            // Clamp normalized rect
+            let nx = max(0.0, min(1.0, norm.origin.x))
+            let ny = max(0.0, min(1.0, norm.origin.y))
+            let nw = max(0.0, min(1.0, norm.size.width))
+            let nh = max(0.0, min(1.0, norm.size.height))
+            let frame = CGRect(x: nx * renderSize.width, y: ny * renderSize.height, width: max(1.0, nw * renderSize.width), height: max(1.0, nh * renderSize.height))
+            videoLayer.frame = frame
+        } else {
+            let pipWidth = renderSize.width * 0.35
+            let pipHeight = pipWidth * videoAspect
+            videoLayer.frame = CGRect(x: renderSize.width - pipWidth - margin, y: renderSize.height - pipHeight - margin, width: pipWidth, height: pipHeight)
+        }
 
-    // Place the PIP in the lower-right visually by using y = margin when
-    // geometryFlipped is true (coordinate system aligned for video compositing).
-    videoLayer.frame = CGRect(x: renderSize.width - pipWidth - margin, y: margin, width: pipWidth, height: pipHeight)
-    videoLayer.masksToBounds = true
+        // Ensure the video content preserves its aspect ratio inside the layer
+        videoLayer.contentsGravity = .resizeAspect
+        videoLayer.masksToBounds = true
 
         parentLayer.addSublayer(artworkLayer)
         parentLayer.addSublayer(videoLayer)
