@@ -18,7 +18,7 @@ public struct VideoComposer {
     ///   - pipRectNormalized: Optional CGRect in normalized coordinates (0..1) relative to
     ///     the artwork/render size specifying where the camera PIP should be placed and
     ///     how large it should be. If nil, a default lower-right PIP is used.
-    public static func compose(cameraVideoURL: URL, artwork: UIImage, outputURL: URL, pipRectNormalized: CGRect? = nil, completion: @escaping (Result<URL, Error>) -> Void) {
+    public static func compose(cameraVideoURL: URL, artwork: UIImage, outputURL: URL, pipRectNormalized: CGRect? = nil, pipKeyframes: [(time: TimeInterval, rect: CGRect)]? = nil, completion: @escaping (Result<URL, Error>) -> Void) {
         let asset = AVAsset(url: cameraVideoURL)
 
         // Ensure the recorded asset has a video track. If the provided file isn't
@@ -85,6 +85,8 @@ public struct VideoComposer {
     // Core Animation layers: artwork as background, video as PIP
     let parentLayer = CALayer()
     parentLayer.frame = CGRect(origin: .zero, size: renderSize)
+    // Flip geometry so CoreAnimation coordinates align with UIKit-like origin (0,0) top-left
+    parentLayer.isGeometryFlipped = true
 
         let artworkLayer = CALayer()
         artworkLayer.frame = parentLayer.bounds
@@ -100,9 +102,100 @@ public struct VideoComposer {
         let videoAspect = transformedVideoSize.height / transformedVideoSize.width
 
         // Default PIP: 35% width, lower-right with margin. If a normalized rect is
-        // supplied by the UI, use that to compute the frame directly.
+        // supplied by the UI, use that to compute the frame directly. If a set of
+        // keyframes was supplied (time + normalized rect), animate the videoLayer
+        // across those keyframes so the exported movie follows the live PIP motion.
         let margin: CGFloat = 24
-        if let norm = pipRectNormalized {
+        if let keyframes = pipKeyframes, let first = keyframes.first {
+            // Build keyframe animation for the combined transform (translate+scale).
+            // Using a single 'transform' animation is more robust when exporting
+            // with AVVideoCompositionCoreAnimationTool than animating position+bounds
+            // separately.
+            let durationSeconds = CMTimeGetSeconds(asset.duration)
+            // Compute frames for each keyframe
+            var times: [NSNumber] = []
+            var transformValues: [NSValue] = []
+
+            // Ensure we include a keyframe at t=0 and at the end of the clip
+            var frames = keyframes
+            if frames.first?.time ?? 0.0 > 0.0, let rect0 = pipRectNormalized {
+                frames.insert((time: 0.0, rect: rect0), at: 0)
+            }
+            if let last = frames.last, durationSeconds.isFinite && last.time < durationSeconds {
+                frames.append((time: durationSeconds, rect: last.rect))
+            }
+
+            for kf in frames {
+                let nx = max(0.0, min(1.0, kf.rect.origin.x))
+                let ny = max(0.0, min(1.0, kf.rect.origin.y))
+                let nw = max(0.0, min(1.0, kf.rect.size.width))
+                let nh = max(0.0, min(1.0, kf.rect.size.height))
+                let frame = CGRect(x: nx * renderSize.width, y: ny * renderSize.height, width: max(1.0, nw * renderSize.width), height: max(1.0, nh * renderSize.height))
+                let tnorm = durationSeconds > 0 ? kf.time / durationSeconds : 0
+                times.append(NSNumber(value: tnorm))
+                // store the actual frame rect as an NSValue – we'll build transforms later
+                transformValues.append(NSValue(cgRect: frame))
+            }
+
+            // Build transform keyframes. We'll use the first frame as the base
+            // (initial bounds/position) and compute CATransform3D values that
+            // translate and scale the layer to each keyframe frame.
+            if let baseFrame = transformValues.first?.cgRectValue {
+                // Set videoLayer to base frame
+                videoLayer.frame = baseFrame
+
+                // Prepare transform keyframe values
+                var tfValues: [NSValue] = []
+                // Debug: capture computed frames and times for inspection
+                #if DEBUG
+                struct _KF: Codable { var time: Double; var normRect: CGRect; var frame: CGRect }
+                var _debugKFs: [_KF] = []
+                for (i, v) in transformValues.enumerated() {
+                    let frame = v.cgRectValue
+                    let t = times.indices.contains(i) ? times[i].doubleValue : 0.0
+                    _debugKFs.append(_KF(time: t, normRect: frames[i].rect, frame: frame))
+                }
+                if let data = try? JSONEncoder().encode(_debugKFs) {
+                    let path = "/tmp/wooWop_pip_keyframes_\(UUID().uuidString).json"
+                    try? data.write(to: URL(fileURLWithPath: path))
+                    print("[VideoComposer] wrote pip keyframes debug to \(path)")
+                }
+                #endif
+                for v in transformValues {
+                    let frame = v.cgRectValue
+                    // Compute scale relative to base
+                    let sx = frame.width / baseFrame.width
+                    let sy = frame.height / baseFrame.height
+                    let tx = frame.midX - baseFrame.midX
+                    let ty = frame.midY - baseFrame.midY
+                    var t = CATransform3DIdentity
+                    t = CATransform3DTranslate(t, tx, ty, 0)
+                    t = CATransform3DScale(t, sx, sy, 1.0)
+                    tfValues.append(NSValue(caTransform3D: t))
+                }
+
+                if tfValues.count > 1 {
+                    let transformAnim = CAKeyframeAnimation(keyPath: "transform")
+                    transformAnim.values = tfValues
+                    transformAnim.keyTimes = times
+                    // Align CoreAnimation timing with AVAsset timeline so the
+                    // exporter samples the animation over the movie duration.
+                    // AVCoreAnimationBeginTimeAtZero makes the animation start at
+                    // the beginning of the exported asset timeline.
+                    transformAnim.beginTime = AVCoreAnimationBeginTimeAtZero
+                    transformAnim.duration = durationSeconds
+                    transformAnim.isRemovedOnCompletion = false
+                    transformAnim.fillMode = .forwards
+                    transformAnim.calculationMode = .linear
+                    videoLayer.add(transformAnim, forKey: "pip.transform")
+                }
+            } else {
+                // fallback: set a default frame
+                let pipWidth = renderSize.width * 0.35
+                let pipHeight = pipWidth * videoAspect
+                videoLayer.frame = CGRect(x: renderSize.width - pipWidth - margin, y: renderSize.height - pipHeight - margin, width: pipWidth, height: pipHeight)
+            }
+        } else if let norm = pipRectNormalized {
             // Clamp normalized rect
             let nx = max(0.0, min(1.0, norm.origin.x))
             let ny = max(0.0, min(1.0, norm.origin.y))
