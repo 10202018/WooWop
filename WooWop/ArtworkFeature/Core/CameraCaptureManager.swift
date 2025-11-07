@@ -1,6 +1,7 @@
 import Foundation
 import AVFoundation
 import UIKit
+import Photos
 
 /// Lightweight camera capture manager used by RecordVideoView.
 /// - Responsibilities:
@@ -12,6 +13,8 @@ final class CameraCapture: NSObject {
 
     // Notification posted on the main queue after the session has started running.
     static let sessionStartedNotification = Notification.Name("CameraCaptureSessionStarted")
+    // Notification posted when a recording finishes. userInfo["fileURL"] = URL
+    static let recordingFinishedNotification = Notification.Name("CameraCaptureRecordingFinished")
 
     let session = AVCaptureSession()
     private(set) lazy var previewLayer: AVCaptureVideoPreviewLayer = {
@@ -149,5 +152,53 @@ extension CameraCapture: AVCaptureFileOutputRecordingDelegate {
 
         // For now simply keep the file URL available. Later we'll hand this to VideoComposer.
         print("Finished recording to: \(outputFileURL.path)")
+        // Post a notification so another component (UI) can perform composition
+        // and save the composed result. The notification contains the raw
+        // recorded file URL in userInfo["fileURL"].
+        NotificationCenter.default.post(name: CameraCapture.recordingFinishedNotification, object: nil, userInfo: ["fileURL": outputFileURL])
     }
+}
+
+extension CameraCapture {
+    func saveVideoToPhotos(_ fileURL: URL) {
+        // Small helper to perform the PHAsset creation once we have authorization.
+        let performSave: () -> Void = {
+            PHPhotoLibrary.shared().performChanges({
+                let req = PHAssetCreationRequest.forAsset()
+                req.addResource(with: .video, fileURL: fileURL, options: nil)
+            }, completionHandler: { success, error in
+                if success {
+                    print("Saved video to Photos: \(fileURL.path)")
+                    // Optionally remove the temporary file after a successful save
+                    try? FileManager.default.removeItem(at: fileURL)
+                } else {
+                    print("Failed to save video to Photos: \(String(describing: error))")
+                }
+            })
+        }
+
+        if #available(iOS 14, *) {
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
+                switch status {
+                case .authorized, .limited:
+                    performSave()
+                default:
+                    print("Photo library add authorization denied: \(status)")
+                }
+            }
+        } else {
+            PHPhotoLibrary.requestAuthorization { status in
+                if status == .authorized {
+                    performSave()
+                } else {
+                    print("Photo library authorization denied: \(status)")
+                }
+            }
+        }
+    }
+
+        /// Static wrapper that delegates to the shared instance helper.
+        static func saveVideoToPhotosStatic(_ fileURL: URL) {
+            CameraCapture.shared.saveVideoToPhotos(fileURL)
+        }
 }
