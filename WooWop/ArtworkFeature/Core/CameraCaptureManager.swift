@@ -15,6 +15,8 @@ final class CameraCapture: NSObject {
     static let sessionStartedNotification = Notification.Name("CameraCaptureSessionStarted")
     // Notification posted when a recording finishes. userInfo["fileURL"] = URL
     static let recordingFinishedNotification = Notification.Name("CameraCaptureRecordingFinished")
+    // Notification posted when a recording actually begins. userInfo["fileURL"] = URL (may be writable nil until the file is created)
+    static let recordingStartedNotification = Notification.Name("CameraCaptureRecordingStarted")
 
     let session = AVCaptureSession()
     private(set) lazy var previewLayer: AVCaptureVideoPreviewLayer = {
@@ -144,6 +146,14 @@ final class CameraCapture: NSObject {
 }
 
 extension CameraCapture: AVCaptureFileOutputRecordingDelegate {
+    func fileOutput(_ output: AVCaptureFileOutput, didStartRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection]) {
+        // Notify observers that recording has started on the file URL. Post on main queue
+        DispatchQueue.main.async {
+            print("Recording started to: \(outputFileURL.path)")
+            NotificationCenter.default.post(name: CameraCapture.recordingStartedNotification, object: nil, userInfo: ["fileURL": outputFileURL])
+        }
+    }
+
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         if let error = error {
             print("Recording error: \(error)")

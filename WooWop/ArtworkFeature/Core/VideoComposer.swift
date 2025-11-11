@@ -112,67 +112,104 @@ public struct VideoComposer {
             // with AVVideoCompositionCoreAnimationTool than animating position+bounds
             // separately.
             let durationSeconds = CMTimeGetSeconds(asset.duration)
-            // Compute frames for each keyframe
+            // Compute frames for each keyframe. Sort keyframes by time to ensure
+            // strictly increasing sampling times (prevents CA/SwiftUI "invalid
+            // sample" runtime errors when times are out of order).
             var times: [NSNumber] = []
             var transformValues: [NSValue] = []
 
-            // Ensure we include a keyframe at t=0 and at the end of the clip
-            var frames = keyframes
-            if frames.first?.time ?? 0.0 > 0.0, let rect0 = pipRectNormalized {
+            // Each keyframe includes (time, rect)
+            var frames = keyframes.sorted { $0.time < $1.time }
+
+            // If the first keyframe is after t=0 and we have a default rect, insert t=0
+            if let firstKF = frames.first, firstKF.time > 0.0, let rect0 = pipRectNormalized {
+                // Insert a t=0 keyframe using the provided normalized rect
                 frames.insert((time: 0.0, rect: rect0), at: 0)
             }
+
+            // Ensure final keyframe reaches the clip duration
             if let last = frames.last, durationSeconds.isFinite && last.time < durationSeconds {
                 frames.append((time: durationSeconds, rect: last.rect))
             }
 
+            // Build normalized keyTimes and rect frames, clamping and guaranteeing
+            // monotonic non-decreasing times. If duplicates are present, we bump
+            // later times by a tiny epsilon so CAKeyframeAnimation gets strictly
+            // increasing keyTimes.
+            let epsilon = 1e-6
+            var previousT: Double = -Double.greatestFiniteMagnitude
             for kf in frames {
+                let clampedTime = max(0.0, min(durationSeconds, kf.time))
+                var tnorm = durationSeconds > 0 ? clampedTime / durationSeconds : 0
+                if tnorm <= previousT {
+                    tnorm = previousT + epsilon
+                }
+                previousT = tnorm
+
                 let nx = max(0.0, min(1.0, kf.rect.origin.x))
                 let ny = max(0.0, min(1.0, kf.rect.origin.y))
                 let nw = max(0.0, min(1.0, kf.rect.size.width))
                 let nh = max(0.0, min(1.0, kf.rect.size.height))
                 let frame = CGRect(x: nx * renderSize.width, y: ny * renderSize.height, width: max(1.0, nw * renderSize.width), height: max(1.0, nh * renderSize.height))
-                let tnorm = durationSeconds > 0 ? kf.time / durationSeconds : 0
+
                 times.append(NSNumber(value: tnorm))
-                // store the actual frame rect as an NSValue – we'll build transforms later
                 transformValues.append(NSValue(cgRect: frame))
             }
 
             // Build transform keyframes. We'll use the first frame as the base
             // (initial bounds/position) and compute CATransform3D values that
             // translate and scale the layer to each keyframe frame.
-            if let baseFrame = transformValues.first?.cgRectValue {
-                // Set videoLayer to base frame
-                videoLayer.frame = baseFrame
+                if let firstFrame = transformValues.first?.cgRectValue {
+                    // Instead of using the first keyframe rect as the layer's
+                    // intrinsic size, set the layer's bounds to the video's
+                    // intrinsic pixel size (transformedVideoSize) and position
+                    // it at the center of the first keyframe. This lets us
+                    // compute transforms that scale the video content from its
+                    // natural size into each target frame consistently no
+                    // matter how the window was resized earlier in the clip.
+                    let intrinsicSize = transformedVideoSize
 
-                // Prepare transform keyframe values
-                var tfValues: [NSValue] = []
-                // Debug: capture computed frames and times for inspection
-                #if DEBUG
-                struct _KF: Codable { var time: Double; var normRect: CGRect; var frame: CGRect }
-                var _debugKFs: [_KF] = []
-                for (i, v) in transformValues.enumerated() {
-                    let frame = v.cgRectValue
-                    let t = times.indices.contains(i) ? times[i].doubleValue : 0.0
-                    _debugKFs.append(_KF(time: t, normRect: frames[i].rect, frame: frame))
-                }
-                if let data = try? JSONEncoder().encode(_debugKFs) {
-                    let path = "/tmp/wooWop_pip_keyframes_\(UUID().uuidString).json"
-                    try? data.write(to: URL(fileURLWithPath: path))
-                    print("[VideoComposer] wrote pip keyframes debug to \(path)")
-                }
-                #endif
-                for v in transformValues {
-                    let frame = v.cgRectValue
-                    // Compute scale relative to base
-                    let sx = frame.width / baseFrame.width
-                    let sy = frame.height / baseFrame.height
-                    let tx = frame.midX - baseFrame.midX
-                    let ty = frame.midY - baseFrame.midY
-                    var t = CATransform3DIdentity
-                    t = CATransform3DTranslate(t, tx, ty, 0)
-                    t = CATransform3DScale(t, sx, sy, 1.0)
-                    tfValues.append(NSValue(caTransform3D: t))
-                }
+                    // Position the layer at the center of the first keyframe
+                    let baseCenter = CGPoint(x: firstFrame.midX, y: firstFrame.midY)
+                    videoLayer.bounds = CGRect(origin: .zero, size: intrinsicSize)
+                    videoLayer.position = baseCenter
+
+                    // Prepare transform keyframe values
+                    var tfValues: [NSValue] = []
+                    // Debug: capture computed frames and times for inspection
+                    #if DEBUG
+                    struct _KF: Codable { var time: Double; var normRect: CGRect; var frame: CGRect }
+                    var _debugKFs: [_KF] = []
+                    for (i, v) in transformValues.enumerated() {
+                        let frame = v.cgRectValue
+                        let t = times.indices.contains(i) ? times[i].doubleValue : 0.0
+                        _debugKFs.append(_KF(time: t, normRect: frames[i].rect, frame: frame))
+                    }
+                    if let data = try? JSONEncoder().encode(_debugKFs) {
+                        let path = "/tmp/wooWop_pip_keyframes_\(UUID().uuidString).json"
+                        try? data.write(to: URL(fileURLWithPath: path))
+                        print("[VideoComposer] wrote pip keyframes debug to \(path)")
+                    }
+                    #endif
+
+                    for v in transformValues {
+                        let frame = v.cgRectValue
+                        // Compute a uniform scale so the video preserves aspect
+                        // ratio. Use the larger scale (max) to fill the target
+                        // frame (matching resizeAspectFill behavior) so the
+                        // content will be cropped if needed instead of stretched.
+                        let sx = frame.width / intrinsicSize.width
+                        let sy = frame.height / intrinsicSize.height
+                        let uniformScale = max(sx, sy)
+
+                        // Translate from baseCenter to target center
+                        let tx = frame.midX - baseCenter.x
+                        let ty = frame.midY - baseCenter.y
+                        var t = CATransform3DIdentity
+                        t = CATransform3DTranslate(t, tx, ty, 0)
+                        t = CATransform3DScale(t, uniformScale, uniformScale, 1.0)
+                        tfValues.append(NSValue(caTransform3D: t))
+                    }
 
                 if tfValues.count > 1 {
                     let transformAnim = CAKeyframeAnimation(keyPath: "transform")
@@ -209,8 +246,12 @@ public struct VideoComposer {
             videoLayer.frame = CGRect(x: renderSize.width - pipWidth - margin, y: renderSize.height - pipHeight - margin, width: pipWidth, height: pipHeight)
         }
 
-        // Ensure the video content preserves its aspect ratio inside the layer
-        videoLayer.contentsGravity = .resizeAspect
+    // Ensure the video content preserves its aspect ratio inside the layer
+    // Use resizeAspectFill so the preview (which uses resizeAspectFill) and
+    // exported content match behavior (fill the PIP window and crop as
+    // needed). We'll use a uniform scale when animating so the video is
+    // not distorted.
+    videoLayer.contentsGravity = .resizeAspectFill
         videoLayer.masksToBounds = true
 
         parentLayer.addSublayer(artworkLayer)

@@ -105,7 +105,7 @@ final class VideoComposerKeyframeTests: XCTestCase {
 
         let exp = expectation(description: "compose")
 
-        VideoComposer.compose(cameraVideoURL: cameraURL, artwork: artwork, outputURL: outputURL, pipRectNormalized: nil, pipKeyframes: keyframes) { result in
+    VideoComposer.compose(cameraVideoURL: cameraURL, artwork: artwork, outputURL: outputURL, pipRectNormalized: nil, pipKeyframes: keyframes) { result in
             switch result {
             case .success(let url):
                 XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
