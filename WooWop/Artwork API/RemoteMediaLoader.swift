@@ -63,6 +63,38 @@ public class RemoteMediaLoader: MediaLoader {
       return LoadMediaResult.error(error)
     }
   }
+
+  /// Performs a simple text-based search using the iTunes Search API as a fallback
+  /// when a direct Shazam text search isn't available. Maps results to `MediaItem`.
+  ///
+  /// - Parameter term: The search term to query for
+  /// - Returns: LoadMediaResult with matches or noMatch/error
+  public func search(term: String) async -> LoadMediaResult {
+    guard let encoded = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), let url = URL(string: "https://itunes.apple.com/search?term=\(encoded)&entity=song&limit=25") else {
+      return LoadMediaResult.noMatch
+    }
+
+    do {
+      let (data, _) = try await URLSession.shared.data(from: url)
+      struct ITunesResponse: Decodable {
+        struct ITunesItem: Decodable {
+          let trackName: String?
+          let artistName: String?
+          let artworkUrl100: String?
+        }
+        let results: [ITunesItem]
+      }
+
+      let resp = try JSONDecoder().decode(ITunesResponse.self, from: data)
+      let items: [MediaItem] = resp.results.compactMap { it in
+        guard let artwork = it.artworkUrl100, let artURL = URL(string: artwork) else { return nil }
+        return MediaItem(artworkURL: artURL, title: it.trackName, artist: it.artistName, shazamID: nil)
+      }
+      return items.isEmpty ? LoadMediaResult.noMatch : LoadMediaResult.match(items)
+    } catch {
+      return LoadMediaResult.error(error)
+    }
+  }
 }
 
 /// Extension providing conversion from RemoteMediaItem to MediaItem.

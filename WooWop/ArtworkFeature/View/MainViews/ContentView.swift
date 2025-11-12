@@ -25,6 +25,12 @@ struct ContentView: View {
   
   /// Currently identified media item with artwork and metadata
   @State private var mediaItem: MediaItem?
+  /// The list of search results returned from Shazam
+  @State private var searchResults: [MediaItem] = []
+  /// Controls showing the search results sheet
+  @State private var showingSearchResults = false
+  /// Controls showing the search input sheet
+  @State private var showingSearchInput = false
   
   /// User rating for the current song (currently unused)
   @State private var rating: Int = 1
@@ -125,7 +131,8 @@ struct ContentView: View {
               Image(systemName: "video")
             }
           }
-          
+
+          // Existing quick-identify button (unchanged behavior)
           Button {
             Task {
               try await getMediaItem()
@@ -133,12 +140,51 @@ struct ContentView: View {
           } label: {
             Image(systemName: "music.note")
           }
+
+          // New dedicated "Find" button that presents a text search input
+          Button {
+            showingSearchInput = true
+          } label: {
+            Image(systemName: "magnifyingglass")
+          }
         }
       }
       .sheet(isPresented: $showingSongRequest) {
         if let mediaItem = mediaItem {
           NavigationView {
             SongRequestView(mediaItem: mediaItem, multipeerManager: multipeerManager)
+          }
+        }
+      }
+      .sheet(isPresented: $showingSearchResults) {
+        SearchResultsView(results: searchResults, multipeerManager: multipeerManager) { selected in
+          // When the user selects an item from search results, set it as current mediaItem
+          self.mediaItem = selected
+          self.showingSearchResults = false
+          self.showingSongRequest = true
+        }
+      }
+      .sheet(isPresented: $showingSearchInput) {
+        // Show a text input sheet; onSearch will call the RemoteMediaLoader.search(term:)
+        SearchInputView { term in
+          if let remote = mediaLoader as? RemoteMediaLoader {
+            let result = await remote.search(term: term)
+            switch result {
+            case .match(let items):
+              self.searchResults = items
+              self.showingSearchResults = true
+            case .noMatch:
+              self.searchResults = []
+              self.showingSearchResults = true
+            case .error(let error):
+              print("Search error: \(error)")
+              self.searchResults = []
+              self.showingSearchResults = true
+            }
+          } else {
+            // mediaLoader doesn't support text search; no-op
+            self.searchResults = []
+            self.showingSearchResults = true
           }
         }
       }
@@ -185,6 +231,29 @@ struct ContentView: View {
       showProgress.toggle()
     }
     
+  }
+
+  /// Loads media items from the media loader and presents the results for user selection.
+  func getMediaItems() async throws {
+    showProgress.toggle()
+    do {
+      let result = try await mediaLoader.loadMedia()
+      switch result {
+      case .match(let mediaItems):
+        // Present the list of matches so the user may choose which to request
+        self.searchResults = mediaItems
+        self.showingSearchResults = true
+      case .noMatch:
+        self.searchResults = []
+      case .error(let error):
+        print(error)
+        self.searchResults = []
+      }
+      showProgress.toggle()
+    } catch(let error) {
+      print(error)
+      showProgress.toggle()
+    }
   }
 }
 
