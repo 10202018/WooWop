@@ -186,6 +186,13 @@ struct ContentView: View {
             self.searchResults = []
             self.showingSearchResults = true
           }
+        }, onSelect: { item in
+          // When a suggestion is tapped, directly set the media item and present the song request UI
+          await MainActor.run {
+            self.mediaItem = item
+            self.showingSearchResults = false
+            self.showingSongRequest = true
+          }
         }, suggestionProvider: { term in
           // Provide live suggestions by reusing the RemoteMediaLoader.text search fallback
           if let remote = mediaLoader as? RemoteMediaLoader {

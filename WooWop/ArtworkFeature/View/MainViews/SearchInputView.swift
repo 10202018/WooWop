@@ -12,6 +12,10 @@ struct SearchInputView: View {
     /// Called when the user taps the Search button (final commit).
     var onSearch: (String) async -> Void
 
+    /// Optional callback invoked when the user taps a suggestion directly.
+    /// If provided, the suggestion tap will call this and will not call `onSearch`.
+    var onSelect: ((MediaItem) async -> Void)? = nil
+
     /// Optional provider used for live suggestions while typing.
     /// Should return `[MediaItem]` for the given partial query.
     var suggestionProvider: ((String) async -> [MediaItem])? = nil
@@ -37,9 +41,18 @@ struct SearchInputView: View {
                     // show a scrollable list of suggestions (no hard limit)
                     List(suggestions, id: \.artworkURL) { item in
                         Button(action: {
-                            // populate the field with the suggestion and commit a search
-                            query = (item.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                            // If a direct select handler is provided, call it and avoid the SearchResults flow.
                             Task {
+                                if let select = onSelect {
+                                    isSearching = true
+                                    await select(item)
+                                    isSearching = false
+                                    dismiss()
+                                    return
+                                }
+
+                                // populate the field with the suggestion and commit a search
+                                query = (item.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
                                 isSearching = true
                                 await onSearch(query)
                                 isSearching = false
