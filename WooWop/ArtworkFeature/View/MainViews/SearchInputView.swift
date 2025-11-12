@@ -34,8 +34,8 @@ struct SearchInputView: View {
                 }
 
                 if !suggestions.isEmpty {
-                    // show a compact list of suggestions
-                    List(suggestions.prefix(8), id: \.artworkURL) { item in
+                    // show a scrollable list of suggestions (no hard limit)
+                    List(suggestions, id: \.artworkURL) { item in
                         Button(action: {
                             // populate the field with the suggestion and commit a search
                             query = (item.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -75,10 +75,12 @@ struct SearchInputView: View {
                         }
                     }
                     .listStyle(.plain)
+                    // allow the list to expand to fill remaining sheet space
+                    .frame(maxHeight: .infinity)
                 }
-
-                Spacer()
+                // removed Spacer so the suggestions List can expand to fill the sheet
             }
+            .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Find Song")
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

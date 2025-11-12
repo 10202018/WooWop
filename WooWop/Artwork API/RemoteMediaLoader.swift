@@ -70,7 +70,7 @@ public class RemoteMediaLoader: MediaLoader {
   /// - Parameter term: The search term to query for
   /// - Returns: LoadMediaResult with matches or noMatch/error
   public func search(term: String) async -> LoadMediaResult {
-    guard let encoded = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), let url = URL(string: "https://itunes.apple.com/search?term=\(encoded)&entity=song&limit=25") else {
+    guard let encoded = term.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed), let url = URL(string: "https://itunes.apple.com/search?term=\(encoded)&entity=song&limit=50") else {
       return LoadMediaResult.noMatch
     }
 
