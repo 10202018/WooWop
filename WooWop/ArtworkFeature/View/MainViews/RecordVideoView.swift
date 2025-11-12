@@ -18,6 +18,14 @@ struct RecordVideoView: View {
     @State private var lastScale: CGFloat = 1.0
     @State private var lastOffset: CGSize = .zero
 
+    // PIP interactive state (position only)
+    @State private var pipOffset: CGSize = .zero
+    @State private var pipLastOffset: CGSize = .zero
+    @State private var canvasSize: CGSize = .zero
+    // Keyframes captured while recording: (time since recording start, normalized rect)
+    @State private var pipKeyframes: [(time: TimeInterval, rect: CGRect)] = []
+    @State private var recordingStartTime: Date?
+
     // Recording state
     @State private var isRecording: Bool = false
     @State private var showPreview: Bool = false
@@ -58,18 +66,26 @@ struct RecordVideoView: View {
                 }
             }
 
-            // Camera preview as a smaller overlay (PIP)
-            VStack {
-                Spacer()
+            // Camera preview as a movable/scalable overlay (PIP)
+            GeometryReader { geo in
+                // capture canvas size for normalized rect calculation
+                Color.clear.onAppear { canvasSize = geo.size }
+                Color.clear.onChange(of: geo.size) { new in canvasSize = new }
 
-                HStack {
-                    Spacer()
-                    CameraPreviewView()
-                        .frame(width: 160, height: 240)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .shadow(radius: 6)
-                        .padding()
-                }
+                // compute base PIP size and initial anchored center (lower-right)
+                let baseSize = CGSize(width: 160, height: 240)
+                let margin: CGFloat = 24
+                let initialCenterX = geo.size.width - margin - baseSize.width / 2
+                let initialCenterY = geo.size.height - margin - baseSize.height / 2
+
+                CameraPreviewView()
+                    .frame(width: baseSize.width, height: baseSize.height)
+                    .clipped()
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .shadow(radius: 6)
+                    .position(x: initialCenterX + pipOffset.width, y: initialCenterY + pipOffset.height)
+                    .gesture(dragPIPGesture())
+                    .padding()
             }
 
             // Controls
@@ -133,7 +149,38 @@ struct RecordVideoView: View {
         func composeWithArtwork(_ artworkImage: UIImage) {
             let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
             let out = tempDir.appendingPathComponent("wooWop_composed_\(UUID().uuidString).mov")
-            VideoComposer.compose(cameraVideoURL: recordedURL, artwork: artworkImage, outputURL: out) { result in
+            // Compute normalized PIP rect/keyframes from captured state. If we recorded
+            // keyframes during the recording, forward them to the composer so the
+            // exported video mirrors the PIP movement over time. Otherwise, send the
+            // single final normalized rect.
+            var normRect: CGRect? = nil
+            if canvasSize.width > 0 && canvasSize.height > 0 {
+                let baseSize = CGSize(width: 160, height: 240)
+                // The exported PIP window should remain the base window size.
+                // `pipScale` controls the internal zoom of the preview content
+                // in the live UI, but the composer expects the normalized rect
+                // to represent the window bounds. Do not multiply by `pipScale`.
+                let currentWidth = baseSize.width
+                let currentHeight = baseSize.height
+                let margin: CGFloat = 24
+                let initialCenterX = canvasSize.width - margin - baseSize.width / 2
+                let initialCenterY = canvasSize.height - margin - baseSize.height / 2
+                let centerX = initialCenterX + pipOffset.width
+                let centerY = initialCenterY + pipOffset.height
+                let originX = centerX - (currentWidth / 2)
+                let originY = centerY - (currentHeight / 2)
+                let nx = originX / canvasSize.width
+                let ny = originY / canvasSize.height
+                let nw = currentWidth / canvasSize.width
+                let nh = currentHeight / canvasSize.height
+                normRect = CGRect(x: max(0, nx), y: max(0, ny), width: max(0, nw), height: max(0, nh))
+            }
+
+                // If we captured any keyframes while recording, use them. Otherwise pass
+                // a single final rect.
+                let keyframesToSend: [(time: TimeInterval, rect: CGRect)]? = pipKeyframes.isEmpty ? nil : pipKeyframes
+
+            VideoComposer.compose(cameraVideoURL: recordedURL, artwork: artworkImage, outputURL: out, pipRectNormalized: normRect, pipKeyframes: keyframesToSend) { result in
                 DispatchQueue.main.async {
                     isComposing = false
                 }
@@ -169,6 +216,13 @@ struct RecordVideoView: View {
             CameraCapture.shared.stopRecording()
             isRecording = false
             showPreview = true
+            // finalize recording keyframes by stamping the final state
+            if let start = recordingStartTime, canvasSize.width > 0 {
+                let t = Date().timeIntervalSince(start)
+                if let r = currentNormalizedRect() {
+                    pipKeyframes.append((time: t, rect: r))
+                }
+            }
         } else {
             // Request permissions then start session + recording
             CameraCapture.shared.requestPermissions { granted in
@@ -181,9 +235,46 @@ struct RecordVideoView: View {
 
                     do {
                         try CameraCapture.shared.configureSessionIfNeeded()
+                        // Start the session. Starting recording immediately can fail
+                        // if the session hasn't fully started; wait for the
+                        // CameraCapture.sessionStartedNotification if needed.
                         CameraCapture.shared.startSession()
-                        CameraCapture.shared.startRecording()
-                        isRecording = true
+
+                        if CameraCapture.shared.session.isRunning {
+                            // Session already running: start recording immediately and wait for
+                            // the movie output to confirm recording has actually started
+                            CameraCapture.shared.startRecording()
+
+                            var recObs: NSObjectProtocol?
+                            recObs = NotificationCenter.default.addObserver(forName: CameraCapture.recordingStartedNotification, object: nil, queue: .main) { note in
+                                // Recording has started for real; flip UI state and stamp time
+                                isRecording = true
+                                recordingStartTime = Date()
+                                pipKeyframes.removeAll()
+                                if let r = currentNormalizedRect() { pipKeyframes.append((time: 0.0, rect: r)) }
+                                if let o = recObs { NotificationCenter.default.removeObserver(o) }
+                            }
+                        } else {
+                            // Observe one-shot session started notification then begin recording.
+                            // We'll also observe the recording-started notification before
+                            // updating UI so we don't show the red indicator until the file
+                            // output is actually writing.
+                            var obs: NSObjectProtocol?
+                            obs = NotificationCenter.default.addObserver(forName: CameraCapture.sessionStartedNotification, object: nil, queue: .main) { _ in
+                                CameraCapture.shared.startRecording()
+
+                                var recObs: NSObjectProtocol?
+                                recObs = NotificationCenter.default.addObserver(forName: CameraCapture.recordingStartedNotification, object: nil, queue: .main) { note in
+                                    isRecording = true
+                                    recordingStartTime = Date()
+                                    pipKeyframes.removeAll()
+                                    if let r = currentNormalizedRect() { pipKeyframes.append((time: 0.0, rect: r)) }
+                                    if let o = recObs { NotificationCenter.default.removeObserver(o) }
+                                }
+
+                                if let o = obs { NotificationCenter.default.removeObserver(o) }
+                            }
+                        }
                     } catch {
                         // configuration failed
                         isRecording = false
@@ -212,6 +303,51 @@ struct RecordVideoView: View {
             .onEnded { _ in
                 lastScale = scale
             }
+    }
+
+    // MARK: - PIP gestures
+    private func dragPIPGesture() -> some Gesture {
+        DragGesture()
+            .onChanged { value in
+                pipOffset = CGSize(width: pipLastOffset.width + value.translation.width, height: pipLastOffset.height + value.translation.height)
+                // capture keyframe while recording
+                if isRecording, let start = recordingStartTime, canvasSize.width > 0 {
+                    let t = Date().timeIntervalSince(start)
+                    if let r = currentNormalizedRect() {
+                        // avoid duplicating identical last frame
+                if pipKeyframes.last?.rect != r {
+                    pipKeyframes.append((time: t, rect: r))
+                        }
+                    }
+                }
+            }
+            .onEnded { _ in
+                pipLastOffset = pipOffset
+            }
+    }
+
+    // Zooming has been removed for PiP; only repositioning remains.
+
+    private func currentNormalizedRect() -> CGRect? {
+        guard canvasSize.width > 0 && canvasSize.height > 0 else { return nil }
+        let baseSize = CGSize(width: 160, height: 240)
+        // Keep the normalized rect based on the PIP window base size.
+        // The live `pipScale` is used only for on-screen zoom; do not
+        // encode it into the normalized rect sent to the composer.
+        let currentWidth = baseSize.width
+        let currentHeight = baseSize.height
+        let margin: CGFloat = 24
+        let initialCenterX = canvasSize.width - margin - baseSize.width / 2
+        let initialCenterY = canvasSize.height - margin - baseSize.height / 2
+        let centerX = initialCenterX + pipOffset.width
+        let centerY = initialCenterY + pipOffset.height
+        let originX = centerX - (currentWidth / 2)
+        let originY = centerY - (currentHeight / 2)
+        let nx = originX / canvasSize.width
+        let ny = originY / canvasSize.height
+        let nw = currentWidth / canvasSize.width
+        let nh = currentHeight / canvasSize.height
+        return CGRect(x: max(0, nx), y: max(0, ny), width: max(0, nw), height: max(0, nh))
     }
 }
 
@@ -275,7 +411,7 @@ struct CameraPreviewView: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let container = PreviewContainerView(session: CameraCapture.shared.session)
         context.coordinator.containerView = container
-
+        // Start the session if permissions are already granted and configure it.
         // Start the session if permissions are already granted and configure it.
         CameraCapture.shared.requestPermissions { granted in
             if granted {
