@@ -87,7 +87,13 @@ public class RemoteMediaLoader: MediaLoader {
 
       let resp = try JSONDecoder().decode(ITunesResponse.self, from: data)
       let items: [MediaItem] = resp.results.compactMap { it in
-        guard let artwork = it.artworkUrl100, let artURL = URL(string: artwork) else { return nil }
+        guard var artwork = it.artworkUrl100 else { return nil }
+        // iTunes artwork URLs include size tokens like 100x100 - prefer a higher-res variant when possible
+        // Replace the trailing '100x100' (or any NxN) with 600x600 for better quality artwork.
+        if let range = artwork.range(of: "\\d+x\\d+", options: .regularExpression, range: nil, locale: nil) {
+          artwork.replaceSubrange(range, with: "600x600")
+        }
+        guard let artURL = URL(string: artwork) else { return nil }
         return MediaItem(artworkURL: artURL, title: it.trackName, artist: it.artistName, shazamID: nil)
       }
       return items.isEmpty ? LoadMediaResult.noMatch : LoadMediaResult.match(items)
