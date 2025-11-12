@@ -166,7 +166,7 @@ struct ContentView: View {
       }
       .sheet(isPresented: $showingSearchInput) {
         // Show a text input sheet; onSearch will call the RemoteMediaLoader.search(term:)
-        SearchInputView { term in
+        SearchInputView(onSearch: { term in
           if let remote = mediaLoader as? RemoteMediaLoader {
             let result = await remote.search(term: term)
             switch result {
@@ -186,7 +186,17 @@ struct ContentView: View {
             self.searchResults = []
             self.showingSearchResults = true
           }
-        }
+        }, suggestionProvider: { term in
+          // Provide live suggestions by reusing the RemoteMediaLoader.text search fallback
+          if let remote = mediaLoader as? RemoteMediaLoader {
+            let result = await remote.search(term: term)
+            switch result {
+            case .match(let items): return items
+            default: return []
+            }
+          }
+          return []
+        })
       }
       .sheet(isPresented: $showingRecordSheet) {
         if let mediaItem = mediaItem {
