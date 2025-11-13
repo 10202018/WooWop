@@ -114,7 +114,8 @@ struct ContentView: View {
             }
             showingDJQueue = true
           } label: {
-            Image(systemName: "list.bullet")
+            Image(systemName: "list.bullet.rectangle.fill")
+              .accessibilityLabel("Queue")
           }
         }
         
@@ -123,12 +124,14 @@ struct ContentView: View {
             Button {
               showingSongRequest = true
             } label: {
-              Image(systemName: "paperplane")
+              Image(systemName: "paperplane.fill")
+                .accessibilityLabel("Send request")
             }
             Button {
               showingRecordSheet = true
             } label: {
-              Image(systemName: "video")
+              Image(systemName: "video.fill")
+                .accessibilityLabel("Record video")
             }
           }
 
@@ -139,6 +142,7 @@ struct ContentView: View {
             }
           } label: {
             Image(systemName: "music.note")
+              .accessibilityLabel("Identify")
           }
 
           // New dedicated "Find" button that presents a text search input
@@ -146,6 +150,7 @@ struct ContentView: View {
             showingSearchInput = true
           } label: {
             Image(systemName: "magnifyingglass")
+              .accessibilityLabel("Find song")
           }
         }
       }
