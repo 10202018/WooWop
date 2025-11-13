@@ -117,7 +117,8 @@ struct RecordVideoView: View {
                 }
             }
         }
-        .navigationTitle(title ?? "Record")
+    // Hide the navigation bar entirely; we don't want any title overlaying the background artwork
+    .navigationBarHidden(true)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             // Observe finished recording and kick off compose+save flow
