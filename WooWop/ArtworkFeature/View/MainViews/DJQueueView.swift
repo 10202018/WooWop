@@ -137,7 +137,14 @@ struct DJQueueView: View {
                                 request: request,
                                 onRemove: {
                                     // removal will be handled after confirmation inside the row via this callback
-                                    multipeerManager.removeSongRequest(request)
+                                    if multipeerManager.isDJ {
+                                        // Authoritative removal: DJ removes locally and broadcasts updated queue
+                                        multipeerManager.removeSongRequest(request)
+                                        multipeerManager.broadcastQueue()
+                                    } else {
+                                        // Ask the DJ to remove this item
+                                        multipeerManager.sendRemoveRequest(request.id)
+                                    }
                                 },
                                 onUpvote: {
                                 // Block self-votes and duplicate votes locally before sending
