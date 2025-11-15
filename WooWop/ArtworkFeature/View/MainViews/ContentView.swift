@@ -65,6 +65,8 @@ struct ContentView: View {
               image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .ignoresSafeArea(.all)
                 .scaleEffect(scale)
                 .gesture(MagnificationGesture().onChanged { val in
                   let delta = val / self.lastScaleValue
