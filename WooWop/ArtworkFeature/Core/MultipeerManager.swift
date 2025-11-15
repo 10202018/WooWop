@@ -163,6 +163,7 @@ class MultipeerManager: NSObject, ObservableObject {
         case queue([SongRequest])
         case request
         case upvote(UUID)
+        case remove(UUID)
 
         private enum CodingKeys: String, CodingKey {
             case type
@@ -174,6 +175,7 @@ class MultipeerManager: NSObject, ObservableObject {
             case queue
             case request
             case upvote
+            case remove
         }
 
         init(from decoder: Decoder) throws {
@@ -191,6 +193,9 @@ class MultipeerManager: NSObject, ObservableObject {
             case .upvote:
                 let id = try container.decode(UUID.self, forKey: .payload)
                 self = .upvote(id)
+            case .remove:
+                let id = try container.decode(UUID.self, forKey: .payload)
+                self = .remove(id)
             }
         }
 
@@ -207,6 +212,9 @@ class MultipeerManager: NSObject, ObservableObject {
                 try container.encode(MessageType.request, forKey: .type)
             case .upvote(let id):
                 try container.encode(MessageType.upvote, forKey: .type)
+                try container.encode(id, forKey: .payload)
+            case .remove(let id):
+                try container.encode(MessageType.remove, forKey: .type)
                 try container.encode(id, forKey: .payload)
             }
         }
@@ -256,6 +264,33 @@ class MultipeerManager: NSObject, ObservableObject {
             print("Sent upvote for id: \(id)")
         } catch {
             print("Failed to send upvote: \(error)")
+        }
+    }
+
+    /// Send a request to remove a queued song. Listeners should call this to ask the DJ
+    /// to remove an item. If this device is the DJ, removal is applied immediately.
+    func sendRemoveRequest(_ id: UUID) {
+        // If we're DJ, just remove locally and broadcast the authoritative queue
+        if isDJ {
+            if let idx = receivedRequests.firstIndex(where: { $0.id == id }) {
+                receivedRequests.remove(at: idx)
+                broadcastQueue()
+            }
+            return
+        }
+
+        guard !session.connectedPeers.isEmpty else {
+            print("No connected peers to send remove request to")
+            return
+        }
+
+        let wrapper = QueueMessage.remove(id)
+        do {
+            let data = try JSONEncoder().encode(wrapper)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("Sent remove request for id: \(id)")
+        } catch {
+            print("Failed to send remove request: \(error)")
         }
     }
 
@@ -337,6 +372,30 @@ extension MultipeerManager: MCSessionDelegate {
                     // Peer asked for the queue; if we're DJ, respond
                     if self.isDJ {
                         self.broadcastQueue()
+                    }
+                case .remove(let id):
+                    // A peer requested removal of an item. Only the DJ should act as authoritative source.
+                    let senderName = peerID.displayName
+                    if self.isDJ {
+                        if let idx = self.receivedRequests.firstIndex(where: { $0.id == id }) {
+                            let req = self.receivedRequests[idx]
+                            // Allow removal only if the sender is the original requester (or we could add more rules)
+                            if req.requesterName == senderName {
+                                self.receivedRequests.remove(at: idx)
+                                print("Removed request \(req.title) by request of \(senderName)")
+                                // Broadcast the authoritative queue after removal
+                                self.broadcastQueue()
+                            } else {
+                                print("Rejecting remove request for id: \(id) from \(senderName) - not permitted")
+                                // Re-broadcast authoritative queue to assert correct state
+                                self.broadcastQueue()
+                            }
+                        } else {
+                            print("Remove request for unknown id: \(id)")
+                        }
+                    } else {
+                        // Ignore remove requests if we're not DJ
+                        print("Ignoring remove request for id: \(id) from \(peerID.displayName) - not DJ")
                     }
                 case .upvote(let id):
                     // A peer signaled an upvote for a request id. Enforce rules:

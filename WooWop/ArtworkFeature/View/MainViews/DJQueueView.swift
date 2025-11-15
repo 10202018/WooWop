@@ -131,12 +131,22 @@ struct DJQueueView: View {
                         let localName = multipeerManager.localDisplayName
                         let canUpvote = (request.requesterName != localName) && !request.upvoters.contains(localName)
 
+                        // determine local permissions
+                        let canRemove = multipeerManager.isDJ || (request.requesterName == localName)
                         SongRequestRow(
-                            request: request,
-                            onRemove: {
-                                multipeerManager.removeSongRequest(request)
-                            },
-                            onUpvote: {
+                                request: request,
+                                onRemove: {
+                                    // removal will be handled after confirmation inside the row via this callback
+                                    if multipeerManager.isDJ {
+                                        // Authoritative removal: DJ removes locally and broadcasts updated queue
+                                        multipeerManager.removeSongRequest(request)
+                                        multipeerManager.broadcastQueue()
+                                    } else {
+                                        // Ask the DJ to remove this item
+                                        multipeerManager.sendRemoveRequest(request.id)
+                                    }
+                                },
+                                onUpvote: {
                                 // Block self-votes and duplicate votes locally before sending
                                 let localName = multipeerManager.localDisplayName
                                 // If the requester is the local user, disallow upvoting own request
@@ -159,7 +169,8 @@ struct DJQueueView: View {
                                 // Send the upvote to peers (DJ will reconcile and rebroadcast authoritative queue)
                                 multipeerManager.sendUpvote(request.id)
                             },
-                            canUpvote: canUpvote
+                            canUpvote: canUpvote,
+                            canRemove: canRemove
                         )
                     }
                 }
@@ -231,6 +242,10 @@ struct SongRequestRow: View {
 
     /// Whether the local user is allowed to upvote this request (for disabling the UI)
     let canUpvote: Bool
+    /// Whether the local user is allowed to remove this request (DJ or original requester)
+    let canRemove: Bool
+
+    
     
     var body: some View {
         HStack {
@@ -269,17 +284,21 @@ struct SongRequestRow: View {
                 }
                 .buttonStyle(.borderless)
                 .disabled(!canUpvote)
-
-                Button {
-                    onRemove()
-                } label: {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
-                        .font(.title2)
-                }
             }
         }
         .padding(.vertical, 4)
+        // Swipe to remove (requires explicit confirmation). Only show when permitted.
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+            if canRemove {
+                Button(role: .destructive) {
+                    // Immediately perform removal when swiped (no confirmation)
+                    onRemove()
+                } label: {
+                    Label("Remove", systemImage: "trash.fill")
+                }
+                .tint(.red)
+            }
+        }
     }
 }
 
