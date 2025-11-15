@@ -245,7 +245,7 @@ struct SongRequestRow: View {
     /// Whether the local user is allowed to remove this request (DJ or original requester)
     let canRemove: Bool
 
-    @State private var showConfirmRemove: Bool = false
+    
     
     var body: some View {
         HStack {
@@ -291,20 +291,13 @@ struct SongRequestRow: View {
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if canRemove {
                 Button(role: .destructive) {
-                    showConfirmRemove = true
+                    // Immediately perform removal when swiped (no confirmation)
+                    onRemove()
                 } label: {
                     Label("Remove", systemImage: "trash.fill")
                 }
                 .tint(.red)
             }
-        }
-        .confirmationDialog("Remove this request?", isPresented: $showConfirmRemove, titleVisibility: .visible) {
-            Button("Remove", role: .destructive) {
-                onRemove()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Remove \(request.title) requested by \(request.requesterName)?")
         }
     }
 }
