@@ -2,7 +2,7 @@
 //  SongRequestView.swift
 //  WooWop
 //
-//  Created by AI Assistant on 10/6/25.
+//  Created by Theron Jones on 10/6/25.
 //
 
 import SwiftUI
@@ -27,7 +27,11 @@ struct SongRequestView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        VStack(spacing: 20) {
+        ZStack {
+            // Black background
+            Color.black.ignoresSafeArea(.all)
+            
+            VStack(spacing: 20) {
             // Song Artwork
             AsyncImage(url: mediaItem.artworkURL) { image in
                 image
@@ -84,6 +88,7 @@ struct SongRequestView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
             .disabled(!multipeerManager.isConnected)
+            }
         }
         .padding()
         .navigationTitle("Request Song")

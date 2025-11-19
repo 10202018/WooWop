@@ -109,7 +109,7 @@ struct RecordVideoView: View {
                     Button(action: { presentationMode.wrappedValue.dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
                             .font(.system(size: 36))
-                            .foregroundColor(.white)
+                            .foregroundColor(Color(red: 0.42, green: 0.45, blue: 0.50))
                     }
                     Spacer()
                 }
@@ -131,7 +131,7 @@ struct RecordVideoView: View {
                         }) {
                             Image(systemName: "plus.magnifyingglass")
                                 .font(.system(size: 36))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color(red: 0.42, green: 0.45, blue: 0.50))
                                 .frame(width: 44, height: 44)
                                 .background(Color.black.opacity(0.6))
                                 .clipShape(Circle())
@@ -146,7 +146,7 @@ struct RecordVideoView: View {
                         }) {
                             Image(systemName: "minus.magnifyingglass")
                                 .font(.system(size: 36))
-                                .foregroundColor(.white)
+                                .foregroundColor(Color(red: 0.42, green: 0.45, blue: 0.50))
                                 .frame(width: 44, height: 44)
                                 .background(Color.black.opacity(0.6))
                                 .clipShape(Circle())
@@ -158,7 +158,7 @@ struct RecordVideoView: View {
                         Circle()
                             .fill(isRecording ? Color.red : Color.white)
                             .frame(width: 68, height: 68)
-                            .overlay(Image(systemName: isRecording ? "stop.fill" : "record.circle").font(.system(size: 36)).foregroundColor(isRecording ? .white : .red))
+                            .overlay(Image(systemName: isRecording ? "stop.fill" : "record.circle").font(.system(size: 36)).foregroundColor(isRecording ? Color(red: 0.42, green: 0.45, blue: 0.50) : .red))
                     }
                     .padding(.bottom, 32)
 

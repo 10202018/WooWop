@@ -16,6 +16,7 @@
 		35F053152EC3940600B59438 /* SearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053142EC3940600B59438 /* SearchResultsView.swift */; };
 		35F053172EC41A2200B59438 /* SearchInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053162EC41A2200B59438 /* SearchInputView.swift */; };
 		35F053192EC8E8B100B59438 /* RemoveRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053182EC8E8B100B59438 /* RemoveRequestTests.swift */; };
+		35F0532A2ECE86CC00B59438 /* AfterHoursComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053292ECE86CC00B59438 /* AfterHoursComponents.swift */; };
 		35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */; };
 		35F5D9E12E94A44400CD46EA /* ConnectionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */; };
 		35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */; };
@@ -56,6 +57,9 @@
 		35F053142EC3940600B59438 /* SearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultsView.swift; sourceTree = "<group>"; };
 		35F053162EC41A2200B59438 /* SearchInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchInputView.swift; sourceTree = "<group>"; };
 		35F053182EC8E8B100B59438 /* RemoveRequestTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoveRequestTests.swift; sourceTree = "<group>"; };
+		35F053202ECE810400B59438 /* CosmicDJQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmicDJQueueView.swift; sourceTree = "<group>"; };
+		35F053222ECE810B00B59438 /* CosmicContentViewExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmicContentViewExample.swift; sourceTree = "<group>"; };
+		35F053292ECE86CC00B59438 /* AfterHoursComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterHoursComponents.swift; sourceTree = "<group>"; };
 		35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManager.swift; sourceTree = "<group>"; };
 		35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSetupView.swift; sourceTree = "<group>"; };
 		35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJQueueView.swift; sourceTree = "<group>"; };
@@ -97,6 +101,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		35F053262ECE813100B59438 /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				35F053292ECE86CC00B59438 /* AfterHoursComponents.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
 		5B0311AB2BF2F479008550DF = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +172,8 @@
 			isa = PBXGroup;
 			children = (
 				35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */,
+				35F053222ECE810B00B59438 /* CosmicContentViewExample.swift */,
+				35F053202ECE810400B59438 /* CosmicDJQueueView.swift */,
 				5B0311B92BF2F479008550DF /* ContentView.swift */,
 				35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */,
 				35DC73762EB326290004A819 /* RecordVideoView.swift */,
@@ -173,6 +187,7 @@
 		5B7273922BFD8D25000A430C /* View */ = {
 			isa = PBXGroup;
 			children = (
+				35F053262ECE813100B59438 /* Theme */,
 				5B72738D2BFD8604000A430C /* MainViews */,
 				5B72738C2BFD85EF000A430C /* Subviews */,
 			);
@@ -320,6 +335,7 @@
 				35F5D9E52E94A44F00CD46EA /* SongRequestView.swift in Sources */,
 				5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */,
 				5BB596492C6C2F6200C4CACF /* MediaItem.swift in Sources */,
+				35F0532A2ECE86CC00B59438 /* AfterHoursComponents.swift in Sources */,
 				5BBD9A2E2C1A1C400020D9E4 /* SHManagedSessionClient.swift in Sources */,
 				35F053172EC41A2200B59438 /* SearchInputView.swift in Sources */,
 				5B6D53842BF685DF007ABB96 /* StarRating.swift in Sources */,

@@ -2,7 +2,7 @@
 //  MultipeerManager.swift
 //  WooWop
 //
-//  Created by AI Assistant on 10/6/25.
+//  Created by Theron Jones on 10/6/25.
 //
 
 import Foundation

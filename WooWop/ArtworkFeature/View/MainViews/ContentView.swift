@@ -57,6 +57,9 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       ZStack {
+        // Black background for the entire app
+        Color.black.ignoresSafeArea(.all)
+        
         if showProgress {
           ProgressView()
         } else {
@@ -82,7 +85,7 @@ struct ContentView: View {
               VStack(spacing: 16) {
                 Image(systemName: "music.note.house")
                   .font(.system(size: 90))
-                  .foregroundColor(.blue)
+                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
                 
                 if !multipeerManager.isDJ && !multipeerManager.isConnected {
                   VStack(spacing: 8) {
@@ -118,6 +121,18 @@ struct ContentView: View {
           } label: {
             Image(systemName: "list.bullet.rectangle.fill")
               .font(.system(size: 24))
+              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+              .padding(8)
+              .background(
+                Circle()
+                  .fill(Color.black.opacity(0.4))
+              )
+              .shadow(
+                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                radius: 6,
+                x: 0,
+                y: 2
+              )
               .accessibilityLabel("Queue")
           }
         }
@@ -129,6 +144,18 @@ struct ContentView: View {
             } label: {
               Image(systemName: "paperplane.fill")
                 .font(.system(size: 24))
+                .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                .padding(8)
+                .background(
+                  Circle()
+                    .fill(Color.black.opacity(0.4))
+                )
+                .shadow(
+                  color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                  radius: 6,
+                  x: 0,
+                  y: 2
+                )
                 .accessibilityLabel("Send request")
             }
             Button {
@@ -136,6 +163,18 @@ struct ContentView: View {
             } label: {
               Image(systemName: "video.fill")
                 .font(.system(size: 24))
+                .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                .padding(8)
+                .background(
+                  Circle()
+                    .fill(Color.black.opacity(0.4))
+                )
+                .shadow(
+                  color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                  radius: 6,
+                  x: 0,
+                  y: 2
+                )
                 .accessibilityLabel("Record video")
             }
           }
@@ -148,6 +187,18 @@ struct ContentView: View {
           } label: {
             Image(systemName: "music.note")
               .font(.system(size: 24))
+              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+              .padding(8)
+              .background(
+                Circle()
+                  .fill(Color.black.opacity(0.4))
+              )
+              .shadow(
+                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                radius: 6,
+                x: 0,
+                y: 2
+              )
               .accessibilityLabel("Identify")
           }
 
@@ -157,6 +208,18 @@ struct ContentView: View {
           } label: {
             Image(systemName: "magnifyingglass")
               .font(.system(size: 24))
+              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+              .padding(8)
+              .background(
+                Circle()
+                  .fill(Color.black.opacity(0.4))
+              )
+              .shadow(
+                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                radius: 6,
+                x: 0,
+                y: 2
+              )
               .accessibilityLabel("Find song")
           }
         }
@@ -166,6 +229,7 @@ struct ContentView: View {
           NavigationView {
             SongRequestView(mediaItem: mediaItem, multipeerManager: multipeerManager)
           }
+          .preferredColorScheme(.dark)
         }
       }
       .sheet(isPresented: $showingSearchResults) {
@@ -175,6 +239,7 @@ struct ContentView: View {
           self.showingSearchResults = false
           self.showingSongRequest = true
         }
+        .preferredColorScheme(ColorScheme.dark)
       }
       .sheet(isPresented: $showingSearchInput) {
         // Show a text input sheet; onSearch will call the RemoteMediaLoader.search(term:)
@@ -216,6 +281,7 @@ struct ContentView: View {
           }
           return []
         })
+        .preferredColorScheme(ColorScheme.dark)
       }
       .sheet(isPresented: $showingRecordSheet) {
         if let mediaItem = mediaItem {
@@ -226,8 +292,10 @@ struct ContentView: View {
           RecordVideoView(artworkURL: nil, title: "Record")
         }
       }
+      .preferredColorScheme(ColorScheme.dark)
       .sheet(isPresented: $showingDJQueue) {
         DJQueueView(multipeerManager: multipeerManager)
+          .preferredColorScheme(ColorScheme.dark)
       }
       .onAppear {
         if !multipeerManager.isDJ && !multipeerManager.isConnected {
