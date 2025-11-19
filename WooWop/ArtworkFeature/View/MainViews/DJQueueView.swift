@@ -69,6 +69,7 @@ struct DJQueueView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "broadcast")
+                                    .font(.system(size: 24))
                                 Text("Start DJ Mode")
                             }
                             .foregroundColor(.white)
@@ -85,6 +86,7 @@ struct DJQueueView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "stop.circle")
+                                    .font(.system(size: 24))
                                 Text("Stop")
                             }
                             .foregroundColor(.white)
@@ -119,7 +121,7 @@ struct DJQueueView: View {
                             }
                         } label: {
                             Image(systemName: "arrow.clockwise")
-                                .font(.caption)
+                                .font(.system(size: 18))
                         }
                         .buttonStyle(.borderless)
                     }
@@ -280,6 +282,7 @@ struct SongRequestRow: View {
                     onUpvote()
                 } label: {
                     Image(systemName: "hand.thumbsup")
+                        .font(.system(size: 24))
                         .foregroundColor(.blue)
                 }
                 .buttonStyle(.borderless)

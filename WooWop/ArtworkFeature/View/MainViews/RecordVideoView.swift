@@ -108,7 +108,7 @@ struct RecordVideoView: View {
                 HStack {
                     Button(action: { presentationMode.wrappedValue.dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.title)
+                            .font(.system(size: 36))
                             .foregroundColor(.white)
                     }
                     Spacer()
@@ -130,7 +130,7 @@ struct RecordVideoView: View {
                             }
                         }) {
                             Image(systemName: "plus.magnifyingglass")
-                                .font(.title2)
+                                .font(.system(size: 36))
                                 .foregroundColor(.white)
                                 .frame(width: 44, height: 44)
                                 .background(Color.black.opacity(0.6))
@@ -145,7 +145,7 @@ struct RecordVideoView: View {
                             }
                         }) {
                             Image(systemName: "minus.magnifyingglass")
-                                .font(.title2)
+                                .font(.system(size: 36))
                                 .foregroundColor(.white)
                                 .frame(width: 44, height: 44)
                                 .background(Color.black.opacity(0.6))
@@ -158,7 +158,7 @@ struct RecordVideoView: View {
                         Circle()
                             .fill(isRecording ? Color.red : Color.white)
                             .frame(width: 68, height: 68)
-                            .overlay(Image(systemName: isRecording ? "stop.fill" : "record.circle").font(.title).foregroundColor(isRecording ? .white : .red))
+                            .overlay(Image(systemName: isRecording ? "stop.fill" : "record.circle").font(.system(size: 36)).foregroundColor(isRecording ? .white : .red))
                     }
                     .padding(.bottom, 32)
 

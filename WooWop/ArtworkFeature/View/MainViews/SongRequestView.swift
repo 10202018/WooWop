@@ -73,6 +73,7 @@ struct SongRequestView: View {
             } label: {
                 HStack {
                     Image(systemName: "music.note")
+                        .font(.system(size: 24))
                     Text("Request This Song")
                 }
                 .font(.headline)

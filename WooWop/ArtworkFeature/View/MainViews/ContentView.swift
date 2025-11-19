@@ -81,7 +81,7 @@ struct ContentView: View {
               // Show connection status when no image
               VStack(spacing: 16) {
                 Image(systemName: "music.note.house")
-                  .font(.system(size: 60))
+                  .font(.system(size: 90))
                   .foregroundColor(.blue)
                 
                 if !multipeerManager.isDJ && !multipeerManager.isConnected {
@@ -117,6 +117,7 @@ struct ContentView: View {
             showingDJQueue = true
           } label: {
             Image(systemName: "list.bullet.rectangle.fill")
+              .font(.system(size: 24))
               .accessibilityLabel("Queue")
           }
         }
@@ -127,12 +128,14 @@ struct ContentView: View {
               showingSongRequest = true
             } label: {
               Image(systemName: "paperplane.fill")
+                .font(.system(size: 24))
                 .accessibilityLabel("Send request")
             }
             Button {
               showingRecordSheet = true
             } label: {
               Image(systemName: "video.fill")
+                .font(.system(size: 24))
                 .accessibilityLabel("Record video")
             }
           }
@@ -144,6 +147,7 @@ struct ContentView: View {
             }
           } label: {
             Image(systemName: "music.note")
+              .font(.system(size: 24))
               .accessibilityLabel("Identify")
           }
 
@@ -152,6 +156,7 @@ struct ContentView: View {
             showingSearchInput = true
           } label: {
             Image(systemName: "magnifyingglass")
+              .font(.system(size: 24))
               .accessibilityLabel("Find song")
           }
         }

@@ -17,6 +17,7 @@ struct StarRating: View {
       ForEach(1 ..< (maxRating + 1), id: \.self) { value in
         HStack(alignment: .top) {
           Image(systemName: "star")
+            .font(.system(size: 36))
             .symbolVariant(value <= rating ? .fill : .none)
             .foregroundStyle(.yellow)
             .frame(width: 60)
