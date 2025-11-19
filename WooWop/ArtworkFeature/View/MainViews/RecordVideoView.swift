@@ -22,6 +22,15 @@ struct RecordVideoView: View {
     @State private var pipOffset: CGSize = .zero
     @State private var pipLastOffset: CGSize = .zero
     @State private var canvasSize: CGSize = .zero
+    
+    // Camera zoom state
+    @State private var cameraZoomFactor: CGFloat = 1.0
+    @State private var lastCameraZoomFactor: CGFloat = 1.0
+    
+    // Zoom thresholds
+    private let maxZoomIn: CGFloat = 3.0 // Maximum zoom in before stopping
+    private let minZoomOut: CGFloat = 0.5 // Minimum camera zoom level
+    
     // Keyframes captured while recording: (time since recording start, normalized rect)
     @State private var pipKeyframes: [(time: TimeInterval, rect: CGRect)] = []
     @State private var recordingStartTime: Date?
@@ -85,6 +94,7 @@ struct RecordVideoView: View {
                     .shadow(radius: 6)
                     .position(x: initialCenterX + pipOffset.width, y: initialCenterY + pipOffset.height)
                     .gesture(dragPIPGesture())
+                    .gesture(pipZoomGesture())
                     .padding()
             }
 
@@ -104,6 +114,40 @@ struct RecordVideoView: View {
 
                 HStack {
                     Spacer()
+                    
+                    // Zoom controls
+                    VStack(spacing: 12) {
+                        Button(action: { 
+                            let newZoom = min(cameraZoomFactor * 1.2, maxZoomIn)
+                            if newZoom > cameraZoomFactor {
+                                CameraCapture.shared.setZoomFactor(newZoom)
+                                cameraZoomFactor = newZoom
+                            }
+                        }) {
+                            Image(systemName: "plus.magnifyingglass")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .frame(width: 44, height: 44)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                        
+                        Button(action: { 
+                            let newZoom = max(cameraZoomFactor / 1.2, minZoomOut)
+                            if newZoom != cameraZoomFactor {
+                                CameraCapture.shared.setZoomFactor(newZoom)
+                                cameraZoomFactor = newZoom
+                            }
+                        }) {
+                            Image(systemName: "minus.magnifyingglass")
+                                .font(.title2)
+                                .foregroundColor(.white)
+                                .frame(width: 44, height: 44)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Circle())
+                        }
+                    }
+                    .padding(.trailing, 20)
 
                     Button(action: toggleRecord) {
                         Circle()
@@ -328,13 +372,44 @@ struct RecordVideoView: View {
     }
 
     // Zooming has been removed for PiP; only repositioning remains.
+    
+    // MARK: - PIP Zoom Gesture
+    
+    private func pipZoomGesture() -> some Gesture {
+        MagnificationGesture()
+            .onChanged { value in
+                let scaleDelta = value / lastCameraZoomFactor
+                let newCameraZoom = cameraZoomFactor * scaleDelta
+                
+                // Handle both zoom in and zoom out with camera zoom only
+                // Clamp to device limits and our min/max zoom range
+                let clampedZoom = max(minZoomOut, min(maxZoomIn, newCameraZoom))
+                
+                if clampedZoom != cameraZoomFactor {
+                    CameraCapture.shared.setZoomFactor(clampedZoom)
+                    lastCameraZoomFactor = value
+                }
+                
+                // Capture keyframe while recording
+                if isRecording, let start = recordingStartTime, canvasSize.width > 0 {
+                    let t = Date().timeIntervalSince(start)
+                    if let r = currentNormalizedRect() {
+                        if pipKeyframes.last?.rect != r {
+                            pipKeyframes.append((time: t, rect: r))
+                        }
+                    }
+                }
+            }
+            .onEnded { _ in
+                lastCameraZoomFactor = 1.0
+                cameraZoomFactor = CameraCapture.shared.currentZoomFactor
+            }
+    }
 
     private func currentNormalizedRect() -> CGRect? {
         guard canvasSize.width > 0 && canvasSize.height > 0 else { return nil }
         let baseSize = CGSize(width: 160, height: 240)
-        // Keep the normalized rect based on the PIP window base size.
-        // The live `pipScale` is used only for on-screen zoom; do not
-        // encode it into the normalized rect sent to the composer.
+        // Keep the window frame at the base size - no scaling
         let currentWidth = baseSize.width
         let currentHeight = baseSize.height
         let margin: CGFloat = 24

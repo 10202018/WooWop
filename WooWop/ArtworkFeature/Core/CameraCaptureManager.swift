@@ -29,6 +29,7 @@ final class CameraCapture: NSObject {
     private let movieOutput = AVCaptureMovieFileOutput()
     private var configured = false
     private var currentOutputURL: URL?
+    private var currentVideoDevice: AVCaptureDevice?
 
     private override init() {
         super.init()
@@ -66,6 +67,7 @@ final class CameraCapture: NSObject {
 
         // Video input (front camera preferred for listener selfie)
         if let videoDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) ?? AVCaptureDevice.default(for: .video) {
+            currentVideoDevice = videoDevice
             do {
                 let videoInput = try AVCaptureDeviceInput(device: videoDevice)
                 if session.canAddInput(videoInput) {
@@ -142,6 +144,59 @@ final class CameraCapture: NSObject {
     func stopRecording() {
         guard movieOutput.isRecording else { return }
         movieOutput.stopRecording()
+    }
+    
+    // MARK: - Camera Zoom
+    
+    /// Returns the current zoom factor of the camera device
+    var currentZoomFactor: CGFloat {
+        return currentVideoDevice?.videoZoomFactor ?? 1.0
+    }
+    
+    /// Returns the minimum zoom factor supported by the camera device
+    var minZoomFactor: CGFloat {
+        return currentVideoDevice?.minAvailableVideoZoomFactor ?? 1.0
+    }
+    
+    /// Returns the maximum zoom factor supported by the camera device
+    var maxZoomFactor: CGFloat {
+        return currentVideoDevice?.maxAvailableVideoZoomFactor ?? 1.0
+    }
+    
+    /// Sets the zoom factor for the camera device
+    /// - Parameter zoomFactor: The desired zoom factor (clamped to device limits)
+    func setZoomFactor(_ zoomFactor: CGFloat) {
+        guard let device = currentVideoDevice else { return }
+        
+        let clampedZoom = max(device.minAvailableVideoZoomFactor, 
+                             min(device.maxAvailableVideoZoomFactor, zoomFactor))
+        
+        do {
+            try device.lockForConfiguration()
+            device.videoZoomFactor = clampedZoom
+            device.unlockForConfiguration()
+        } catch {
+            print("Error setting zoom factor: \(error)")
+        }
+    }
+    
+    /// Smoothly ramps the zoom factor to the target value
+    /// - Parameters:
+    ///   - targetZoom: The target zoom factor
+    ///   - duration: The duration of the ramp in seconds
+    func rampZoomFactor(to targetZoom: CGFloat, duration: Float) {
+        guard let device = currentVideoDevice else { return }
+        
+        let clampedZoom = max(device.minAvailableVideoZoomFactor, 
+                             min(device.maxAvailableVideoZoomFactor, targetZoom))
+        
+        do {
+            try device.lockForConfiguration()
+            device.ramp(toVideoZoomFactor: clampedZoom, withRate: Float(abs(clampedZoom - device.videoZoomFactor) / CGFloat(duration)))
+            device.unlockForConfiguration()
+        } catch {
+            print("Error ramping zoom factor: \(error)")
+        }
     }
 }
 
