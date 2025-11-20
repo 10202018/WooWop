@@ -57,8 +57,8 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       ZStack {
-        // Black background for the entire app
-        Color.black.ignoresSafeArea(.all)
+        // Pure black background for found songs
+        Color.black.ignoresSafeArea()
         
         if showProgress {
           ProgressView()

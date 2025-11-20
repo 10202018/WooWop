@@ -24,7 +24,36 @@ struct SearchInputView: View {
 
     var body: some View {
         NavigationView {
-            VStack(spacing: 8) {
+            ZStack {
+                // After Hours cyberpunk background for modal
+                ZStack {
+                    // Midnight gradient background
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color(red: 0.059, green: 0.047, blue: 0.161), // Deep midnight
+                            Color(red: 0.102, green: 0.102, blue: 0.180)  // Dark purple-black
+                        ]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                    .ignoresSafeArea(.all)
+                    
+                    // Club light effects
+                    RadialGradient(
+                        gradient: Gradient(colors: [
+                            Color(red: 1.0, green: 0.0, blue: 0.6).opacity(0.1), // Electric pink
+                            Color(red: 0.059, green: 0.047, blue: 0.161).opacity(0.3),
+                            Color(red: 0.102, green: 0.102, blue: 0.180)
+                        ]),
+                        center: .topTrailing,
+                        startRadius: 50,
+                        endRadius: 400
+                    )
+                    .ignoresSafeArea(.all)
+                    .blendMode(.overlay)
+                }
+                
+                VStack(spacing: 8) {
                 TextField("Type song or artist", text: $query)
                     .textFieldStyle(.roundedBorder)
                     .padding([.top, .horizontal])
@@ -92,6 +121,7 @@ struct SearchInputView: View {
                     .frame(maxHeight: .infinity)
                 }
                 // removed Spacer so the suggestions List can expand to fill the sheet
+                }
             }
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Find Song")

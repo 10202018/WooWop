@@ -94,22 +94,96 @@ extension RadialGradient {
 // MARK: - After Hours Background View
 
 struct AfterHoursBackground: View {
+    // Configuration
+    let gridSize: CGFloat = 40     // Distance between lines
+    let lineWidth: CGFloat = 0.5   // Ultra-thin for that "Retina" look
+    let gridColor: Color = Color(hex: "00F0FF") // Your Neon Cyan
+    let opacity: Double = 0.08     // Very subtle (Data texture, not content)
+    
     var body: some View {
         ZStack {
-            // Base midnight gradient
-            LinearGradient.afterHoursBackground
-                .ignoresSafeArea(.all)
+            // 1. The Base: Pure Black
+            Color.black.ignoresSafeArea()
             
-            // Club light effect from top-right
-            RadialGradient.clubLightEffect(center: .topTrailing)
-                .ignoresSafeArea(.all)
-                .blendMode(.overlay)
+            // 2. The Spotlight: A deep, cold Radial Gradient
+            RadialGradient(
+                gradient: Gradient(colors: [
+                    Color(hex: "111827"), // Dark Navy/Grey center
+                    Color.black           // Fades to pure black edges
+                ]),
+                center: .center,
+                startRadius: 5,
+                endRadius: 500
+            )
+            .ignoresSafeArea()
             
-            // Subtle accent lights from bottom-left
-            RadialGradient.clubLightEffect(center: .bottomLeading)
-                .ignoresSafeArea(.all)
-                .opacity(0.3)
-                .blendMode(.screen)
+            // 3. The Technical Grid Layer
+            Canvas { context, size in
+                let width = size.width
+                let height = size.height
+                
+                // Draw Vertical Lines
+                for x in stride(from: 0, to: width, by: gridSize) {
+                    let path = Path { p in
+                        p.move(to: CGPoint(x: x, y: 0))
+                        p.addLine(to: CGPoint(x: x, y: height))
+                    }
+                    context.stroke(path, with: .color(gridColor.opacity(opacity)), lineWidth: lineWidth)
+                }
+                
+                // Draw Horizontal Lines
+                for y in stride(from: 0, to: height, by: gridSize) {
+                    let path = Path { p in
+                        p.move(to: CGPoint(x: 0, y: y))
+                        p.addLine(to: CGPoint(x: width, y: y))
+                    }
+                    context.stroke(path, with: .color(gridColor.opacity(opacity)), lineWidth: lineWidth)
+                }
+            }
+            .ignoresSafeArea()
+            .mask {
+                RadialGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: .black, location: 0),      // Visible in center
+                        .init(color: .black.opacity(0.6), location: 0.6),
+                        .init(color: .clear, location: 1)       // Fades out at edges
+                    ]),
+                    center: .center,
+                    startRadius: 10,
+                    endRadius: 500
+                )
+                .ignoresSafeArea()
+            }
+            
+            // 4. Digital Grain Texture
+            GeometryReader { proxy in
+                Canvas { context, size in
+                    let noiseLevel: Double = 0.995 // Higher = Less Noise
+                    
+                    for _ in 0..<Int(size.width * size.height / 100) {
+                        let x = Double.random(in: 0...size.width)
+                        let y = Double.random(in: 0...size.height)
+                        if Double.random(in: 0...1) > noiseLevel {
+                            let rect = CGRect(x: x, y: y, width: 1.5, height: 1.5)
+                            context.fill(Path(rect), with: .color(.white.opacity(0.05)))
+                        }
+                    }
+                }
+            }
+            .ignoresSafeArea()
+            .drawingGroup()
+            
+            // 5. Subtle Blue Glow in center for atmosphere
+            RadialGradient(
+                colors: [
+                    Color(hex: "00F0FF").opacity(0.05), // Faint Cyan center
+                    .clear
+                ],
+                center: .center,
+                startRadius: 0,
+                endRadius: 300
+            )
+            .ignoresSafeArea()
         }
     }
 }

@@ -22,32 +22,95 @@ struct ConnectionSetupView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                // After Hours cyberpunk background - full screen
+                // Tech Noir background with Technical Grid
                 ZStack {
-                    // Midnight gradient background
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color(red: 0.059, green: 0.047, blue: 0.161), // Deep midnight
-                            Color(red: 0.102, green: 0.102, blue: 0.180)  // Dark purple-black
-                        ]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                    .ignoresSafeArea(.all)
+                    // 1. The Base: Pure Black
+                    Color.black.ignoresSafeArea()
                     
-                    // Club light effects
+                    // 2. The Spotlight: A deep, cold Radial Gradient
                     RadialGradient(
                         gradient: Gradient(colors: [
-                            Color(red: 1.0, green: 0.0, blue: 0.6).opacity(0.1), // Electric pink
-                            Color(red: 0.059, green: 0.047, blue: 0.161).opacity(0.3),
-                            Color(red: 0.102, green: 0.102, blue: 0.180)
+                            Color(red: 0.067, green: 0.094, blue: 0.153), // Dark Navy/Grey center
+                            Color.black                                    // Fades to pure black edges
                         ]),
-                        center: .topTrailing,
-                        startRadius: 50,
-                        endRadius: 400
+                        center: .center,
+                        startRadius: 5,
+                        endRadius: 500
                     )
-                    .ignoresSafeArea(.all)
-                    .blendMode(.overlay)
+                    .ignoresSafeArea()
+                    
+                    // 3. The Technical Grid Layer
+                    Canvas { context, size in
+                        let gridSize: CGFloat = 40
+                        let lineWidth: CGFloat = 0.5
+                        let gridColor = Color(red: 0.0, green: 0.941, blue: 1.0) // Neon Cyan
+                        let opacity: Double = 0.08
+                        
+                        let width = size.width
+                        let height = size.height
+                        
+                        // Draw Vertical Lines
+                        for x in stride(from: 0, to: width, by: gridSize) {
+                            let path = Path { p in
+                                p.move(to: CGPoint(x: x, y: 0))
+                                p.addLine(to: CGPoint(x: x, y: height))
+                            }
+                            context.stroke(path, with: .color(gridColor.opacity(opacity)), lineWidth: lineWidth)
+                        }
+                        
+                        // Draw Horizontal Lines
+                        for y in stride(from: 0, to: height, by: gridSize) {
+                            let path = Path { p in
+                                p.move(to: CGPoint(x: 0, y: y))
+                                p.addLine(to: CGPoint(x: width, y: y))
+                            }
+                            context.stroke(path, with: .color(gridColor.opacity(opacity)), lineWidth: lineWidth)
+                        }
+                    }
+                    .ignoresSafeArea()
+                    .mask {
+                        RadialGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: .black, location: 0),      // Visible in center
+                                .init(color: .black.opacity(0.6), location: 0.6),
+                                .init(color: .clear, location: 1)       // Fades out at edges
+                            ]),
+                            center: .center,
+                            startRadius: 10,
+                            endRadius: 500
+                        )
+                        .ignoresSafeArea()
+                    }
+                    
+                    // 4. The Digital Grain Texture
+                    GeometryReader { proxy in
+                        Canvas { context, size in
+                            let noiseLevel: Double = 0.995 // Higher = Less Noise
+                            
+                            for _ in 0..<Int(size.width * size.height / 100) {
+                                let x = Double.random(in: 0...size.width)
+                                let y = Double.random(in: 0...size.height)
+                                if Double.random(in: 0...1) > noiseLevel {
+                                    let rect = CGRect(x: x, y: y, width: 1.5, height: 1.5)
+                                    context.fill(Path(rect), with: .color(.white.opacity(0.05)))
+                                }
+                            }
+                        }
+                    }
+                    .ignoresSafeArea()
+                    .drawingGroup()
+                    
+                    // 5. Subtle Blue Glow for atmosphere
+                    RadialGradient(
+                        colors: [
+                            Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.05), // Faint Cyan center
+                            .clear
+                        ],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: 300
+                    )
+                    .ignoresSafeArea()
                 }
                 
                 VStack(spacing: 24) {
