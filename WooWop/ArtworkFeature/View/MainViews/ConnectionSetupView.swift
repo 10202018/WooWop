@@ -53,13 +53,10 @@ struct ConnectionSetupView: View {
                 VStack(spacing: 24) {
                     // Header with cyberpunk styling
                     VStack(spacing: 16) {
-                        Image(systemName: "music.note.house")
+                        Image(systemName: "waveform")
                             .font(.system(size: 60))
                             .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
-                            .shadow(
-                                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.4),
-                                radius: 10
-                            )
+                            .shadow(color: .cyan, radius: 10)
                         
                         Text("WooWop")
                             .font(.largeTitle)

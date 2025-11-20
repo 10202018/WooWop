@@ -83,10 +83,10 @@ struct ContentView: View {
             } else {
               // Show connection status when no image
               VStack(spacing: 16) {
-                Image(systemName: "music.note.house")
+                Image(systemName: "waveform")
                   .font(.system(size: 90))
                   .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
-                
+                  .shadow(color: .cyan, radius: 10)
                 if !multipeerManager.isDJ && !multipeerManager.isConnected {
                   VStack(spacing: 8) {
                     ProgressView()
