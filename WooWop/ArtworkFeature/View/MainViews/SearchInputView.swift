@@ -24,7 +24,7 @@ struct SearchInputView: View {
 
     var body: some View {
         NavigationView {
-            ZStack {
+            ZStack(alignment: .top) {
                 // After Hours cyberpunk background for modal
                 ZStack {
                     // Midnight gradient background
@@ -53,21 +53,45 @@ struct SearchInputView: View {
                     .blendMode(.overlay)
                 }
                 
-                VStack(spacing: 8) {
-                TextField("Type song or artist", text: $query)
-                    .textFieldStyle(.roundedBorder)
-                    .padding([.top, .horizontal])
-                    .onChange(of: query) { new in
-                        handleQueryChange(new)
-                    }
-
-                if isSearching {
-                    ProgressView()
+                VStack(alignment: .leading, spacing: 0) {
+                    // Search Input with cyberpunk styling at very top
+                    TextField("Type song or artist", text: $query)
+                        .textFieldStyle(.plain)
+                        .foregroundColor(Color.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color(red: 0.086, green: 0.129, blue: 0.243).opacity(0.6)) // Surface card
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .strokeBorder(
+                                            Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3), // Electric blue border
+                                            lineWidth: 1
+                                        )
+                                )
+                        )
+                        .onChange(of: query) { new in
+                            handleQueryChange(new)
+                        }
+                        .onSubmit {
+                            Task {
+                                isSearching = true
+                                await onSearch(query)
+                                isSearching = false
+                                dismiss()
+                            }
+                        }
                         .padding(.horizontal)
-                }
+                        .padding(.top, 0)
 
-                if !suggestions.isEmpty {
-                    // show a scrollable list of suggestions (no hard limit)
+                    if isSearching {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding(.horizontal)
+                            .padding(.top, 16)
+                    } else if !suggestions.isEmpty {
+                    // show a scrollable list of suggestions with cyberpunk styling
                     List(suggestions, id: \.artworkURL) { item in
                         Button(action: {
                             // If a direct select handler is provided, call it and avoid the SearchResults flow.
@@ -96,27 +120,45 @@ struct SearchInputView: View {
                                             .aspectRatio(contentMode: .fill)
                                             .frame(width: 44, height: 44)
                                             .clipped()
-                                            .cornerRadius(4)
+                                            .cornerRadius(8)
                                     } else {
-                                        RoundedRectangle(cornerRadius: 4)
-                                            .fill(Color.gray.opacity(0.3))
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color(red: 0.086, green: 0.129, blue: 0.243).opacity(0.4))
                                             .frame(width: 44, height: 44)
                                     }
                                 }
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(item.title ?? "Unknown Title")
                                         .font(.subheadline)
+                                        .foregroundColor(.white)
                                         .lineLimit(1)
                                     Text(item.artist ?? "Unknown Artist")
                                         .font(.caption)
-                                        .foregroundColor(.secondary)
+                                        .foregroundColor(Color.white.opacity(0.6))
                                         .lineLimit(1)
                                 }
                                 Spacer()
                             }
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(red: 0.086, green: 0.129, blue: 0.243).opacity(0.3))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .strokeBorder(
+                                                Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.2),
+                                                lineWidth: 0.5
+                                            )
+                                    )
+                            )
                         }
+                        .buttonStyle(PlainButtonStyle())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                     }
                     .listStyle(.plain)
+                    .scrollContentBackground(.hidden)
                     // allow the list to expand to fill remaining sheet space
                     .frame(maxHeight: .infinity)
                 }
@@ -126,9 +168,6 @@ struct SearchInputView: View {
             .frame(maxHeight: .infinity, alignment: .top)
             .navigationTitle("Find Song")
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") { dismiss() }
-                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Search") {
                         Task {
