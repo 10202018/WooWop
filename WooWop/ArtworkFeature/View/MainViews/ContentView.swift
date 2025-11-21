@@ -120,7 +120,7 @@ struct ContentView: View {
             showingDJQueue = true
           } label: {
             Image(systemName: "list.bullet.rectangle.fill")
-              .font(.system(size: 24))
+              .font(.system(size: 18)) // 25% smaller (was 24)
               .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
               .padding(8)
               .background(
@@ -135,6 +135,7 @@ struct ContentView: View {
               )
               .accessibilityLabel("Queue")
           }
+          .padding(.trailing, 16) // Add extra spacing after DJ Queue icon
         }
         
         ToolbarItemGroup(placement: .navigationBarTrailing) {
@@ -143,7 +144,7 @@ struct ContentView: View {
               showingSongRequest = true
             } label: {
               Image(systemName: "paperplane.fill")
-                .font(.system(size: 24))
+                .font(.system(size: 18)) // 25% smaller (was 24)
                 .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
                 .padding(8)
                 .background(
@@ -162,7 +163,7 @@ struct ContentView: View {
               showingRecordSheet = true
             } label: {
               Image(systemName: "video.fill")
-                .font(.system(size: 24))
+                .font(.system(size: 18)) // 25% smaller (was 24)
                 .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
                 .padding(8)
                 .background(
@@ -186,7 +187,7 @@ struct ContentView: View {
             }
           } label: {
             Image(systemName: "music.note")
-              .font(.system(size: 24))
+              .font(.system(size: 18)) // 25% smaller (was 24)
               .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
               .padding(8)
               .background(
@@ -207,7 +208,7 @@ struct ContentView: View {
             showingSearchInput = true
           } label: {
             Image(systemName: "magnifyingglass")
-              .font(.system(size: 24))
+              .font(.system(size: 18)) // 25% smaller (was 24)
               .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
               .padding(8)
               .background(
