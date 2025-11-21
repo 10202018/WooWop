@@ -139,11 +139,55 @@ struct ContentView: View {
         }
         
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-          if let mediaItem = mediaItem {
+          HStack(spacing: -4) { // Reduce spacing between icons
+            if let mediaItem = mediaItem {
+              Button {
+                showingSongRequest = true
+              } label: {
+                Image(systemName: "paperplane.fill")
+                  .font(.system(size: 18)) // 25% smaller (was 24)
+                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                  .padding(8)
+                  .background(
+                    Circle()
+                      .fill(Color.black.opacity(0.4))
+                  )
+                  .shadow(
+                    color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                    radius: 6,
+                    x: 0,
+                    y: 2
+                  )
+                  .accessibilityLabel("Send request")
+              }
+              Button {
+                showingRecordSheet = true
+              } label: {
+                Image(systemName: "video.fill")
+                  .font(.system(size: 18)) // 25% smaller (was 24)
+                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                  .padding(8)
+                  .background(
+                    Circle()
+                      .fill(Color.black.opacity(0.4))
+                  )
+                  .shadow(
+                    color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                    radius: 6,
+                    x: 0,
+                    y: 2
+                  )
+                  .accessibilityLabel("Record video")
+              }
+            }
+
+            // Existing quick-identify button (unchanged behavior)
             Button {
-              showingSongRequest = true
+              Task {
+                try await getMediaItem()
+              }
             } label: {
-              Image(systemName: "paperplane.fill")
+              Image(systemName: "music.note")
                 .font(.system(size: 18)) // 25% smaller (was 24)
                 .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
                 .padding(8)
@@ -157,12 +201,14 @@ struct ContentView: View {
                   x: 0,
                   y: 2
                 )
-                .accessibilityLabel("Send request")
+                .accessibilityLabel("Identify")
             }
+
+            // New dedicated "Find" button that presents a text search input
             Button {
-              showingRecordSheet = true
+              showingSearchInput = true
             } label: {
-              Image(systemName: "video.fill")
+              Image(systemName: "magnifyingglass")
                 .font(.system(size: 18)) // 25% smaller (was 24)
                 .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
                 .padding(8)
@@ -176,52 +222,8 @@ struct ContentView: View {
                   x: 0,
                   y: 2
                 )
-                .accessibilityLabel("Record video")
+                .accessibilityLabel("Find song")
             }
-          }
-
-          // Existing quick-identify button (unchanged behavior)
-          Button {
-            Task {
-              try await getMediaItem()
-            }
-          } label: {
-            Image(systemName: "music.note")
-              .font(.system(size: 18)) // 25% smaller (was 24)
-              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
-              .padding(8)
-              .background(
-                Circle()
-                  .fill(Color.black.opacity(0.4))
-              )
-              .shadow(
-                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
-                radius: 6,
-                x: 0,
-                y: 2
-              )
-              .accessibilityLabel("Identify")
-          }
-
-          // New dedicated "Find" button that presents a text search input
-          Button {
-            showingSearchInput = true
-          } label: {
-            Image(systemName: "magnifyingglass")
-              .font(.system(size: 18)) // 25% smaller (was 24)
-              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
-              .padding(8)
-              .background(
-                Circle()
-                  .fill(Color.black.opacity(0.4))
-              )
-              .shadow(
-                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
-                radius: 6,
-                x: 0,
-                y: 2
-              )
-              .accessibilityLabel("Find song")
           }
         }
       }
