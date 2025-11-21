@@ -13,12 +13,15 @@ public struct VideoComposer {
     ///   - cameraVideoURL: URL of the recorded camera video file.
     ///   - artwork: UIImage used as the background.
     ///   - outputURL: Destination file URL for the composed video.
-    ///   - completion: Called on the main queue with the composed file URL or an error.
-    /// - Parameters:
     ///   - pipRectNormalized: Optional CGRect in normalized coordinates (0..1) relative to
     ///     the artwork/render size specifying where the camera PIP should be placed and
     ///     how large it should be. If nil, a default lower-right PIP is used.
-    public static func compose(cameraVideoURL: URL, artwork: UIImage, outputURL: URL, pipRectNormalized: CGRect? = nil, pipKeyframes: [(time: TimeInterval, rect: CGRect)]? = nil, completion: @escaping (Result<URL, Error>) -> Void) {
+    ///   - pipKeyframes: Optional array of keyframes for PIP animation over time.
+    ///   - backgroundScale: Scale factor for the background artwork (default 1.0)
+    ///   - backgroundOffset: Offset for the background artwork in normalized coordinates (default .zero)
+    ///   - progressCallback: Optional callback for progress updates (0.0 to 1.0)
+    ///   - completion: Called on the main queue with the composed file URL or an error.
+    public static func compose(cameraVideoURL: URL, artwork: UIImage, outputURL: URL, pipRectNormalized: CGRect? = nil, pipKeyframes: [(time: TimeInterval, rect: CGRect)]? = nil, backgroundScale: CGFloat = 1.0, backgroundOffset: CGPoint = .zero, progressCallback: ((Double) -> Void)? = nil, completion: @escaping (Result<URL, Error>) -> Void) {
         let asset = AVAsset(url: cameraVideoURL)
 
         // Ensure the recorded asset has a video track. If the provided file isn't
@@ -89,8 +92,46 @@ public struct VideoComposer {
     parentLayer.isGeometryFlipped = true
 
         let artworkLayer = CALayer()
-        artworkLayer.frame = parentLayer.bounds
-        artworkLayer.contentsGravity = .resizeAspectFill
+        
+        // Apply background positioning: calculate scaled size and position
+        let artworkSize = CGSize(width: artwork.size.width, height: artwork.size.height)
+        let artworkAspect = artworkSize.height / artworkSize.width
+        let renderAspect = renderSize.height / renderSize.width
+        
+        print("🖼️ COMPOSER DEBUG - Artwork size: \(artworkSize)")
+        print("🖼️ COMPOSER DEBUG - Render size: \(renderSize)")
+        print("🖼️ COMPOSER DEBUG - Background scale: \(backgroundScale)")
+        print("🖼️ COMPOSER DEBUG - Background offset: \(backgroundOffset)")
+        
+        // Calculate scaled dimensions for aspect fill behavior
+        var scaledWidth: CGFloat
+        var scaledHeight: CGFloat
+        
+        if artworkAspect > renderAspect {
+            // Artwork is taller, fit to width
+            scaledWidth = renderSize.width * backgroundScale
+            scaledHeight = scaledWidth * artworkAspect
+        } else {
+            // Artwork is wider, fit to height
+            scaledHeight = renderSize.height * backgroundScale
+            scaledWidth = scaledHeight / artworkAspect
+        }
+        
+        print("🖼️ COMPOSER DEBUG - Scaled dimensions: \(scaledWidth) x \(scaledHeight)")
+        
+        // Apply offset (backgroundOffset is in normalized coordinates)
+        let offsetX = backgroundOffset.x * renderSize.width
+        let offsetY = backgroundOffset.y * renderSize.height
+        
+        // Center the scaled artwork and apply offset
+        let x = (renderSize.width - scaledWidth) / 2 + offsetX
+        let y = (renderSize.height - scaledHeight) / 2 + offsetY
+        
+        print("🖼️ COMPOSER DEBUG - Final frame: x=\(x), y=\(y), w=\(scaledWidth), h=\(scaledHeight)")
+        
+        artworkLayer.frame = CGRect(x: x, y: y, width: scaledWidth, height: scaledHeight)
+        artworkLayer.contentsGravity = .resize // Use resize since we're handling aspect fill manually
+        
         if let cg = artwork.cgImage {
             artworkLayer.contents = cg
         }

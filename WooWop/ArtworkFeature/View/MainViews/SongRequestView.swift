@@ -2,7 +2,7 @@
 //  SongRequestView.swift
 //  WooWop
 //
-//  Created by AI Assistant on 10/6/25.
+//  Created by Theron Jones on 10/6/25.
 //
 
 import SwiftUI
@@ -27,66 +27,79 @@ struct SongRequestView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        VStack(spacing: 20) {
-            // Song Artwork
-            AsyncImage(url: mediaItem.artworkURL) { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-            } placeholder: {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.3))
-                    .aspectRatio(1, contentMode: .fit)
-            }
-            .frame(width: 200, height: 200)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            
-            // Song Info
-            VStack(spacing: 8) {
-                Text(mediaItem.title ?? "Unknown Title")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .multilineTextAlignment(.center)
-                
-                Text(mediaItem.artist ?? "Unknown Artist")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            
-            // Connection Status
-            HStack {
-                Circle()
-                    .fill(multipeerManager.isConnected ? .green : .red)
-                    .frame(width: 8, height: 8)
-                
-                Text(multipeerManager.isConnected ? "Connected to DJ" : "Not connected to DJ")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            // Request Button
-            Button {
-                sendRequest()
-            } label: {
-                HStack {
-                    Image(systemName: "music.note")
-                    Text("Request This Song")
+        NavigationView {
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    // Top spacer - 1/3 of screen height
+                    Spacer()
+                        .frame(height: geometry.size.height * 0.10)
+                    
+                    // Content positioned at 2/3rds up the screen
+                    VStack(spacing: 20) {
+                        // Song Artwork
+                        AsyncImage(url: mediaItem.artworkURL) { image in
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.gray.opacity(0.3))
+                                .aspectRatio(1, contentMode: .fit)
+                        }
+                        .frame(width: 250, height: 250)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    
+                    // Song Info
+                    VStack(spacing: 8) {
+                        Text(mediaItem.title ?? "Unknown Title")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.center)
+                        
+                        Text(mediaItem.artist ?? "Unknown Artist")
+                            .font(.title3)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    
+                    // Connection Status
+                    HStack {
+                        Circle()
+                            .fill(multipeerManager.isConnected ? .green : .red)
+                            .frame(width: 8, height: 8)
+                        
+                        Text(multipeerManager.isConnected ? "Connected to DJ" : "Not connected to DJ")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    }
+                    
+                    // Bottom spacer - pushes content up and leaves room for button
+                    Spacer()
+                    
+                    // Request Button - always at bottom
+                    Button {
+                        sendRequest()
+                    } label: {
+                        HStack {
+                            Image(systemName: "music.note")
+                                .font(.system(size: 24))
+                            Text("Request This Song")
+                        }
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(multipeerManager.isConnected ? Color.blue : Color.gray)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(!multipeerManager.isConnected)
+                    .padding(.horizontal)
+                    .padding(.bottom, geometry.safeAreaInsets.bottom + 20)
                 }
-                .font(.headline)
-                .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(multipeerManager.isConnected ? Color.blue : Color.gray)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-            .disabled(!multipeerManager.isConnected)
         }
         .padding()
-        .navigationTitle("Request Song")
-        .navigationBarTitleDisplayMode(.inline)
         .alert("Request Sent!", isPresented: $showingSuccessAlert) {
             Button("OK") {
                 dismiss()

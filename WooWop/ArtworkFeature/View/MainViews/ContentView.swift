@@ -57,6 +57,9 @@ struct ContentView: View {
   var body: some View {
     NavigationStack {
       ZStack {
+        // Pure black background for found songs
+        Color.black.ignoresSafeArea()
+        
         if showProgress {
           ProgressView()
         } else {
@@ -80,10 +83,10 @@ struct ContentView: View {
             } else {
               // Show connection status when no image
               VStack(spacing: 16) {
-                Image(systemName: "music.note.house")
-                  .font(.system(size: 60))
-                  .foregroundColor(.blue)
-                
+                Image(systemName: "waveform")
+                  .font(.system(size: 90))
+                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                  .shadow(color: .cyan, radius: 10)
                 if !multipeerManager.isDJ && !multipeerManager.isConnected {
                   VStack(spacing: 8) {
                     ProgressView()
@@ -117,42 +120,110 @@ struct ContentView: View {
             showingDJQueue = true
           } label: {
             Image(systemName: "list.bullet.rectangle.fill")
+              .font(.system(size: 18)) // 25% smaller (was 24)
+              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+              .padding(8)
+              .background(
+                Circle()
+                  .fill(Color.black.opacity(0.4))
+              )
+              .shadow(
+                color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                radius: 6,
+                x: 0,
+                y: 2
+              )
               .accessibilityLabel("Queue")
           }
+          .padding(.trailing, 16) // Add extra spacing after DJ Queue icon
         }
         
         ToolbarItemGroup(placement: .navigationBarTrailing) {
-          if let mediaItem = mediaItem {
-            Button {
-              showingSongRequest = true
-            } label: {
-              Image(systemName: "paperplane.fill")
-                .accessibilityLabel("Send request")
+          HStack(spacing: -4) { // Reduce spacing between icons
+            if let mediaItem = mediaItem {
+              Button {
+                showingSongRequest = true
+              } label: {
+                Image(systemName: "paperplane.fill")
+                  .font(.system(size: 18)) // 25% smaller (was 24)
+                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                  .padding(8)
+                  .background(
+                    Circle()
+                      .fill(Color.black.opacity(0.4))
+                  )
+                  .shadow(
+                    color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                    radius: 6,
+                    x: 0,
+                    y: 2
+                  )
+                  .accessibilityLabel("Send request")
+              }
+              Button {
+                showingRecordSheet = true
+              } label: {
+                Image(systemName: "video.fill")
+                  .font(.system(size: 18)) // 25% smaller (was 24)
+                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                  .padding(8)
+                  .background(
+                    Circle()
+                      .fill(Color.black.opacity(0.4))
+                  )
+                  .shadow(
+                    color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                    radius: 6,
+                    x: 0,
+                    y: 2
+                  )
+                  .accessibilityLabel("Record video")
+              }
             }
-            Button {
-              showingRecordSheet = true
-            } label: {
-              Image(systemName: "video.fill")
-                .accessibilityLabel("Record video")
-            }
-          }
 
-          // Existing quick-identify button (unchanged behavior)
-          Button {
-            Task {
-              try await getMediaItem()
+            // Existing quick-identify button (unchanged behavior)
+            Button {
+              Task {
+                try await getMediaItem()
+              }
+            } label: {
+              Image(systemName: "music.note")
+                .font(.system(size: 18)) // 25% smaller (was 24)
+                .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                .padding(8)
+                .background(
+                  Circle()
+                    .fill(Color.black.opacity(0.4))
+                )
+                .shadow(
+                  color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                  radius: 6,
+                  x: 0,
+                  y: 2
+                )
+                .accessibilityLabel("Identify")
             }
-          } label: {
-            Image(systemName: "music.note")
-              .accessibilityLabel("Identify")
-          }
 
-          // New dedicated "Find" button that presents a text search input
-          Button {
-            showingSearchInput = true
-          } label: {
-            Image(systemName: "magnifyingglass")
-              .accessibilityLabel("Find song")
+            // New dedicated "Find" button that presents a text search input
+            Button {
+              showingSearchInput = true
+            } label: {
+              Image(systemName: "magnifyingglass")
+                .font(.system(size: 18)) // 25% smaller (was 24)
+                .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                .padding(8)
+                .background(
+                  Circle()
+                    .fill(Color.black.opacity(0.4))
+                )
+                .shadow(
+                  color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                  radius: 6,
+                  x: 0,
+                  y: 2
+                )
+                .accessibilityLabel("Find song")
+            }
           }
         }
       }
@@ -161,6 +232,7 @@ struct ContentView: View {
           NavigationView {
             SongRequestView(mediaItem: mediaItem, multipeerManager: multipeerManager)
           }
+          .preferredColorScheme(.dark)
         }
       }
       .sheet(isPresented: $showingSearchResults) {
@@ -170,6 +242,7 @@ struct ContentView: View {
           self.showingSearchResults = false
           self.showingSongRequest = true
         }
+        .preferredColorScheme(ColorScheme.dark)
       }
       .sheet(isPresented: $showingSearchInput) {
         // Show a text input sheet; onSearch will call the RemoteMediaLoader.search(term:)
@@ -211,6 +284,7 @@ struct ContentView: View {
           }
           return []
         })
+        .preferredColorScheme(ColorScheme.dark)
       }
       .sheet(isPresented: $showingRecordSheet) {
         if let mediaItem = mediaItem {
@@ -221,8 +295,10 @@ struct ContentView: View {
           RecordVideoView(artworkURL: nil, title: "Record")
         }
       }
+      .preferredColorScheme(ColorScheme.dark)
       .sheet(isPresented: $showingDJQueue) {
         DJQueueView(multipeerManager: multipeerManager)
+          .preferredColorScheme(ColorScheme.dark)
       }
       .onAppear {
         if !multipeerManager.isDJ && !multipeerManager.isConnected {

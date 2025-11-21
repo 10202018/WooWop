@@ -57,8 +57,6 @@ struct RecordVideoView: View {
                                 .aspectRatio(contentMode: .fill)
                                 .scaleEffect(scale)
                                 .offset(offset)
-                                .gesture(dragGesture())
-                                .gesture(magnificationGesture())
                                 .frame(width: geo.size.width, height: geo.size.height)
                                 .clipped()
                         } else {
@@ -80,6 +78,13 @@ struct RecordVideoView: View {
                 // capture canvas size for normalized rect calculation
                 Color.clear.onAppear { canvasSize = geo.size }
                 Color.clear.onChange(of: geo.size) { new in canvasSize = new }
+
+                // Background gesture overlay - captures gestures for background positioning
+                // but allows PIP to handle its own gestures
+                Color.clear
+                    .contentShape(Rectangle())
+                    .gesture(dragGesture())
+                    .gesture(magnificationGesture())
 
                 // compute base PIP size and initial anchored center (lower-right)
                 let baseSize = CGSize(width: 160, height: 240)
@@ -103,8 +108,8 @@ struct RecordVideoView: View {
                 HStack {
                     Button(action: { presentationMode.wrappedValue.dismiss() }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.title)
-                            .foregroundColor(.white)
+                            .font(.system(size: 36))
+                            .foregroundColor(Color(red: 0.42, green: 0.45, blue: 0.50))
                     }
                     Spacer()
                 }
@@ -125,8 +130,8 @@ struct RecordVideoView: View {
                             }
                         }) {
                             Image(systemName: "plus.magnifyingglass")
-                                .font(.title2)
-                                .foregroundColor(.white)
+                                .font(.system(size: 36))
+                                .foregroundColor(Color(red: 0.42, green: 0.45, blue: 0.50))
                                 .frame(width: 44, height: 44)
                                 .background(Color.black.opacity(0.6))
                                 .clipShape(Circle())
@@ -140,8 +145,8 @@ struct RecordVideoView: View {
                             }
                         }) {
                             Image(systemName: "minus.magnifyingglass")
-                                .font(.title2)
-                                .foregroundColor(.white)
+                                .font(.system(size: 36))
+                                .foregroundColor(Color(red: 0.42, green: 0.45, blue: 0.50))
                                 .frame(width: 44, height: 44)
                                 .background(Color.black.opacity(0.6))
                                 .clipShape(Circle())
@@ -153,7 +158,7 @@ struct RecordVideoView: View {
                         Circle()
                             .fill(isRecording ? Color.red : Color.white)
                             .frame(width: 68, height: 68)
-                            .overlay(Image(systemName: isRecording ? "stop.fill" : "record.circle").font(.title).foregroundColor(isRecording ? .white : .red))
+                            .overlay(Image(systemName: isRecording ? "stop.fill" : "record.circle").font(.system(size: 36)).foregroundColor(isRecording ? Color(red: 0.42, green: 0.45, blue: 0.50) : .red))
                     }
                     .padding(.bottom, 32)
 
@@ -225,7 +230,26 @@ struct RecordVideoView: View {
                 // a single final rect.
                 let keyframesToSend: [(time: TimeInterval, rect: CGRect)]? = pipKeyframes.isEmpty ? nil : pipKeyframes
 
-            VideoComposer.compose(cameraVideoURL: recordedURL, artwork: artworkImage, outputURL: out, pipRectNormalized: normRect, pipKeyframes: keyframesToSend) { result in
+            // Convert UI background positioning to normalized coordinates
+            let backgroundOffsetNormalized = CGPoint(
+                x: canvasSize.width > 0 ? offset.width / canvasSize.width : 0,
+                y: canvasSize.height > 0 ? offset.height / canvasSize.height : 0
+            )
+
+            print("🖼️ BACKGROUND DEBUG - Canvas size: \(canvasSize)")
+            print("🖼️ BACKGROUND DEBUG - UI offset: \(offset)")
+            print("🖼️ BACKGROUND DEBUG - UI scale: \(scale)")
+            print("🖼️ BACKGROUND DEBUG - Normalized offset: \(backgroundOffsetNormalized)")
+
+            VideoComposer.compose(
+                cameraVideoURL: recordedURL, 
+                artwork: artworkImage, 
+                outputURL: out, 
+                pipRectNormalized: normRect, 
+                pipKeyframes: keyframesToSend,
+                backgroundScale: scale,
+                backgroundOffset: backgroundOffsetNormalized
+            ) { result in
                 DispatchQueue.main.async {
                     isComposing = false
                 }
@@ -334,9 +358,11 @@ struct RecordVideoView: View {
         DragGesture()
             .onChanged { value in
                 offset = CGSize(width: lastOffset.width + value.translation.width, height: lastOffset.height + value.translation.height)
+                print("🖼️ BACKGROUND DEBUG - Drag offset: \(offset)")
             }
             .onEnded { _ in
                 lastOffset = offset
+                print("🖼️ BACKGROUND DEBUG - Final drag offset: \(offset)")
             }
     }
 
@@ -344,9 +370,11 @@ struct RecordVideoView: View {
         MagnificationGesture()
             .onChanged { value in
                 scale = lastScale * value
+                print("🖼️ BACKGROUND DEBUG - Magnification scale: \(scale)")
             }
             .onEnded { _ in
                 lastScale = scale
+                print("🖼️ BACKGROUND DEBUG - Final scale: \(scale)")
             }
     }
 
