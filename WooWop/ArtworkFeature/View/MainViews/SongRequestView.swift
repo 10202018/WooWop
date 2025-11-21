@@ -32,7 +32,7 @@ struct SongRequestView: View {
                 VStack(spacing: 0) {
                     // Top spacer - 1/3 of screen height
                     Spacer()
-                        .frame(height: geometry.size.height * 0.15)
+                        .frame(height: geometry.size.height * 0.10)
                     
                     // Content positioned at 2/3rds up the screen
                     VStack(spacing: 20) {
@@ -46,7 +46,7 @@ struct SongRequestView: View {
                                 .fill(Color.gray.opacity(0.3))
                                 .aspectRatio(1, contentMode: .fit)
                         }
-                        .frame(width: 200, height: 200)
+                        .frame(width: 250, height: 250)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     
                     // Song Info
