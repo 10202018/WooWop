@@ -25,10 +25,6 @@ struct ContentView: View {
   
   /// Currently identified media item with artwork and metadata
   @State private var mediaItem: MediaItem?
-  /// The list of search results returned from Shazam
-  @State private var searchResults: [MediaItem] = []
-  /// Controls showing the search results sheet
-  @State private var showingSearchResults = false
   /// Controls showing the search input sheet
   @State private var showingSearchInput = false
   
@@ -235,54 +231,41 @@ struct ContentView: View {
           .preferredColorScheme(.dark)
         }
       }
-      .sheet(isPresented: $showingSearchResults) {
-        SearchResultsView(results: searchResults, multipeerManager: multipeerManager) { selected in
-          // When the user selects an item from search results, set it as current mediaItem
-          self.mediaItem = selected
-          self.showingSearchResults = false
-          self.showingSongRequest = true
-        }
-        .preferredColorScheme(ColorScheme.dark)
-      }
       .sheet(isPresented: $showingSearchInput) {
         // Show a text input sheet; onSearch will call the RemoteMediaLoader.search(term:)
         SearchInputView(onSearch: { term in
           if let remote = mediaLoader as? RemoteMediaLoader {
             let result = await remote.search(term: term)
-            switch result {
-            case .match(let items):
-              self.searchResults = items
-              self.showingSearchResults = true
-            case .noMatch:
-              self.searchResults = []
-              self.showingSearchResults = true
-            case .error(let error):
-              print("Search error: \(error)")
-              self.searchResults = []
-              self.showingSearchResults = true
+            await MainActor.run {
+              // Just dismiss SearchInputView - user selects from suggestions instead
+              self.showingSearchInput = false
             }
           } else {
-            // mediaLoader doesn't support text search; no-op
-            self.searchResults = []
-            self.showingSearchResults = true
+            await MainActor.run {
+              self.showingSearchInput = false
+            }
           }
         }, onSelect: { item in
           // When a suggestion is tapped, directly set the media item and present the song request UI
           await MainActor.run {
             self.mediaItem = item
-            self.showingSearchResults = false
-            self.showingSongRequest = true
+            self.showingSearchInput = false   // Dismiss SearchInputView
+            self.showingSongRequest = true    // Go directly to SongRequestView
           }
         }, suggestionProvider: { term in
-          // Provide live suggestions by reusing the RemoteMediaLoader.text search fallback
           if let remote = mediaLoader as? RemoteMediaLoader {
             let result = await remote.search(term: term)
             switch result {
-            case .match(let items): return items
-            default: return []
+            case .match(let items):
+              return items
+            case .noMatch:
+              return []
+            case .error(_):
+              return []
             }
+          } else {
+            return []
           }
-          return []
         })
         .preferredColorScheme(ColorScheme.dark)
       }
@@ -340,14 +323,18 @@ struct ContentView: View {
       let result = try await mediaLoader.loadMedia()
       switch result {
       case .match(let mediaItems):
-        // Present the list of matches so the user may choose which to request
-        self.searchResults = mediaItems
-        self.showingSearchResults = true
+        // If we get multiple matches, just take the first one for direct song request
+        if let firstItem = mediaItems.first {
+          await MainActor.run {
+            self.mediaItem = firstItem
+            self.showingSongRequest = true
+          }
+        }
       case .noMatch:
-        self.searchResults = []
+        // Handle no match case - maybe show an alert or just do nothing
+        break
       case .error(let error):
         print(error)
-        self.searchResults = []
       }
       showProgress.toggle()
     } catch(let error) {

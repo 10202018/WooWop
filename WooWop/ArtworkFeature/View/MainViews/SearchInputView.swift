@@ -75,11 +75,9 @@ struct SearchInputView: View {
                             handleQueryChange(new)
                         }
                         .onSubmit {
-                            Task {
-                                isSearching = true
-                                await onSearch(query)
-                                isSearching = false
-                                dismiss()
+                            // Just trigger suggestions display, don't call onSearch
+                            if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                handleQueryChange(query)
                             }
                         }
                         .padding(.horizontal)
@@ -94,22 +92,14 @@ struct SearchInputView: View {
                     // show a scrollable list of suggestions with cyberpunk styling
                     List(suggestions, id: \.artworkURL) { item in
                         Button(action: {
-                            // If a direct select handler is provided, call it and avoid the SearchResults flow.
+                            // Always use onSelect for direct suggestion taps
                             Task {
                                 if let select = onSelect {
                                     isSearching = true
                                     await select(item)
                                     isSearching = false
-                                    dismiss()
-                                    return
+                                    // Let ContentView handle dismissal
                                 }
-
-                                // populate the field with the suggestion and commit a search
-                                query = (item.title ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                                isSearching = true
-                                await onSearch(query)
-                                isSearching = false
-                                dismiss()
                             }
                         }) {
                             HStack(spacing: 12) {
@@ -170,11 +160,9 @@ struct SearchInputView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Search") {
-                        Task {
-                            isSearching = true
-                            await onSearch(query)
-                            isSearching = false
-                            dismiss()
+                        // Just trigger suggestions display, don't call onSearch
+                        if !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            handleQueryChange(query)
                         }
                     }
                     .disabled(query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)

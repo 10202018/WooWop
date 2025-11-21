@@ -76,6 +76,7 @@ public class RemoteMediaLoader: MediaLoader {
 
     do {
       let (data, _) = try await URLSession.shared.data(from: url)
+      
       struct ITunesResponse: Decodable {
         struct ITunesItem: Decodable {
           let trackName: String?
@@ -86,11 +87,11 @@ public class RemoteMediaLoader: MediaLoader {
       }
 
       let resp = try JSONDecoder().decode(ITunesResponse.self, from: data)
+      
       let items: [MediaItem] = resp.results.compactMap { it in
-        guard var artwork = it.artworkUrl100 else { return nil }
-        
-        // DEBUG: Print original iTunes artwork URL
-        print("🎵 ITUNES DEBUG - Original artwork URL: \(artwork)")
+        guard var artwork = it.artworkUrl100 else { 
+          return nil 
+        }
         
         // iTunes artwork URLs include size tokens like 100x100 - prefer a higher-res variant when possible
         // Replace only if current resolution is lower than 600x600 for better quality artwork.
@@ -102,20 +103,18 @@ public class RemoteMediaLoader: MediaLoader {
              let currentWidth = Int(String(sizeString[..<xIndex])) {
             
             if currentWidth < 600 {
-              print("🎵 ITUNES DEBUG - Current resolution (\(currentWidth)x\(currentWidth)) is low, upgrading to 600x600")
               artwork.replaceSubrange(range, with: "600x600")
-              print("🎵 ITUNES DEBUG - Enhanced artwork URL: \(artwork)")
-            } else {
-              print("🎵 ITUNES DEBUG - Current resolution (\(currentWidth)x\(currentWidth)) is already high quality, keeping original")
             }
           }
-        } else {
-          print("🎵 ITUNES DEBUG - No resolution pattern found in URL - cannot enhance")
         }
         
-        guard let artURL = URL(string: artwork) else { return nil }
+        guard let artURL = URL(string: artwork) else { 
+          return nil 
+        }
+        
         return MediaItem(artworkURL: artURL, title: it.trackName, artist: it.artistName, shazamID: nil)
       }
+      
       return items.isEmpty ? LoadMediaResult.noMatch : LoadMediaResult.match(items)
     } catch {
       return LoadMediaResult.error(error)
