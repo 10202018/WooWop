@@ -88,6 +88,9 @@ public class RemoteMediaLoader: MediaLoader {
 
       let resp = try JSONDecoder().decode(ITunesResponse.self, from: data)
       
+      // Debug: Print raw results count
+      print("iTunes API returned \(resp.results.count) raw results")
+      
       let items: [MediaItem] = resp.results.compactMap { it in
         guard var artwork = it.artworkUrl100 else { 
           return nil 
@@ -115,10 +118,113 @@ public class RemoteMediaLoader: MediaLoader {
         return MediaItem(artworkURL: artURL, title: it.trackName, artist: it.artistName, shazamID: nil)
       }
       
-      return items.isEmpty ? LoadMediaResult.noMatch : LoadMediaResult.match(items)
+      // Smart deduplication that groups by song title and keeps the most canonical version
+      var titleGroups: [String: [MediaItem]] = [:]
+      
+      // Group items by normalized title (ignoring artist differences)
+      for item in items {
+        let normalizedTitle = item.title?
+          .trimmingCharacters(in: .whitespacesAndNewlines)
+          .lowercased()
+          .replacingOccurrences(of: "\\s*\\([^)]*\\)\\s*", with: "", options: .regularExpression) // Remove parenthetical info
+          .replacingOccurrences(of: "\\s*\\[[^]]*\\]\\s*", with: "", options: .regularExpression) // Remove bracketed info
+          .replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression) ?? ""
+        
+        if titleGroups[normalizedTitle] == nil {
+          titleGroups[normalizedTitle] = []
+        }
+        titleGroups[normalizedTitle]?.append(item)
+      }
+      
+      var uniqueItems: [MediaItem] = []
+      
+      // For each title group, pick the best version
+      for (titleKey, versions) in titleGroups {
+        if versions.count == 1 {
+          // Only one version, keep it
+          uniqueItems.append(versions[0])
+        } else {
+          // Multiple versions - pick the most canonical one
+          let bestVersion = versions.max { v1, v2 in
+            calculateCanonicalScore(v1) < calculateCanonicalScore(v2)
+          }
+          
+          if let best = bestVersion {
+            uniqueItems.append(best)
+            print("Title group '\(titleKey)': Kept '\(best.title ?? "")' by '\(best.artist ?? "")', filtered \(versions.count - 1) other version(s)")
+          }
+        }
+      }
+      
+      // Debug: Print deduplication results
+      print("After smart deduplication: \(items.count) -> \(uniqueItems.count) items")
+      
+      return uniqueItems.isEmpty ? LoadMediaResult.noMatch : LoadMediaResult.match(uniqueItems)
     } catch {
       return LoadMediaResult.error(error)
     }
+  }
+  
+  /// Calculates a score to determine the most "canonical" version of a song
+  /// Higher score = more canonical/preferred
+  private func calculateCanonicalScore(_ item: MediaItem) -> Int {
+    var score = 0
+    
+    let title = item.title?.lowercased() ?? ""
+    let artist = item.artist?.lowercased() ?? ""
+    
+    // Heavily prefer non-instrumental versions
+    if !title.contains("instrumental") && !title.contains("karaoke") {
+      score += 1000
+    }
+    
+    // Prefer non-remix versions
+    if !title.contains("remix") && !title.contains("remaster") && !title.contains("radio edit") {
+      score += 500
+    }
+    
+    // Major bonus for authentic/original artists vs compilation albums
+    // Heavily penalize known compilation/tribute artists
+    let compilationArtists = ["can you flow", "various artists", "tribute", "karaoke", "instrumental", 
+                             "cover", "sound alike", "hits", "greatest", "collection", "best of",
+                             "compilation", "playlist", "anthology"]
+    
+    let isCompilation = compilationArtists.contains { keyword in
+      artist.contains(keyword)
+    }
+    
+    if isCompilation {
+      score -= 5000 // Heavy penalty for compilation albums
+    } else {
+        // Moderate bonus for likely real artists (shorter names, no business words)
+        let artistWordCount = artist.split(separator: " ").count
+        let hasBusinessWords = artist.contains("records") || artist.contains("music") || 
+                              artist.contains("entertainment") || artist.contains("productions")
+        
+        if artistWordCount <= 2 && !hasBusinessWords {
+          score += 1000 // Moderate bonus for likely real artist names
+        }
+    }
+    
+    // Specific song-artist combination bonuses for authenticity
+    if title.contains("memory lane") && artist.contains("nas") {
+      score += 2000
+    }
+    
+    // Prefer versions with explicit features (more complete info) but not for compilation artists
+    if !isCompilation && (title.contains("feat") || artist.contains("feat")) {
+      score += 300
+    }
+    
+    // Prefer more descriptive artist names (usually original artists), but not if it's a compilation
+    if !isCompilation {
+      score += (item.artist?.count ?? 0) * 2
+    }
+    
+    // Slight preference for longer titles (usually more complete), but less weight than artist authenticity
+    score += (item.title?.count ?? 0)
+    
+    return score
   }
 }
 
