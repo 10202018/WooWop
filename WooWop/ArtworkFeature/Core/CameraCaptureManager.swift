@@ -31,7 +31,7 @@ final class CameraCapture: NSObject {
     private var currentOutputURL: URL?
     private var currentVideoDevice: AVCaptureDevice?
 
-    private override init() {
+    override init() {
         super.init()
     }
 
