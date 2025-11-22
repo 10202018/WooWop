@@ -214,9 +214,16 @@ struct DJQueueView: View {
                         }
                     }
                     
-                    // Song Requests List
+                    // Song Requests List  
                     List {
-                        ForEach(multipeerManager.receivedRequests) { request in
+                        ForEach(multipeerManager.receivedRequests.sorted(by: { 
+                            // Primary sort: highest upvotes first (use upvoters.count as source of truth)
+                            if $0.upvoters.count != $1.upvoters.count {
+                                return $0.upvoters.count > $1.upvoters.count
+                            }
+                            // Secondary sort: oldest requests first (tiebreaker)
+                            return $0.timestamp < $1.timestamp
+                        })) { request in
                             let localName = multipeerManager.localDisplayName
                             let canUpvote = (request.requesterName != localName) && !request.upvoters.contains(localName)
                             
