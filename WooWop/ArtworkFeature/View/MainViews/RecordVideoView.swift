@@ -180,6 +180,17 @@ struct RecordVideoView: View {
                 NotificationCenter.default.removeObserver(obs)
                 recordingObserver = nil
             }
+            
+            // Stop any active recording first
+            if isRecording {
+                CameraCapture.shared.stopRecording()
+            }
+            
+            // Stop the camera session to turn off the green recording light
+            // Do this synchronously to ensure it's fully stopped before view disappears
+            if CameraCapture.shared.session.isRunning {
+                CameraCapture.shared.session.stopRunning()
+            }
         }
         // Simple composing progress overlay
         .overlay(Group {
