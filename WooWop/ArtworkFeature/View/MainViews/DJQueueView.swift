@@ -49,72 +49,92 @@ struct DJQueueView: View {
                 }
                 
                 VStack(spacing: 16) {
-                    // DJ Status Header with cyberpunk styling
-                    VStack(spacing: 8) {
-                        HStack {
-                            Circle()
-                                .fill(multipeerManager.isDJ ? Color(red: 0.0, green: 0.941, blue: 1.0) : Color.gray) // Electric blue
-                                .frame(width: 12, height: 12)
-                                .shadow(
-                                    color: multipeerManager.isDJ ? Color(red: 0.0, green: 0.941, blue: 1.0) : Color.clear,
-                                    radius: 4
-                                )
-                            
-                            Text(multipeerManager.isDJ ? "DJ Mode Active" : "DJ Mode Inactive")
-                                .font(.headline.weight(.medium))
-                                .textCase(.uppercase)
-                                .foregroundColor(multipeerManager.isDJ ? Color(red: 0.0, green: 0.941, blue: 1.0) : Color.gray)
-                        }
-                        
-                        Text("\(multipeerManager.connectedPeers.count) connected devices")
-                            .font(.caption)
-                            .foregroundColor(Color.white.opacity(0.7))
-                    }
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color(red: 0.086, green: 0.129, blue: 0.243).opacity(0.6)) // Surface card
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 16)
-                                    .strokeBorder(
-                                        LinearGradient(
-                                            colors: [
-                                                Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
-                                                Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.1)
-                                            ],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        ),
-                                        lineWidth: 1
+                    // Status Header - only show DJ mode status for DJs
+                    if multipeerManager.isDJ {
+                        VStack(spacing: 8) {
+                            HStack {
+                                Circle()
+                                    .fill(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+                                    .frame(width: 12, height: 12)
+                                    .shadow(
+                                        color: Color(red: 0.0, green: 0.941, blue: 1.0),
+                                        radius: 4
                                     )
-                            )
-                    )
-                    .shadow(
-                        color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.1),
-                        radius: 8,
-                        x: 0,
-                        y: 4
-                    )
-                    
-                    // For listeners, show the currently-discovered DJ's name if available
-                    if !multipeerManager.isDJ {
-                        HStack(spacing: 8) {
-                            if let dj = multipeerManager.currentDJName, !dj.isEmpty {
-                                Text("DJ \(dj)")
-                                    .font(.subheadline)
-                                    .bold()
-                            } else if multipeerManager.djAvailable {
-                                Text("DJ: (unknown)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            } else {
-                                Text("No DJ connected")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                
+                                Text("DJ Mode Active")
+                                    .font(.headline.weight(.medium))
+                                    .textCase(.uppercase)
+                                    .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0))
                             }
+                            
+                            Text("\(multipeerManager.connectedPeers.count) connected devices")
+                                .font(.caption)
+                                .foregroundColor(Color.white.opacity(0.7))
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 4)
+                    } else {
+                        // For listeners, show DJ name and connection info
+                        VStack(spacing: 8) {
+                            HStack(spacing: 8) {
+                                if let dj = multipeerManager.currentDJName, !dj.isEmpty {
+                                    Circle()
+                                        .fill(Color(red: 0.0, green: 0.941, blue: 1.0))
+                                        .frame(width: 12, height: 12)
+                                        .shadow(
+                                            color: Color(red: 0.0, green: 0.941, blue: 1.0),
+                                            radius: 4
+                                        )
+                                    Text("DJ \(dj)")
+                                        .font(.headline.weight(.medium))
+                                        .textCase(.uppercase)
+                                        .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0))
+                                } else if multipeerManager.djAvailable {
+                                    Circle()
+                                        .fill(Color.gray)
+                                        .frame(width: 12, height: 12)
+                                    Text("DJ: (unknown)")
+                                        .font(.headline.weight(.medium))
+                                        .textCase(.uppercase)
+                                        .foregroundColor(.secondary)
+                                } else {
+                                    Circle()
+                                        .fill(Color.gray)
+                                        .frame(width: 12, height: 12)
+                                    Text("No DJ connected")
+                                        .font(.headline.weight(.medium))
+                                        .textCase(.uppercase)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            
+                            Text("\(multipeerManager.connectedPeers.count) connected devices")
+                                .font(.caption)
+                                .foregroundColor(Color.white.opacity(0.7))
+                        }
+                        .padding()
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color(red: 0.086, green: 0.129, blue: 0.243).opacity(0.6)) // Surface card
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .strokeBorder(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                                                    Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.1)
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 1
+                                        )
+                                )
+                        )
+                        .shadow(
+                            color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.1),
+                            radius: 8,
+                            x: 0,
+                            y: 4
+                        )
                     }
                     
                     // Control Buttons: only visible to the DJ. Listeners should not see Start/Stop controls.

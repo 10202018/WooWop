@@ -333,6 +333,11 @@ extension MultipeerManager: MCSessionDelegate {
                     let advertised = self.discoveredDJNames[peerID.displayName]
                     self.currentDJName = advertised ?? peerID.displayName
                     self.djAvailable = true
+                    
+                    // Request the queue from newly connected DJ to ensure we have fresh data
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        self.requestQueue()
+                    }
                 }
                 print("Connected to: \(peerID.displayName)")
             case .connecting:
@@ -340,11 +345,34 @@ extension MultipeerManager: MCSessionDelegate {
             case .notConnected:
                 self.connectedPeers.removeAll { $0 == peerID }
                 self.isConnected = !self.connectedPeers.isEmpty
-                // If the disconnected peer was the DJ we were tracking, clear it
-                if self.currentDJName == self.discoveredDJNames[peerID.displayName] || self.currentDJName == peerID.displayName {
-                    self.currentDJName = nil
-                    self.djAvailable = !self.connectedPeers.isEmpty
+                
+                // If the disconnected peer was the DJ we were tracking, handle cleanup
+                if !self.isDJ {
+                    let wasTrackedDJ = (self.currentDJName == self.discoveredDJNames[peerID.displayName]) || 
+                                      (self.currentDJName == peerID.displayName)
+                    
+                    if wasTrackedDJ {
+                        // Check if we have any other connected DJs
+                        var hasOtherDJ = false
+                        for peer in self.connectedPeers {
+                            if self.discoveredDJNames[peer.displayName] != nil {
+                                // Found another connected DJ, switch to them
+                                let newDJName = self.discoveredDJNames[peer.displayName] ?? peer.displayName
+                                self.currentDJName = newDJName
+                                hasOtherDJ = true
+                                print("Switched to DJ: \(newDJName)")
+                                break
+                            }
+                        }
+                        
+                        if !hasOtherDJ {
+                            // No other DJs connected
+                            self.currentDJName = nil
+                            self.djAvailable = false
+                        }
+                    }
                 }
+                
                 // Remove any cached advertised name for this peer
                 self.discoveredDJNames.removeValue(forKey: peerID.displayName)
                 print("Disconnected from: \(peerID.displayName)")
@@ -465,6 +493,14 @@ extension MultipeerManager: MCNearbyServiceBrowserDelegate {
             DispatchQueue.main.async {
                 self.djAvailable = true
                 let advertisedName = info["name"] ?? peerID.displayName
+                
+                // Check if we already have a stale connection to a peer with the same display name
+                // This can happen when a DJ app is killed and relaunched quickly
+                if let existingPeer = self.connectedPeers.first(where: { $0.displayName == peerID.displayName && $0 != peerID }) {
+                    print("Found stale connection to \(existingPeer.displayName), will be cleaned up automatically")
+                    // The stale connection will be cleaned up by the session timeout
+                }
+                
                 // Cache advertised DJ name keyed by the peer's displayName so we can use it when connected
                 self.discoveredDJNames[peerID.displayName] = advertisedName
                 self.currentDJName = advertisedName
@@ -479,16 +515,28 @@ extension MultipeerManager: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
         print("Lost peer: \(peerID.displayName)")
         DispatchQueue.main.async {
-            // If we lost a peer that we had an advertised name for, clear it
-            if let advertised = self.discoveredDJNames[peerID.displayName] {
-                if self.currentDJName == advertised {
+            // Only clear DJ name if the peer is actually disconnected from the session
+            // Don't clear on browser "lostPeer" events since peers can be temporarily lost
+            // from discovery while still maintaining an active session connection
+            let isStillConnected = self.connectedPeers.contains(peerID)
+            
+            if !isStillConnected {
+                // Peer is actually disconnected, safe to clear
+                if let advertised = self.discoveredDJNames[peerID.displayName] {
+                    if self.currentDJName == advertised {
+                        self.currentDJName = nil
+                        self.djAvailable = false
+                    }
+                    self.discoveredDJNames.removeValue(forKey: peerID.displayName)
+                } else if self.currentDJName == peerID.displayName {
                     self.currentDJName = nil
                     self.djAvailable = false
                 }
-                self.discoveredDJNames.removeValue(forKey: peerID.displayName)
-            } else if self.currentDJName == peerID.displayName {
-                self.currentDJName = nil
-                self.djAvailable = false
+            } else {
+                // Peer is still connected to session, just lost from discovery
+                // Keep the DJ name but remove from discovery cache for now
+                print("Peer \(peerID.displayName) lost from discovery but still connected to session")
+                // Don't remove from discoveredDJNames as it might be rediscovered
             }
         }
     }
