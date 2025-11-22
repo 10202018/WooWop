@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		352711D72ED1B5F5009147CF /* MultipeerManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352711D62ED1B5F5009147CF /* MultipeerManagerTests.swift */; };
 		359539152EB0587D0034E334 /* QueueMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359539142EB0587D0034E334 /* QueueMessageTests.swift */; };
 		35DC73732EB318050004A819 /* UpvoteLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73722EB318050004A819 /* UpvoteLogicTests.swift */; };
 		35DC73752EB326000004A819 /* VideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73742EB326000004A819 /* VideoComposer.swift */; };
@@ -17,6 +18,7 @@
 		35F053172EC41A2200B59438 /* SearchInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053162EC41A2200B59438 /* SearchInputView.swift */; };
 		35F053192EC8E8B100B59438 /* RemoveRequestTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053182EC8E8B100B59438 /* RemoveRequestTests.swift */; };
 		35F0532A2ECE86CC00B59438 /* AfterHoursComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053292ECE86CC00B59438 /* AfterHoursComponents.swift */; };
+		35F053322EEDB03100B59438 /* MultipeerManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F053312EEDB03000B59438 /* MultipeerManagerTests.swift */; };
 		35F5D9DF2E94A3EA00CD46EA /* MultipeerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */; };
 		35F5D9E12E94A44400CD46EA /* ConnectionSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */; };
 		35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */; };
@@ -48,6 +50,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		352711D62ED1B5F5009147CF /* MultipeerManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManagerTests.swift; sourceTree = "<group>"; };
 		359539142EB0587D0034E334 /* QueueMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueMessageTests.swift; sourceTree = "<group>"; };
 		35DC73722EB318050004A819 /* UpvoteLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpvoteLogicTests.swift; sourceTree = "<group>"; };
 		35DC73742EB326000004A819 /* VideoComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoComposer.swift; sourceTree = "<group>"; };
@@ -61,6 +64,7 @@
 		35F053222ECE810B00B59438 /* CosmicContentViewExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CosmicContentViewExample.swift; sourceTree = "<group>"; };
 		35F053292ECE86CC00B59438 /* AfterHoursComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfterHoursComponents.swift; sourceTree = "<group>"; };
 		35F053302EEDB02F00B59438 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		35F053312EEDB03000B59438 /* MultipeerManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManagerTests.swift; sourceTree = "<group>"; };
 		35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManager.swift; sourceTree = "<group>"; };
 		35F5D9E02E94A44400CD46EA /* ConnectionSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionSetupView.swift; sourceTree = "<group>"; };
 		35F5D9E22E94A44F00CD46EA /* DJQueueView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DJQueueView.swift; sourceTree = "<group>"; };
@@ -207,8 +211,10 @@
 		5BB5963B2C6AF3E700C4CACF /* WooWopTests */ = {
 			isa = PBXGroup;
 			children = (
+				352711D62ED1B5F5009147CF /* MultipeerManagerTests.swift */,
 				5BB5963C2C6AF3E700C4CACF /* WooWopTests.swift */,
 				359539142EB0587D0034E334 /* QueueMessageTests.swift */,
+				35F053312EEDB03000B59438 /* MultipeerManagerTests.swift */,
 				5BB596432C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift */,
 				35DC73722EB318050004A819 /* UpvoteLogicTests.swift */,
 				35F053182EC8E8B100B59438 /* RemoveRequestTests.swift */,
@@ -359,6 +365,8 @@
 			files = (
 				35DC737D2EB403C10004A819 /* RecordVideoTests.swift in Sources */,
 				35F053192EC8E8B100B59438 /* RemoveRequestTests.swift in Sources */,
+				35F053322EEDB03100B59438 /* MultipeerManagerTests.swift in Sources */,
+				352711D72ED1B5F5009147CF /* MultipeerManagerTests.swift in Sources */,
 				5BB5963D2C6AF3E700C4CACF /* WooWopTests.swift in Sources */,
 				35DC73732EB318050004A819 /* UpvoteLogicTests.swift in Sources */,
 				5BB596442C6AF40F00C4CACF /* RemoteMediaLoaderTests.swift in Sources */,
