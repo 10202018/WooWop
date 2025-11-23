@@ -89,7 +89,7 @@ public class RemoteMediaLoader: MediaLoader {
       let resp = try JSONDecoder().decode(ITunesResponse.self, from: data)
       
       // Debug: Print raw results count
-      print("iTunes API returned \(resp.results.count) raw results")
+      print("iTunes API returned \(resp.results.count) raw results for search: '\(term)'")
       
       let items: [MediaItem] = resp.results.compactMap { it in
         guard var artwork = it.artworkUrl100 else { 
@@ -126,9 +126,17 @@ public class RemoteMediaLoader: MediaLoader {
         let normalizedTitle = item.title?
           .trimmingCharacters(in: .whitespacesAndNewlines)
           .lowercased()
-          .replacingOccurrences(of: "\\s*\\([^)]*\\)\\s*", with: "", options: .regularExpression) // Remove parenthetical info
+          // Only remove common metadata patterns in parentheses, not song titles
+          .replacingOccurrences(of: "\\s*\\(feat[^)]*\\)\\s*", with: "", options: .regularExpression) // Remove feat. info
+          .replacingOccurrences(of: "\\s*\\(remix\\)\\s*", with: "", options: .regularExpression) // Remove remix labels
+          .replacingOccurrences(of: "\\s*\\(remaster[^)]*\\)\\s*", with: "", options: .regularExpression) // Remove remaster info
+          .replacingOccurrences(of: "\\s*\\(radio edit\\)\\s*", with: "", options: .regularExpression) // Remove radio edit
+          .replacingOccurrences(of: "\\s*\\(acoustic\\)\\s*", with: "", options: .regularExpression) // Remove acoustic labels
+          .replacingOccurrences(of: "\\s*\\(live\\)\\s*", with: "", options: .regularExpression) // Remove live labels
           .replacingOccurrences(of: "\\s*\\[[^]]*\\]\\s*", with: "", options: .regularExpression) // Remove bracketed info
-          .replacingOccurrences(of: "[^a-z0-9]", with: "", options: .regularExpression) ?? ""
+          .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression) // Normalize whitespace to single spaces
+          .replacingOccurrences(of: "[^a-z0-9 ()]", with: "", options: .regularExpression) // Remove special chars but keep spaces and parentheses
+          .trimmingCharacters(in: .whitespaces) ?? ""
         
         if titleGroups[normalizedTitle] == nil {
           titleGroups[normalizedTitle] = []
@@ -139,7 +147,8 @@ public class RemoteMediaLoader: MediaLoader {
       var uniqueItems: [MediaItem] = []
       
       // For each title group, pick the best version
-      for (titleKey, versions) in titleGroups {
+      // Sort by title to ensure consistent ordering across searches
+      for (titleKey, versions) in titleGroups.sorted(by: { $0.key < $1.key }) {
         if versions.count == 1 {
           // Only one version, keep it
           uniqueItems.append(versions[0])
@@ -151,9 +160,16 @@ public class RemoteMediaLoader: MediaLoader {
           
           if let best = bestVersion {
             uniqueItems.append(best)
-            print("Title group '\(titleKey)': Kept '\(best.title ?? "")' by '\(best.artist ?? "")', filtered \(versions.count - 1) other version(s)")
           }
         }
+      }
+      
+      // Sort final results by search relevance first, then canonical score
+      let searchTermLower = term.lowercased()
+      uniqueItems.sort { item1, item2 in
+        let score1 = calculateCanonicalScore(item1) + calculateSearchRelevance(item1, searchTerm: searchTermLower)
+        let score2 = calculateCanonicalScore(item2) + calculateSearchRelevance(item2, searchTerm: searchTermLower)
+        return score1 > score2
       }
       
       // Debug: Print deduplication results
@@ -201,14 +217,9 @@ public class RemoteMediaLoader: MediaLoader {
         let hasBusinessWords = artist.contains("records") || artist.contains("music") || 
                               artist.contains("entertainment") || artist.contains("productions")
         
-        if artistWordCount <= 2 && !hasBusinessWords {
-          score += 1000 // Moderate bonus for likely real artist names
+        if artistWordCount <= 3 && !hasBusinessWords {
+          score += 1000 // Moderate bonus for likely real artist names (increased from 2 to 3 words)
         }
-    }
-    
-    // Specific song-artist combination bonuses for authenticity
-    if title.contains("memory lane") && artist.contains("nas") {
-      score += 2000
     }
     
     // Prefer versions with explicit features (more complete info) but not for compilation artists
@@ -225,6 +236,29 @@ public class RemoteMediaLoader: MediaLoader {
     score += (item.title?.count ?? 0)
     
     return score
+  }
+  
+  /// Calculates a search relevance score based on how well the item matches the search term
+  /// Higher score = more relevant to what the user searched for
+  private func calculateSearchRelevance(_ item: MediaItem, searchTerm: String) -> Int {
+    var relevanceScore = 0
+    
+    let title = item.title?.lowercased() ?? ""
+    let artist = item.artist?.lowercased() ?? ""
+    let searchWords = searchTerm.split(separator: " ").map { String($0) }
+    
+    // Major bonus for exact artist name match
+    for word in searchWords {
+      if artist.contains(word) {
+        relevanceScore += 1000
+      }
+      
+      if title.contains(word) {
+        relevanceScore += 500
+      }
+    }
+    
+    return relevanceScore
   }
 }
 
