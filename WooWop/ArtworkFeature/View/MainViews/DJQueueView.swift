@@ -16,6 +16,30 @@ struct DJQueueView: View {
     /// Manager handling multipeer connectivity and song request data
     @ObservedObject var multipeerManager: MultipeerManager
     @State private var isSyncing: Bool = false
+    @State private var searchText: String = ""
+    
+    /// Filtered song requests based on search text
+    private var filteredRequests: [SongRequest] {
+        let allRequests = multipeerManager.receivedRequests.sorted(by: { 
+            // Primary sort: highest upvotes first (use upvoters.count as source of truth)
+            if $0.upvoters.count != $1.upvoters.count {
+                return $0.upvoters.count > $1.upvoters.count
+            }
+            // Secondary sort: oldest requests first (tiebreaker)
+            return $0.timestamp < $1.timestamp
+        })
+        
+        if searchText.isEmpty {
+            return allRequests
+        }
+        
+        return allRequests.filter { request in
+            let searchLower = searchText.lowercased()
+            return request.title.lowercased().contains(searchLower) ||
+                   request.artist.lowercased().contains(searchLower) ||
+                   request.requesterName.lowercased().contains(searchLower)
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -234,16 +258,55 @@ struct DJQueueView: View {
                         }
                     }
                     
+                    // Search Bar - only show if there are requests to search through
+                    if !multipeerManager.receivedRequests.isEmpty {
+                        VStack(spacing: 8) {
+                            HStack {
+                                Image(systemName: "magnifyingglass")
+                                    .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.7))
+                                    .font(.system(size: 16))
+                                
+                                TextField("Search queue by song, artist, or requester...", text: $searchText)
+                                    .textFieldStyle(.plain)
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 16))
+                                
+                                if !searchText.isEmpty {
+                                    Button {
+                                        searchText = ""
+                                    } label: {
+                                        Image(systemName: "xmark.circle.fill")
+                                            .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.7))
+                                            .font(.system(size: 16))
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 12)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(red: 0.086, green: 0.129, blue: 0.243).opacity(0.8))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .strokeBorder(
+                                                Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                                                lineWidth: 1
+                                            )
+                                    )
+                            )
+                            
+                            // Search results count
+                            if !searchText.isEmpty {
+                                Text("\(filteredRequests.count) of \(multipeerManager.receivedRequests.count) requests")
+                                    .font(.caption2)
+                                    .foregroundColor(Color.white.opacity(0.6))
+                            }
+                        }
+                    }
+                    
                     // Song Requests List  
                     List {
-                        ForEach(multipeerManager.receivedRequests.sorted(by: { 
-                            // Primary sort: highest upvotes first (use upvoters.count as source of truth)
-                            if $0.upvoters.count != $1.upvoters.count {
-                                return $0.upvoters.count > $1.upvoters.count
-                            }
-                            // Secondary sort: oldest requests first (tiebreaker)
-                            return $0.timestamp < $1.timestamp
-                        })) { request in
+                        ForEach(filteredRequests) { request in
                             let localName = multipeerManager.localDisplayName
                             let canUpvote = (request.requesterName != localName) && !request.upvoters.contains(localName)
                             
@@ -292,11 +355,23 @@ struct DJQueueView: View {
                     }
                     .listStyle(PlainListStyle())
                     
+                    // Empty state messages
                     if multipeerManager.receivedRequests.isEmpty && multipeerManager.isDJ {
                         Spacer()
                         Text("No song requests yet")
                             .font(.title3)
                             .foregroundColor(.secondary)
+                        Spacer()
+                    } else if filteredRequests.isEmpty && !searchText.isEmpty {
+                        Spacer()
+                        VStack(spacing: 8) {
+                            Text("No matches found")
+                                .font(.title3)
+                                .foregroundColor(.secondary)
+                            Text("Try adjusting your search terms")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                         Spacer()
                     }
                 }
