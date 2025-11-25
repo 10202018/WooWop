@@ -47,6 +47,12 @@ struct ContentView: View {
   /// Final scale factor after gesture completion
   @State var scaledFrame: CGFloat = 1.0
   
+  /// Current offset for background image repositioning (drag-to-move)
+  @State private var offset: CGSize = .zero
+  
+  /// Previous offset value used during gesture calculations
+  @State private var lastOffset: CGSize = .zero
+  
   /// Indicates whether a Shazam identification is in progress
   @State var showProgress: Bool = false
   
@@ -56,52 +62,73 @@ struct ContentView: View {
         // Pure black background for found songs
         Color.black.ignoresSafeArea()
         
-        if showProgress {
-          ProgressView()
-        } else {
-          AsyncImage(url: mediaItem?.artworkURL) { phase in
+        // Background image layer - always full screen when available
+        if let mediaItem = mediaItem {
+          AsyncImage(url: mediaItem.artworkURL) { phase in
             if let image = phase.image {
               image
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea(.all)
                 .scaleEffect(scale)
-                .gesture(MagnificationGesture().onChanged { val in
-                  let delta = val / self.lastScaleValue
-                  self.lastScaleValue = val
-                  let newScale = self.scale * delta
-                  scale = newScale
-                }.onEnded{ val in
-                  scaledFrame = scale
-                  lastScaleValue = 1
-                })
-            } else {
-              // Show connection status when no image
-              VStack(spacing: 16) {
-                Image(systemName: "waveform")
-                  .font(.system(size: 90))
-                  .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
-                  .shadow(color: .cyan, radius: 10)
-                if !multipeerManager.isDJ && !multipeerManager.isConnected {
-                  VStack(spacing: 8) {
-                    ProgressView()
-                      .scaleEffect(1.2)
-                    Text("Looking for DJ...")
-                      .font(.headline)
-                      .foregroundColor(.secondary)
-                  }
-                } else if multipeerManager.isDJ {
-                  Text("DJ Mode Active")
-                    .font(.headline)
-                    .foregroundColor(.green)
-                } else {
-                  Text("Tap the music note to discover songs")
-                    .font(.headline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                }
+                .offset(offset)
+                .gesture(
+                  SimultaneousGesture(
+                    DragGesture()
+                      .onChanged { value in
+                        offset = CGSize(
+                          width: lastOffset.width + value.translation.width,
+                          height: lastOffset.height + value.translation.height
+                        )
+                      }
+                      .onEnded { _ in
+                        lastOffset = offset
+                      },
+                    MagnificationGesture()
+                      .onChanged { val in
+                        let delta = val / self.lastScaleValue
+                        self.lastScaleValue = val
+                        let newScale = self.scale * delta
+                        // Constrain scale to prevent extreme zoom levels that trigger layout issues
+                        scale = max(0.5, min(3.0, newScale))
+                      }
+                      .onEnded { val in
+                        scaledFrame = scale
+                        lastScaleValue = 1
+                      }
+                  )
+                )
+            }
+          }
+        }
+        
+        // Overlay content layer
+        if showProgress {
+          ProgressView()
+        } else if mediaItem == nil {
+          // Show connection status when no image
+          VStack(spacing: 16) {
+            Image(systemName: "waveform")
+              .font(.system(size: 90))
+              .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
+              .shadow(color: .cyan, radius: 10)
+            if !multipeerManager.isDJ && !multipeerManager.isConnected {
+              VStack(spacing: 8) {
+                ProgressView()
+                  .scaleEffect(1.2)
+                Text("Looking for DJ...")
+                  .font(.headline)
+                  .foregroundColor(.secondary)
               }
+            } else if multipeerManager.isDJ {
+              Text("DJ Mode Active")
+                .font(.headline)
+                .foregroundColor(.green)
+            } else {
+              Text("Tap the music note to discover songs")
+                .font(.headline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
             }
           }
         }
