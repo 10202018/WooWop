@@ -139,60 +139,7 @@ struct DJQueueView: View {
                     
                     // Control Buttons: only visible to the DJ. Listeners should not see Start/Stop controls.
                     if multipeerManager.isDJ {
-                        HStack(spacing: 16) {
-                            // Start DJ Mode with Neon Glow Style
-                            Button {
-                                multipeerManager.startHosting()
-                            } label: {
-                                HStack {
-                                    Image(systemName: "broadcast")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(Color.white)
-                                    Text("Start DJ Mode")
-                                        .font(.system(.title2, design: .default, weight: .bold))
-                                        .textCase(.uppercase)
-                                }
-                                .foregroundColor(Color.white)
-                                .padding(.horizontal, 32)
-                                .padding(.vertical, 16)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color(red: 1.0, green: 0.0, blue: 0.6)) // Electric pink
-                                )
-                                .shadow(
-                                    color: Color(red: 1.0, green: 0.0, blue: 0.6).opacity(0.6),
-                                    radius: 10,
-                                    x: 0,
-                                    y: 5
-                                )
-                            }
-                            .disabled(multipeerManager.isDJ || (multipeerManager.isConnected && !multipeerManager.isDJ))
-                            
-                            // Stop button with Ghost Style
-                            Button {
-                                multipeerManager.stopSession()
-                            } label: {
-                                HStack {
-                                    Image(systemName: "stop.circle")
-                                        .font(.system(size: 24))
-                                        .foregroundColor(Color(red: 0.914, green: 0.271, blue: 0.376)) // Soft red
-                                    Text("Stop")
-                                        .font(.system(.body, design: .default, weight: .semibold))
-                                        .textCase(.uppercase)
-                                }
-                                .foregroundColor(Color(red: 0.914, green: 0.271, blue: 0.376))
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 12)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .strokeBorder(Color(red: 0.914, green: 0.271, blue: 0.376), lineWidth: 2)
-                                )
-                            }
-                            .padding()
-                            .background(Color.red)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                        }
-                        .disabled(!multipeerManager.isDJ && !multipeerManager.isConnected)
+                        // Remove the large stop button from here - moved to toolbar
                     } else {
                         // For listeners, show a subtle informational label while keeping the queue visible
                         HStack(spacing: 8) {
@@ -302,6 +249,29 @@ struct DJQueueView: View {
                 }
                 .padding()
                 .navigationTitle("DJ Queue")
+                .toolbar {
+                    if multipeerManager.isDJ {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                multipeerManager.stopSession()
+                            } label: {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "stop.circle.fill")
+                                        .font(.system(size: 16))
+                                    Text("Stop")
+                                        .font(.system(size: 14, weight: .medium))
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 6)
+                                        .fill(Color(red: 0.8, green: 0.2, blue: 0.2))
+                                )
+                            }
+                        }
+                    }
+                }
             }
             .onAppear {
                 // If we're a listener, ask the connected DJ(s) for the current queue when the user opens the view
