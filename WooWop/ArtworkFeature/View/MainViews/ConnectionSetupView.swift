@@ -230,7 +230,6 @@ struct ConnectionSetupView: View {
                                         .foregroundColor(Color.white)
                                     Text("Become DJ")
                                         .font(.system(.body, design: .default, weight: .bold))
-                                        .textCase(.uppercase)
                                         .foregroundColor(Color.white)
                                     Spacer()
                                     Text("Receive requests")
@@ -241,14 +240,14 @@ struct ConnectionSetupView: View {
                                 .padding(.vertical, 16)
                                 .background(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .fill(Color(red: 1.0, green: 0.0, blue: 0.6)) // Electric pink
+                                        .fill(Color(red: 0.0, green: 0.8, blue: 0.4)) // Better green color
                                         .overlay(
                                             RoundedRectangle(cornerRadius: 12)
                                                 .strokeBorder(Color.white.opacity(0.3), lineWidth: 1)
                                         )
                                 )
                                 .shadow(
-                                    color: Color(red: 1.0, green: 0.0, blue: 0.6).opacity(0.6),
+                                    color: Color(red: 0.0, green: 0.8, blue: 0.4).opacity(0.6),
                                     radius: 10,
                                     x: 0,
                                     y: 5
