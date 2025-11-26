@@ -10,6 +10,7 @@
 		352711D72ED1B5F5009147CF /* MultipeerManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352711D62ED1B5F5009147CF /* MultipeerManagerTests.swift */; };
 		352711D92ED6AE3F009147CF /* AppIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352711D82ED6AE3F009147CF /* AppIntroView.swift */; };
 		352711DD2ED6B27D009147CF /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 352711DC2ED6B27D009147CF /* Media.xcassets */; };
+		352711DF2ED70FB9009147CF /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 352711DE2ED70FB9009147CF /* ChatMessage.swift */; };
 		359539152EB0587D0034E334 /* QueueMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 359539142EB0587D0034E334 /* QueueMessageTests.swift */; };
 		35DC73732EB318050004A819 /* UpvoteLogicTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73722EB318050004A819 /* UpvoteLogicTests.swift */; };
 		35DC73752EB326000004A819 /* VideoComposer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35DC73742EB326000004A819 /* VideoComposer.swift */; };
@@ -55,6 +56,7 @@
 		352711D62ED1B5F5009147CF /* MultipeerManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipeerManagerTests.swift; sourceTree = "<group>"; };
 		352711D82ED6AE3F009147CF /* AppIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntroView.swift; sourceTree = "<group>"; };
 		352711DC2ED6B27D009147CF /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		352711DE2ED70FB9009147CF /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		359539142EB0587D0034E334 /* QueueMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueueMessageTests.swift; sourceTree = "<group>"; };
 		35DC73722EB318050004A819 /* UpvoteLogicTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpvoteLogicTests.swift; sourceTree = "<group>"; };
 		35DC73742EB326000004A819 /* VideoComposer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoComposer.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 		5B4A269F2C6CE9B700DCBB08 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				352711DE2ED70FB9009147CF /* ChatMessage.swift */,
 				35DC73782EB3C8E80004A819 /* CameraCaptureManager.swift */,
 				5B7273792BFBD47F000A430C /* MediaLoader.swift */,
 				35F5D9DE2E94A3EA00CD46EA /* MultipeerManager.swift */,
@@ -349,6 +352,7 @@
 				35F5D9E42E94A44F00CD46EA /* DJQueueView.swift in Sources */,
 				35F5D9E52E94A44F00CD46EA /* SongRequestView.swift in Sources */,
 				5B7C54592BF3D458001C2212 /* AnimatedButton.swift in Sources */,
+				352711DF2ED70FB9009147CF /* ChatMessage.swift in Sources */,
 				5BB596492C6C2F6200C4CACF /* MediaItem.swift in Sources */,
 				35F0532A2ECE86CC00B59438 /* AfterHoursComponents.swift in Sources */,
 				5BBD9A2E2C1A1C400020D9E4 /* SHManagedSessionClient.swift in Sources */,
