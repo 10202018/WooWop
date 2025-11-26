@@ -36,7 +36,7 @@ struct ChatStreamView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
     }
     
     private var chatContentHeight: CGFloat {
@@ -127,7 +127,8 @@ struct TikTokChatOverlay: View {
                     VStack(spacing: 0) {
                         // Chat stream area
                         ChatStreamView(multipeerManager: multipeerManager)
-                            .frame(maxWidth: 250, maxHeight: min(400, geometry.size.height * 0.5))
+                            .frame(width: min(260, geometry.size.width * 0.7))
+                            .frame(maxHeight: min(400, geometry.size.height * 0.5))
                             .clipShape(RoundedRectangle(cornerRadius: 20))
                         
                         // Quick input area
@@ -141,7 +142,7 @@ struct TikTokChatOverlay: View {
                                         Text(emoji)
                                             .font(.title2)
                                             .padding(8)
-                                            .background(Color.black.opacity(0.3))
+                                            .background(Color.black.opacity(0.4))
                                             .clipShape(Circle())
                                     }
                                 }
@@ -155,22 +156,30 @@ struct TikTokChatOverlay: View {
                                     .foregroundColor(.white)
                                     .font(.title2)
                                     .padding(10)
-                                    .background(Color.black.opacity(0.6))
+                                    .background(Color.black.opacity(0.7))
                                     .clipShape(Circle())
                             }
                         }
                         .padding(.horizontal, 12)
                         .padding(.bottom, 8)
                     }
-                    .padding(.trailing, max(16, geometry.safeAreaInsets.trailing + 8))
-                    .padding(.bottom, max(20, geometry.safeAreaInsets.bottom + 8))
+                    .background(
+                        // Subtle background to ensure visibility over any background image
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(Color.black.opacity(0.1))
+                            .blur(radius: 8)
+                            .padding(-8)
+                    )
+                    .padding(.bottom, 20)
+                    
+                    Spacer()
                 }
             }
-        }
-        .ignoresSafeArea(edges: .bottom)
-        .sheet(isPresented: $showInput) {
-            QuickChatInput(multipeerManager: multipeerManager, isPresented: $showInput)
-                .frame(height: 120)
+            .ignoresSafeArea(edges: .bottom)
+            .sheet(isPresented: $showInput) {
+                QuickChatInput(multipeerManager: multipeerManager, isPresented: $showInput)
+                    .frame(height: 120)
+            }
         }
     }
 }
