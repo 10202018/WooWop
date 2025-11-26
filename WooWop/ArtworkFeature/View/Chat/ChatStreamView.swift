@@ -53,7 +53,7 @@ struct ChatMessageBubble: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
-                // Sender name
+                // Always show sender name for all messages
                 Text(message.senderName)
                     .font(.caption2)
                     .foregroundColor(.white.opacity(0.7))
@@ -117,50 +117,54 @@ struct TikTokChatOverlay: View {
     @State private var showInput = false
     
     var body: some View {
-        VStack {
-            Spacer()
-            
-            HStack {
-                VStack(spacing: 0) {
-                    // Chat stream area
-                    ChatStreamView(multipeerManager: multipeerManager)
-                        .frame(maxWidth: 250, maxHeight: 400)
-                        .clipShape(RoundedRectangle(cornerRadius: 20))
+        GeometryReader { geometry in
+            VStack {
+                Spacer()
+                
+                HStack {
+                    Spacer()
                     
-                    // Quick input area
-                    HStack(spacing: 12) {
-                        // Quick emoji reactions
-                        HStack(spacing: 8) {
-                            ForEach(["❤️", "🔥", "👏", "😂"], id: \.self) { emoji in
-                                Button {
-                                    multipeerManager.sendEmojiReaction(emoji)
-                                } label: {
-                                    Text(emoji)
-                                        .font(.title2)
-                                        .padding(8)
-                                        .background(Color.black.opacity(0.3))
-                                        .clipShape(Circle())
+                    VStack(spacing: 0) {
+                        // Chat stream area
+                        ChatStreamView(multipeerManager: multipeerManager)
+                            .frame(maxWidth: 250, maxHeight: min(400, geometry.size.height * 0.5))
+                            .clipShape(RoundedRectangle(cornerRadius: 20))
+                        
+                        // Quick input area
+                        HStack(spacing: 12) {
+                            // Quick emoji reactions
+                            HStack(spacing: 8) {
+                                ForEach(["❤️", "🔥", "👏", "😂"], id: \.self) { emoji in
+                                    Button {
+                                        multipeerManager.sendEmojiReaction(emoji)
+                                    } label: {
+                                        Text(emoji)
+                                            .font(.title2)
+                                            .padding(8)
+                                            .background(Color.black.opacity(0.3))
+                                            .clipShape(Circle())
+                                    }
                                 }
                             }
+                            
+                            // Chat toggle button
+                            Button {
+                                showInput.toggle()
+                            } label: {
+                                Image(systemName: "message")
+                                    .foregroundColor(.white)
+                                    .font(.title2)
+                                    .padding(10)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Circle())
+                            }
                         }
-                        
-                        // Chat toggle button
-                        Button {
-                            showInput.toggle()
-                        } label: {
-                            Image(systemName: "message")
-                                .foregroundColor(.white)
-                                .font(.title2)
-                                .padding(10)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Circle())
-                        }
+                        .padding(.horizontal, 12)
+                        .padding(.bottom, 8)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 12)
+                    .padding(.trailing, max(16, geometry.safeAreaInsets.trailing + 8))
+                    .padding(.bottom, max(20, geometry.safeAreaInsets.bottom + 8))
                 }
-                
-                Spacer()
             }
         }
         .ignoresSafeArea(edges: .bottom)

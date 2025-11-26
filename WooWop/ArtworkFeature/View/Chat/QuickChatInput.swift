@@ -8,9 +8,6 @@ struct QuickChatInput: View {
     @State private var messageText = ""
     @FocusState private var isTextFieldFocused: Bool
     
-    // Quick emoji options
-    private let quickEmojis = ["❤️", "🔥", "👏", "😂", "🎵", "🎉", "💃", "🕺", "🎤", "🎧"]
-    
     var body: some View {
         VStack(spacing: 16) {
             // Handle bar
@@ -18,25 +15,6 @@ struct QuickChatInput: View {
                 .fill(Color.gray.opacity(0.3))
                 .frame(width: 40, height: 4)
                 .padding(.top, 8)
-            
-            // Quick emoji reactions row
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(quickEmojis, id: \.self) { emoji in
-                        Button {
-                            sendEmoji(emoji)
-                        } label: {
-                            Text(emoji)
-                                .font(.title2)
-                                .padding(8)
-                                .background(Color.gray.opacity(0.2))
-                                .clipShape(Circle())
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-                .padding(.horizontal, 20)
-            }
             
             // Text input section
             HStack(spacing: 12) {
@@ -85,20 +63,11 @@ struct QuickChatInput: View {
         let trimmed = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         
-        let chatMessage = ChatMessage(text: trimmed, senderName: multipeerManager.localDisplayName)
+        let chatMessage = ChatMessage(text: trimmed, senderName: multipeerManager.userName)
         multipeerManager.sendChatMessage(chatMessage)
         messageText = ""
         
         // Close input after sending
-        withAnimation {
-            isPresented = false
-        }
-    }
-    
-    private func sendEmoji(_ emoji: String) {
-        multipeerManager.sendEmojiReaction(emoji)
-        
-        // Close input after sending emoji
         withAnimation {
             isPresented = false
         }
