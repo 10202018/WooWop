@@ -20,9 +20,18 @@ struct WooWopApp: App {
     /// Controls whether to show the initial setup screen or the main content
     @State private var showingSetup = true
     
+    /// Controls whether to show the intro animation
+    @State private var showingIntro = true
+    
     var body: some Scene {
         WindowGroup {
-            if showingSetup {
+            if showingIntro {
+                AppIntroView {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        showingIntro = false
+                    }
+                }
+            } else if showingSetup {
                 ConnectionSetupView(multipeerManager: multipeerManager)
                     .onChange(of: multipeerManager.isDJ) { isDJ in
                         if isDJ {
