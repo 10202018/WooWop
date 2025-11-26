@@ -38,6 +38,9 @@ struct ContentView: View {
   @State private var showingDJQueue = false
   @State private var showingRecordSheet = false
   
+  /// Controls the visibility of the TikTok-style chat overlay
+  @State private var showingChatOverlay = false
+  
   /// Current scale factor for the artwork image (pinch-to-zoom)
   @State var scale: CGFloat = 1.0
   
@@ -146,6 +149,11 @@ struct ContentView: View {
             }
           }
         }
+        
+        // TikTok-style chat overlay (only show when connected and chat is enabled)
+        if multipeerManager.isConnected && showingChatOverlay {
+          TikTokChatOverlay(multipeerManager: multipeerManager)
+        }
       }
       .toolbar {
         ToolbarItemGroup(placement: .navigationBarLeading) {
@@ -177,6 +185,31 @@ struct ContentView: View {
         
         ToolbarItemGroup(placement: .navigationBarTrailing) {
           HStack(spacing: -4) { // Reduce spacing between icons
+            // Chat toggle button (only show when connected)
+            if multipeerManager.isConnected {
+              Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                  showingChatOverlay.toggle()
+                }
+              } label: {
+                Image(systemName: showingChatOverlay ? "message.fill" : "message")
+                  .font(.system(size: 18))
+                  .foregroundColor(showingChatOverlay ? .white : Color(red: 0.0, green: 0.941, blue: 1.0))
+                  .padding(8)
+                  .background(
+                    Circle()
+                      .fill(showingChatOverlay ? Color(red: 0.0, green: 0.941, blue: 1.0) : Color.black.opacity(0.4))
+                  )
+                  .shadow(
+                    color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                    radius: 6,
+                    x: 0,
+                    y: 2
+                  )
+                  .accessibilityLabel("Toggle chat")
+              }
+            }
+            
             if let mediaItem = mediaItem {
               Button {
                 showingSongRequest = true
