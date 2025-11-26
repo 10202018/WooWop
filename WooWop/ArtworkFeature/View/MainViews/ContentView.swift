@@ -56,6 +56,10 @@ struct ContentView: View {
   /// Indicates whether a Shazam identification is in progress
   @State var showProgress: Bool = false
   
+  /// Animation state for waveform pulsing effect
+  @State private var waveformScale: CGFloat = 1.0
+  @State private var waveformOpacity: Double = 1.0
+  
   var body: some View {
     NavigationStack {
       ZStack {
@@ -112,6 +116,16 @@ struct ContentView: View {
               .font(.system(size: 90))
               .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
               .shadow(color: .cyan, radius: 10)
+              .scaleEffect(waveformScale)
+              .opacity(waveformOpacity)
+              .onAppear {
+                withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                  waveformScale = 1.2
+                }
+                withAnimation(Animation.easeInOut(duration: 3.33).repeatForever(autoreverses: true)) {
+                  waveformOpacity = 0.7
+                }
+              }
             if !multipeerManager.isDJ && !multipeerManager.isConnected {
               VStack(spacing: 8) {
                 ProgressView()

@@ -19,6 +19,10 @@ struct ConnectionSetupView: View {
     /// User's display name for song requests and session identification
     @State private var userName: String = ""
     
+    /// Animation state for waveform pulsing effect
+    @State private var waveformScale: CGFloat = 1.0
+    @State private var waveformOpacity: Double = 1.0
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -120,6 +124,16 @@ struct ConnectionSetupView: View {
                             .font(.system(size: 60))
                             .foregroundColor(Color(red: 0.0, green: 0.941, blue: 1.0)) // Electric blue
                             .shadow(color: .cyan, radius: 10)
+                            .scaleEffect(waveformScale)
+                            .opacity(waveformOpacity)
+                            .onAppear {
+                                withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                                    waveformScale = 1.2
+                                }
+                                withAnimation(Animation.easeInOut(duration: 3.33).repeatForever(autoreverses: true)) {
+                                    waveformOpacity = 0.7
+                                }
+                            }
                         
                         Text("WooWop")
                             .font(.largeTitle)
