@@ -135,7 +135,7 @@ struct TikTokChatOverlay: View {
                         HStack(spacing: 12) {
                             // Quick emoji reactions
                             HStack(spacing: 8) {
-                                ForEach(["❤️", "🔥", "👏", "😂"], id: \.self) { emoji in
+                                ForEach(["❤️", "🔥", "👏🏾", "😂"], id: \.self) { emoji in
                                     Button {
                                         multipeerManager.sendEmojiReaction(emoji)
                                     } label: {
@@ -176,10 +176,16 @@ struct TikTokChatOverlay: View {
                 }
             }
             .ignoresSafeArea(edges: .bottom)
-            .sheet(isPresented: $showInput) {
-                QuickChatInput(multipeerManager: multipeerManager, isPresented: $showInput)
-                    .frame(height: 120)
-            }
+            .overlay(
+                // Floating chat input overlay (appears over everything)
+                Group {
+                    if showInput {
+                        FloatingChatInput(multipeerManager: multipeerManager, isPresented: $showInput)
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                            .zIndex(999)
+                    }
+                }
+            )
         }
     }
 }
