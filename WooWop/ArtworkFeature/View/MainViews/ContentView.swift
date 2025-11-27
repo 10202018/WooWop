@@ -63,6 +63,9 @@ struct ContentView: View {
   @State private var waveformScale: CGFloat = 1.0
   @State private var waveformOpacity: Double = 1.0
   
+  /// Animation state for text glistening effect
+  @State private var textGlistenOpacity: Double = 1.0
+  
   var body: some View {
     NavigationStack {
       ZStack {
@@ -140,12 +143,26 @@ struct ContentView: View {
             } else if multipeerManager.isDJ {
               Text("DJ Mode Active")
                 .font(.headline)
-                .foregroundColor(.green)
+                .foregroundColor(Color(red: 0.45, green: 0.40, blue: 0.60)) // Light medium purple
+                .shadow(color: Color(red: 0.45, green: 0.40, blue: 0.60), radius: 10)
+                .opacity(textGlistenOpacity)
+                .onAppear {
+                  withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                    textGlistenOpacity = 0.5
+                  }
+                }
             } else {
               Text("Tap the music note to discover songs")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(red: 0.45, green: 0.40, blue: 0.60)) // Light medium purple
+                .shadow(color: Color(red: 0.45, green: 0.40, blue: 0.60), radius: 10)
+                .opacity(textGlistenOpacity)
                 .multilineTextAlignment(.center)
+                .onAppear {
+                  withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                    textGlistenOpacity = 0.5
+                  }
+                }
             }
           }
         }

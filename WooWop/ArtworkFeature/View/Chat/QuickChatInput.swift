@@ -158,16 +158,6 @@ struct FloatingChatInput: View {
                         showEmojiPicker = false
                     }
                 }
-            
-            // Placeholder text
-            if messageText.isEmpty {
-                Text("Message...")
-                    .foregroundColor(.white.opacity(0.5))
-                    .font(.system(size: 16))
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
-                    .allowsHitTesting(false) // Allow taps to pass through
-            }
         }
     }
     
