@@ -143,8 +143,8 @@ struct ContentView: View {
             } else if multipeerManager.isDJ {
               Text("DJ Mode Active")
                 .font(.headline)
-                .foregroundColor(Color(red: 0.45, green: 0.40, blue: 0.60)) // Light medium purple
-                .shadow(color: Color(red: 0.45, green: 0.40, blue: 0.60), radius: 10)
+                .foregroundColor(Color(red: 0.97, green: 0.96, blue: 0.95)) // Pearl white
+                .shadow(color: Color(red: 0.97, green: 0.96, blue: 0.95), radius: 10)
                 .opacity(textGlistenOpacity)
                 .onAppear {
                   withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
@@ -154,8 +154,8 @@ struct ContentView: View {
             } else {
               Text("Tap the music note to discover songs")
                 .font(.headline)
-                .foregroundColor(Color(red: 0.45, green: 0.40, blue: 0.60)) // Light medium purple
-                .shadow(color: Color(red: 0.45, green: 0.40, blue: 0.60), radius: 10)
+                .foregroundColor(Color(red: 0.97, green: 0.96, blue: 0.95)) // Pearl white
+                .shadow(color: Color(red: 0.97, green: 0.96, blue: 0.95), radius: 10)
                 .opacity(textGlistenOpacity)
                 .multilineTextAlignment(.center)
                 .onAppear {
