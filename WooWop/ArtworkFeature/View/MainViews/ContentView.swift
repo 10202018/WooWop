@@ -38,6 +38,9 @@ struct ContentView: View {
   @State private var showingDJQueue = false
   @State private var showingRecordSheet = false
   
+  /// Controls the visibility of the TikTok-style chat overlay
+  @State private var showingChatOverlay = false
+  
   /// Current scale factor for the artwork image (pinch-to-zoom)
   @State var scale: CGFloat = 1.0
   
@@ -59,6 +62,9 @@ struct ContentView: View {
   /// Animation state for waveform pulsing effect
   @State private var waveformScale: CGFloat = 1.0
   @State private var waveformOpacity: Double = 1.0
+  
+  /// Animation state for text glistening effect
+  @State private var textGlistenOpacity: Double = 1.0
   
   var body: some View {
     NavigationStack {
@@ -137,14 +143,33 @@ struct ContentView: View {
             } else if multipeerManager.isDJ {
               Text("DJ Mode Active")
                 .font(.headline)
-                .foregroundColor(.green)
+                .foregroundColor(Color(red: 0.97, green: 0.96, blue: 0.95)) // Pearl white
+                .shadow(color: Color(red: 0.97, green: 0.96, blue: 0.95), radius: 10)
+                .opacity(textGlistenOpacity)
+                .onAppear {
+                  withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                    textGlistenOpacity = 0.5
+                  }
+                }
             } else {
               Text("Tap the music note to discover songs")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(Color(red: 0.97, green: 0.96, blue: 0.95)) // Pearl white
+                .shadow(color: Color(red: 0.97, green: 0.96, blue: 0.95), radius: 10)
+                .opacity(textGlistenOpacity)
                 .multilineTextAlignment(.center)
+                .onAppear {
+                  withAnimation(Animation.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                    textGlistenOpacity = 0.5
+                  }
+                }
             }
           }
+        }
+        
+        // TikTok-style chat overlay (only show when connected and chat is enabled)
+        if multipeerManager.isConnected && showingChatOverlay {
+          TikTokChatOverlay(multipeerManager: multipeerManager)
         }
       }
       .toolbar {
@@ -177,6 +202,31 @@ struct ContentView: View {
         
         ToolbarItemGroup(placement: .navigationBarTrailing) {
           HStack(spacing: -4) { // Reduce spacing between icons
+            // Chat toggle button (only show when connected)
+            if multipeerManager.isConnected {
+              Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                  showingChatOverlay.toggle()
+                }
+              } label: {
+                Image(systemName: showingChatOverlay ? "message.fill" : "message")
+                  .font(.system(size: 18))
+                  .foregroundColor(showingChatOverlay ? .white : Color(red: 0.0, green: 0.941, blue: 1.0))
+                  .padding(8)
+                  .background(
+                    Circle()
+                      .fill(showingChatOverlay ? Color(red: 0.0, green: 0.941, blue: 1.0) : Color.black.opacity(0.4))
+                  )
+                  .shadow(
+                    color: Color(red: 0.0, green: 0.941, blue: 1.0).opacity(0.3),
+                    radius: 6,
+                    x: 0,
+                    y: 2
+                  )
+                  .accessibilityLabel("Toggle chat")
+              }
+            }
+            
             if let mediaItem = mediaItem {
               Button {
                 showingSongRequest = true

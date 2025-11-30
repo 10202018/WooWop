@@ -66,6 +66,14 @@ class MultipeerManager: NSObject, ObservableObject {
     /// Map of discovered peer displayName -> advertised DJ name (from discoveryInfo)
     private var discoveredDJNames: [String: String] = [:]
     
+    // MARK: - Chat Properties
+    
+    /// Array of chat messages received from connected peers
+    @Published var chatMessages: [ChatMessage] = []
+    
+    /// Maximum number of chat messages to keep in memory (for performance)
+    private let maxChatMessages = 100
+    
     /// Initializes the MultipeerManager with default settings.
     /// 
     /// Sets up the multipeer connectivity components including the session,
@@ -164,6 +172,7 @@ class MultipeerManager: NSObject, ObservableObject {
         case request
         case upvote(UUID)
         case remove(UUID)
+        case chatMessage(ChatMessage)
 
         private enum CodingKeys: String, CodingKey {
             case type
@@ -176,6 +185,7 @@ class MultipeerManager: NSObject, ObservableObject {
             case request
             case upvote
             case remove
+            case chatMessage
         }
 
         init(from decoder: Decoder) throws {
@@ -196,6 +206,9 @@ class MultipeerManager: NSObject, ObservableObject {
             case .remove:
                 let id = try container.decode(UUID.self, forKey: .payload)
                 self = .remove(id)
+            case .chatMessage:
+                let msg = try container.decode(ChatMessage.self, forKey: .payload)
+                self = .chatMessage(msg)
             }
         }
 
@@ -216,6 +229,9 @@ class MultipeerManager: NSObject, ObservableObject {
             case .remove(let id):
                 try container.encode(MessageType.remove, forKey: .type)
                 try container.encode(id, forKey: .payload)
+            case .chatMessage(let msg):
+                try container.encode(MessageType.chatMessage, forKey: .type)
+                try container.encode(msg, forKey: .payload)
             }
         }
     }
@@ -291,6 +307,67 @@ class MultipeerManager: NSObject, ObservableObject {
             print("Sent remove request for id: \(id)")
         } catch {
             print("Failed to send remove request: \(error)")
+        }
+    }
+    
+    // MARK: - Chat Methods
+    
+    /// Sends a chat message to all connected peers.
+    /// 
+    /// The message is broadcasted to all connected devices and added to the local
+    /// chat history. Automatically trims old messages to maintain performance.
+    /// 
+    /// - Parameter message: The chat message to send
+    func sendChatMessage(_ message: ChatMessage) {
+        guard !session.connectedPeers.isEmpty else {
+            print("No connected peers to send chat message to")
+            // Still add to local messages so sender can see their own message
+            addChatMessage(message)
+            return
+        }
+
+        let wrapper = QueueMessage.chatMessage(message)
+        do {
+            let data = try JSONEncoder().encode(wrapper)
+            try session.send(data, toPeers: session.connectedPeers, with: .reliable)
+            print("Sent chat message: \(message.displayText)")
+            
+            // Add to local chat history
+            addChatMessage(message)
+        } catch {
+            print("Failed to send chat message: \(error)")
+        }
+    }
+    
+    /// Sends a quick emoji reaction message.
+    /// 
+    /// Convenience method for sending emoji-only chat messages for quick reactions.
+    /// 
+    /// - Parameter emoji: The emoji character to send
+    func sendEmojiReaction(_ emoji: String) {
+        let message = ChatMessage(text: emoji, senderName: userName, isEmoji: true)
+        sendChatMessage(message)
+    }
+    
+    /// Adds a chat message to the local history and trims if necessary.
+    /// 
+    /// - Parameter message: The message to add
+    private func addChatMessage(_ message: ChatMessage) {
+        DispatchQueue.main.async {
+            self.chatMessages.append(message)
+            
+            // Trim old messages to maintain performance
+            if self.chatMessages.count > self.maxChatMessages {
+                let excessCount = self.chatMessages.count - self.maxChatMessages
+                self.chatMessages.removeFirst(excessCount)
+            }
+        }
+    }
+    
+    /// Clears all chat messages from local history.
+    func clearChatHistory() {
+        DispatchQueue.main.async {
+            self.chatMessages.removeAll()
         }
     }
 
@@ -454,6 +531,10 @@ extension MultipeerManager: MCSessionDelegate {
                     } else {
                         print("Upvote received for unknown id: \(id)")
                     }
+                case .chatMessage(let message):
+                    // Receive and display chat message from peer
+                    print("Received chat message from \(peerID.displayName): \(message.displayText)")
+                    self.addChatMessage(message)
                 }
             }
         } catch {
